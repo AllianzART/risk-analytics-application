@@ -14,15 +14,11 @@ grails.project.dependency.resolution = {
 
     repositories {
         grailsHome()
-        grailsCentral()
-        mavenCentral()
+        mavenLocal()
 
-        mavenRepo "https://repository.intuitive-collaboration.com/nexus/content/repositories/pillarone-public/"
-        mavenRepo("https://repository.intuitive-collaboration.com/nexus/content/repositories/pillarone-public-snapshot/") {
+        mavenRepo (name:"zh-artisan-test" , url:"http://zh-artisan-test.art-allianz.com:8085/nexus/content/groups/public/") {
             updatePolicy System.getProperty('snapshotUpdatePolicy') ?: 'daily'
         }
-        mavenRepo "http://repo.spring.io/milestone/" //needed for spring-security-core 2.0-rc2 plugin
-        mavenRepo "https://ci.canoo.com/nexus/content/repositories/public-releases"
     }
 
     String ulcVersion = "7.2.0.8"
@@ -69,6 +65,8 @@ grails.project.dependency.resolution = {
         build "com.lowagie:itext:2.1.7"
     }
 }
+
+grails.project.repos.default = "pillarone"
 
 grails.project.dependency.distribution = {
     String password = ""
