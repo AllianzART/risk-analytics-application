@@ -11,7 +11,7 @@
 
     <property name="GRAILS_JVM_OPTS" value="-Xmx2g -XX:MaxPermSize=512m -Duser.language='en'" />
 
-    <get src="https://raw.githubusercontent.com/pillarone/risk-analytics-core/1.9.x/scripts/build.xml" dest="_build.xml" skipexisting="true" ignoreerrors="true"/>
+    <get src="https://raw.githubusercontent.com/AllianzART/risk-analytics-core/1.9.x_local/scripts/build.xml" dest="_build.xml" skipexisting="true" ignoreerrors="true"/>
 
     <copy tofile="_build.xml" overwrite="true" failonerror="false">
         <fileset dir=".." includes="local-plugins/${app.name}-1.9.x/risk-analytics-core*/scripts/build.xml" />
