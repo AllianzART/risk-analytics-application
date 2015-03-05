@@ -59,6 +59,7 @@
         <property name="signjar.storepass" value="nopasswd" />
         <property name="signjar.keypass" value="nopasswd" />
         <property name="signjar.keystoretype" value="JKS" />
+        <!--<property name="signjar.keystoretype" value="PKCS12" />-->
     </target>
 
     <target name="jar-client" depends="-self-signed-cert" description="--> Create clientside jar files">
