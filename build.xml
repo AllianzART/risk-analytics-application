@@ -58,6 +58,7 @@
         <property name="signjar.keystore" value="pillarone.keystore" />
         <property name="signjar.storepass" value="nopasswd" />
         <property name="signjar.keypass" value="nopasswd" />
+        <property name="signjar.keystoretype" value="JKS" />
     </target>
 
     <target name="jar-client" depends="-self-signed-cert" description="--> Create clientside jar files">
@@ -106,7 +107,7 @@
         </foreach>
         <!-- has to be replaced with a trusted certificate issued for the builder of the jar files -->
         <!-- this is a self signed certificate and won't work with a strict security policy -->
-        <signjar alias="${signjar.alias}"  storetype="PKCS12" keystore="${signjar.keystore}" storepass="${signjar.storepass}"
+        <signjar alias="${signjar.alias}"  storetype="${signjar.keystoretype}" keystore="${signjar.keystore}" storepass="${signjar.storepass}"
             keypass="${signjar.keypass}" lazy="false" tsaurl="http://tsa.starfieldtech.com/">
             <fileset dir="${webapp.lib.dir}" includes="*.jar" />
         </signjar>
