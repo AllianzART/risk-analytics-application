@@ -13,7 +13,7 @@
 
     <get src="https://raw.githubusercontent.com/AllianzART/risk-analytics-core/1.9.x_local/scripts/build.xml" dest="_build.xml" skipexisting="true" ignoreerrors="true"/>
 
-    <copy tofile="_build.xml" overwrite="true" failonerror="false">
+    <copy tofile="_build.xml" overwrite="false" failonerror="false">
         <fileset dir=".." includes="local-plugins/${app.name}-1.9.x/risk-analytics-core*/scripts/build.xml" />
     </copy>
     <import file="_build.xml" />
