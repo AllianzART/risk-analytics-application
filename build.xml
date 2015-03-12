@@ -111,6 +111,8 @@
         <signjar alias="${signjar.alias}"  storetype="${signjar.keystoretype}" keystore="${signjar.keystore}" storepass="${signjar.storepass}"
             keypass="${signjar.keypass}" lazy="false" tsaurl="http://tsa.starfieldtech.com/">
             <fileset dir="${webapp.lib.dir}" includes="*.jar" />
+            <sysproperty key="http.proxyHost" value="${signjar.proxyHost}"/>
+            <sysproperty key="http.proxyPort" value="${signjar.proxyPort}"/>
         </signjar>
     </target>
 
