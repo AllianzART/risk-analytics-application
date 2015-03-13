@@ -121,6 +121,7 @@
             <manifest>
                 <attribute name="Codebase" value="*" />
                 <attribute name="Permissions" value="all-permissions" />
+                <attribute name="Application-Name" value="AllianzART" />
             </manifest>
         </jar>
     </target>
