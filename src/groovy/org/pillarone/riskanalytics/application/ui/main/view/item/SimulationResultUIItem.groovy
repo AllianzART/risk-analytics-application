@@ -32,7 +32,8 @@ abstract class SimulationResultUIItem<T extends IDetailView> extends ModellingUi
         if (!(obj instanceof ModellingUIItem)) {
             return false
         }
-        return item.modelClass == obj.item.modelClass && item.name == obj.item.name
+        ModellingUIItem mObj = (obj as ModellingUIItem)
+        return item.modelClass == mObj.item.modelClass && item.name == mObj.item.name
     }
 
     @Override
