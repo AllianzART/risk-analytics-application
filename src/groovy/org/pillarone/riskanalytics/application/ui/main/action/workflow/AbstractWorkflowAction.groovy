@@ -74,7 +74,7 @@ abstract class AbstractWorkflowAction extends SingleItemAction {
         try {
             return StatusChangeService.getService()
         } catch (Exception ex) {
-            LOG.info("StatusChangeService.getService() threw: ", ex)
+            LOG.warn("StatusChangeService.getService() threw: ", ex)
         }
         return null
     }
