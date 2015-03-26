@@ -26,7 +26,7 @@ class SaveAction extends ResourceBasedAction {
     ModellingUIItem currentItem
     ULCComponent parent
 
-    public SaveAction(ULCComponent parent) {
+    public SaveAction(ULCComponent parent) { //nb directly called by HeaderView.initComponents()
         super("Save")
         this.parent = parent
     }
@@ -44,19 +44,25 @@ class SaveAction extends ResourceBasedAction {
         Holders.grailsApplication.mainContext.getBean('detailViewManager', DetailViewManager)
     }
 
-    void save(AbstractUIItem abstractUIItem) {
-        if (abstractUIItem instanceof ModellingUIItem) {
-            final ModellingUIItem modellingUIItem = abstractUIItem
-            if (isChangedAndNotUsed(modellingUIItem)) {
-                LOG.info("Saving ${abstractUIItem.nameAndVersion}.")
-                saveItem(abstractUIItem)
-            } else {
-                LOG.info("Cannot save ${abstractUIItem.nameAndVersion} because it already used in a simulation.")
-                I18NAlert alert = new I18NAlert(UlcUtilities.getWindowAncestor(parent), "SaveItemAlreadyUsed")
-                alert.addWindowListener([windowClosing: { WindowEvent e -> handleEvent(alert, modellingUIItem) }] as IWindowListener)
-                alert.show()
-            }
+    // Work with the type system and avoid instanceof ..
+    //
+    void save(ModellingUIItem modellingUIItem) {
+
+        boolean changedAndUsed = modellingUIItem.item.changed && modellingUIItem.usedInSimulation
+
+        if( changedAndUsed ){
+            LOG.info("Cannot save ${modellingUIItem.nameAndVersion} (already used in a simulation).")
+            I18NAlert alert = new I18NAlert(UlcUtilities.getWindowAncestor(parent), "SaveItemAlreadyUsed")
+            alert.addWindowListener([windowClosing: { WindowEvent e -> handleEvent(alert, modellingUIItem) }] as IWindowListener)
+            alert.show()
+        } else {
+            LOG.info("Saving ${modellingUIItem.nameAndVersion}.")
+            saveItem(modellingUIItem)
         }
+
+    }
+    void save(AbstractUIItem argItem) {
+        // NOP
     }
 
 
@@ -66,8 +72,6 @@ class SaveAction extends ResourceBasedAction {
 
     /**
      * save a changed item by creating  a new version or deleting all dependent simulations
-     * @param alert
-     * @param item
      */
     private void handleEvent(I18NAlert alert, ModellingUIItem modellingUIItem) {
 
@@ -118,17 +122,6 @@ class SaveAction extends ResourceBasedAction {
         }
     }
 
-    /**
-     * there is a possibility to a comment to used p14n
-     * by saving we have to make a difference if the item is changed and not used
-     * in a simulation or only its comments have been changed
-     * @param item
-     * @return
-     */
-    private boolean isChangedAndNotUsed(ModellingUIItem modellingUIItem) {
-        return !modellingUIItem.item.changed || (modellingUIItem.item.changed && !modellingUIItem.usedInSimulation)
-    }
-
     @Override
     boolean isEnabled() {
         if (detailViewManager.currentUIItem) {
@@ -151,6 +144,16 @@ class SaveAction extends ResourceBasedAction {
 
     @Override
     String toString() {
-        "currentItem: $currentItem"
+        if (currentItem){
+            return "currentItem: $currentItem"
+        }
+
+        // Avoid all those "currenItem: null" log debug lines
+        //
+        DetailViewManager dvm = getDetailViewManager()
+        if( dvm ){
+            return "currentItem: ${dvm.getCurrentUIItem()}"
+        }
+        return ""
     }
 }
