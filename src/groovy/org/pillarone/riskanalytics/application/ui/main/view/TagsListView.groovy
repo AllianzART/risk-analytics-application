@@ -27,9 +27,9 @@ class TagsListView extends AbstractView {
 
     private static Log LOG = LogFactory.getLog(TagsListView )
 
-    // Set -DvetoDupQtrTagsInWorkflow=true to activate extra Quarter Tag validation on Workflow p14ns
+    // Set -DquarterTagsAreSpecial=false to activate extra Quarter Tag validation on Workflow p14ns
     //
-    private static boolean vetoDupQtrTagsInWorkflow = System.getProperty("vetoDupQtrTagsInWorkflows","true").equalsIgnoreCase("true");
+    static boolean quarterTagsAreSpecial = System.getProperty("quarterTagsAreSpecial","true").equalsIgnoreCase("true");
 
     private ULCWindow parent
     public ULCBoxPane content
@@ -112,7 +112,7 @@ class TagsListView extends AbstractView {
         if (!itemTags.contains(tag)) itemTags << tag            // Some itemTags were only on subset of selected items
         for (ModellingItem modellingItem : modellingItems) {
             if (!modellingItem.getTags().contains(tag)) {
-                if(!vetoDupQtrTagsInWorkflow){
+                if(!quarterTagsAreSpecial){
                     // Generic logic
                     modellingItem.getTags().add(tag)
                     modellingItem.setChanged(true)
@@ -177,7 +177,7 @@ class TagsListView extends AbstractView {
             String firstLine= "Cant add ${tag.name} to '${simulation.name}' (sandbox model sim):"
             String secondLine = "Might want to first create workflow from model '${simulation?.parameterization?.nameAndVersion}'"
             LOG.warn(firstLine + " " + secondLine)
-            LOG.info("To disable qtr tag checks, override -DvetoDupQtrTagsInWorkflow=false ")
+            LOG.info("To disable qtr tag checks, override -DquarterTagsAreSpecial=false ")
             UIUtils.showWarnAlert(parent, "Cant quarter-tag sandbox sim-results", firstLine + "\n" + secondLine)
             return true
         }
@@ -210,7 +210,7 @@ class TagsListView extends AbstractView {
                     String firstLine= "Deal ${dealId}: Cant add ${tag.name} to '${simulation.name}' :"
                     String secondLine = "Tag already on '${sim.name}'."
                     LOG.warn(firstLine + " " + secondLine)
-                    LOG.info("To disable qtr tag checks, override -DvetoDupQtrTagsInWorkflow=false ")
+                    LOG.info("To disable qtr tag checks, override -DquarterTagsAreSpecial=false ")
                     UIUtils.showWarnAlert(parent, "Duplicate quarter tag on deal $dealId", firstLine + "\n" + secondLine)
                     return true
                 }
@@ -240,7 +240,7 @@ class TagsListView extends AbstractView {
                     String firstLine = "Cannot tag ${workflow.nameAndVersion} with '${tag.name}'"
                     String secondLine= "(Tag already exists on v${otherP14n.versionNumber.toString()} of same workflow.)"
                     LOG.warn(firstLine + " " + secondLine)
-                    LOG.info("To disable qtr tag checks, override -DvetoDupQtrTagsInWorkflow=false ")
+                    LOG.info("To disable qtr tag checks, override -DquarterTagsAreSpecial=false ")
                     UIUtils.showWarnAlert(parent, "Duplicate quarter tag in workflow", firstLine + "\n" + secondLine)
                     return true
                 }
