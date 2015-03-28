@@ -169,7 +169,7 @@ class I18NUtilities {
     public static String getExceptionText(String exception) {
         String text = getPropertyText(exceptionResourceBundles, ResourceBundleRegistry.RESOURCE, exception)
         if (!text) {
-            text = toLines(exception, 70)
+            text = toLinesFaz(exception, 70)
         }
         text = text.replaceAll("<", "&lt;")
         text = text.replaceAll(">", "&gt;")
@@ -182,6 +182,32 @@ class I18NUtilities {
         return getTextByResourceBundles(bundles, arg)
     }
 
+    private static String toLinesFaz(String exception, int lineMaxLength) {
+        //Respect existing newlines in message text ..
+        List lines = exception.split("\n") as List
+        StringBuffer bf = new StringBuffer()
+        int bfLineLen = 0
+        for(String line in lines){
+            if(bfLineLen + line.length() <= lineMaxLength){
+                if(bfLineLen>0){
+                    bf << "\n"
+                }
+                bf << line + "\n"
+                bfLineLen = 0
+            }else{
+                List words = line.split(" ") as List
+                for (String w in words) {
+                    if (bfLineLen + w.length() > lineMaxLength) {
+                        bf << "\n"
+                        bfLineLen = 0
+                    }
+                    bf << w + " "
+                    bfLineLen += (w.length() + 1)
+                }
+            }
+        }
+        return bf.toString()
+    }
     private static String toLines(String exception, int lineMaxLength) {
         List words = exception.split(" ") as List
         StringBuffer bf = new StringBuffer()
