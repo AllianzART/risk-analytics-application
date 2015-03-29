@@ -61,7 +61,9 @@ class SimulationActionsPaneModel {
 
     private void possiblyWarnUserIfHugeResultSetExpected() {
         try {
-            int iterationThreshold = Holders.config.iterationCountThresholdForWarningWhenUsingSingleCollector
+            // When overridden in external config this is a string, when in Config.groovy it's an int..
+            //
+            int iterationThreshold = Integer.valueOf(Holders.config.iterationCountThresholdForWarningWhenUsingSingleCollector)
 
             if (simulation.numberOfIterations > iterationThreshold &&
                     simulation.template.collectors.find { collector -> collector.mode instanceof SingleValueCollectingModeStrategy }) {
