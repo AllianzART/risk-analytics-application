@@ -93,6 +93,8 @@ class AboutDialog {
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
         pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Hartmann Stephan, Munich Re Group"));
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
+        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Huber Martin, Canoo Engineering AG"));
+        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
         pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Huber Matthias, Canoo Engineering AG"));
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
         pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Jaada Fouad, Intuitive Collaboration AG"));
