@@ -1,9 +1,12 @@
 package org.pillarone.riskanalytics.application.ui.main.view
 
 import com.google.common.base.Preconditions
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.UlcSessionScope
 import org.pillarone.riskanalytics.application.ui.main.view.item.AbstractUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
+import org.pillarone.riskanalytics.application.ui.main.view.item.SimulationSettingsUIItem
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 
@@ -13,6 +16,7 @@ import javax.annotation.PreDestroy
 @Scope(UlcSessionScope.ULC_SESSION_SCOPE)
 @Component
 class DetailViewManager {
+    protected final static Log log = LogFactory.getLog(DetailViewManager)
 
     AbstractUIItem currentUIItem
 
@@ -56,11 +60,16 @@ class DetailViewManager {
     }
 
     void saveAllOpenItems() {
-        modellingUiItems.each { it.save() }
+        nonSimConfigModellingUiItems.each { it.save() }
     }
 
     private Set<ModellingUIItem> getModellingUiItems() {
         uiItems.findAll { it instanceof ModellingUIItem }
+    }
+
+    private Set<ModellingUIItem> getNonSimConfigModellingUiItems() {
+        log.info("[AR-123] Hack - not saving any open SimulationSettingsUIItems (should fix properly.) ")
+        uiItems.findAll { (it instanceof ModellingUIItem) && !(it instanceof SimulationSettingsUIItem)}
     }
 
     private Set<AbstractUIItem> getUiItems() {
