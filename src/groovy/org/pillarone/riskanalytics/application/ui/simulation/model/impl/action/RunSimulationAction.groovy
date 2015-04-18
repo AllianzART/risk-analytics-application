@@ -50,7 +50,7 @@ class RunSimulationAction extends ResourceBasedAction {
         } != null) {
             ULCAlert alert = new I18NAlert(UlcUtilities.getWindowAncestor(event.source as ULCComponent), "DuplicateName")
             alert.show()
-            return
+            return false
         }
 
         if (parameterization.changed || configuration.changed) {
