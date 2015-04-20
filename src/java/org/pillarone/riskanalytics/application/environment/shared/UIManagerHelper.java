@@ -18,9 +18,9 @@ public class UIManagerHelper {
             setWindowsLookAndFeel();
         } else if (isLinux()) {
             setLinuxLookAndFeel();
-        } //else if (isMacOS()) {
-          //  setMacLookAndFeel();
-        //}
+        } else if (isMacOS()) {
+            setMacLookAndFeel();
+        }
         else setSystemLookAndFeel();
 
         ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
@@ -64,12 +64,10 @@ public class UIManagerHelper {
             e.printStackTrace();
         }
     }
-    /* disabled temporarily to make it run on hudson where there are not Aqua classes.... (dk)
     public static void setMacLookAndFeel() {
-        setLookAndFeel(new CUIAquaLookAndFeel());
-        UIManager.put("TextFieldUI", CUIAquaTextField.class.getName());
+        setLookAndFeel(new MetalLookAndFeel());
+        UIManager.put("TextFieldUI", MetalTextFieldUI.class.getName());
     }
-    */
 
     private static void setWindowsLookAndFeel() {
         setLookAndFeel(new WindowsLookAndFeel());
