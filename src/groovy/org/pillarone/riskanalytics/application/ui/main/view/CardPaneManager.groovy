@@ -40,7 +40,7 @@ class CardPaneManager {
     void addCard(Model selectedModel) {
         ULCDetachableTabbedPane modelCardContent = createDetachableTabbedPane(selectedModel)
         cardPane.addCard(getModelName(selectedModel), modelCardContent)
-        Closure closeAction = { event -> closeCard(selectedModel, modelCardContent, modelCardContent.selectedIndex) }
+        Closure closeAction = { event -> closeTab(selectedModel, modelCardContent, modelCardContent.selectedIndex) }
 
         modelCardContent.registerKeyboardAction([actionPerformed: closeAction] as IActionListener, KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.CTRL_DOWN_MASK, false), ULCComponent.WHEN_IN_FOCUSED_WINDOW)
         selectCard(selectedModel)
@@ -94,22 +94,24 @@ class CardPaneManager {
         return selectedModel ? selectedModel.name : NO_MODEL
     }
 
-    private void closeCard(Model model, ULCTabbedPane modelCardContent, int closingIndex) {
+    private void closeTab(Model model, ULCTabbedPane modelCardContent, int closingIndex) {
         if (closingIndex == -1) return
         TabbedPaneManager tabbedPaneManager = tabbedPaneManagers[getModelName(model)]
         tabbedPaneManager.closeTab(modelCardContent.getComponentAt(closingIndex))
-        if (modelCardContent && modelCardContent.tabCount == 0) {
+        boolean shouldCloseCard = tabbedPaneManager.isEmpty();
+        if (shouldCloseCard) {
             removeCard(model)
         }
     }
 
     public ULCDetachableTabbedPane createDetachableTabbedPane(Model selectedModel) {
-        ULCTabbedPane tabbedPane = new ULCDetachableTabbedPane(name: "DetachableTabbedPane")
+        ULCDetachableTabbedPane tabbedPane = new ULCDetachableTabbedPane(name: "DetachableTabbedPane")
+
         tabbedPane.addTabListener([tabClosing: { TabEvent event ->
             int closingIndex = event.tabClosingIndex
             if (closingIndex < 0) closingIndex = 0
             ULCCloseableTabbedPane modelCardContent = event.closableTabbedPane
-            closeCard(selectedModel, modelCardContent, closingIndex)
+            closeTab(selectedModel, modelCardContent, closingIndex)
         }] as ITabListener)
         Closure syncCurrentItem = { e ->
             selectCurrentItemFromTab(selectedModel)

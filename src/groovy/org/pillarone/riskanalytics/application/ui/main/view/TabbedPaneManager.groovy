@@ -141,4 +141,8 @@ class TabbedPaneManager {
             }
         }
     }
+
+    boolean isEmpty() {
+          tabbedPane.getTabCount() == 0 && tabbedPane.dependentFrames.isEmpty()
+    }
 }
