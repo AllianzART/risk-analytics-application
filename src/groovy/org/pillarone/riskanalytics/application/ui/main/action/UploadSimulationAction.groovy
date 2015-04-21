@@ -53,7 +53,7 @@ class UploadSimulationAction extends SelectionTreeAction {
         if (qtrSims.size() != selectedSims.size()) {
             int nonQtrCount = selectedSims.size() - qtrSims.size()
             Simulation example = selectedSims.find { !qtrSims.contains(it) }
-            String title = "Only quarter-tagged sims can upload"
+            String title = "Only tagged (non azre) sims can upload"
             String body = "($nonQtrCount) non quarter-tagged sims skipped.\n(No quarter tag found on ${(nonQtrCount > 1) ? 'e.g. ' : ''} ${example})"
             showInfoAlert(title, body)
         }
@@ -64,7 +64,7 @@ class UploadSimulationAction extends SelectionTreeAction {
 
         int azReCount = azReSims.size()
         if (azReCount > 0) {
-            String title = "Cannot upload AZRe sims "
+            String title = "Artisan cant upload AZRe sims"
             String body = "($azReCount) AZRe sims skipped.\nE.g. ${azReSims.first().parameterization.nameAndVersion} is an AZRe model."
             showInfoAlert(title, body)
             qtrSims.removeAll(azReSims)
