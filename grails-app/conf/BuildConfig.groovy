@@ -8,7 +8,7 @@ grails.project.fork = [test: false, run: false]
 
 grails.project.dependency.resolution = {
     inherits("global") { // inherit Grails' default dependencies
-        excludes "grails-plugin-testing"
+//        excludes "grails-plugin-testing"
     }
     log "warn"
 
@@ -62,7 +62,7 @@ grails.project.dependency.resolution = {
         test 'org.mortbay.jetty:jetty-util:6.1.21', 'org.mortbay.jetty:jetty-naming:6.1.21'
         test 'hsqldb:hsqldb:1.8.0.10'
 
-        test("org.grails:grails-plugin-testing:2.2.4")
+//        test("org.grails:grails-plugin-testing:2.2.4")
         test("org.springframework:spring-test:3.2.4.RELEASE")
 
         //see http://jira.grails.org/browse/GRAILS-10671
