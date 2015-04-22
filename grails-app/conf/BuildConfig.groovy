@@ -1,5 +1,5 @@
 //Use a custom plugins dir, because different branches use different plugin versions
-grails.project.plugins.dir = "../local-plugins/RiskAnalyticsApplication-1.9.x"
+grails.project.plugins.dir = "../local-plugins/RiskAnalyticsApplication-master"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 
@@ -41,7 +41,7 @@ grails.project.dependency.resolution = {
         test ":codenarc:0.20"
 
         if (appName == 'RiskAnalyticsApplication') {
-            runtime "org.pillarone:risk-analytics-core:1.9.20"
+            runtime "org.pillarone:risk-analytics-core:1.10.1-SNAPSHOT"
         }
 
     }
@@ -108,7 +108,7 @@ coverage {
 
 reportFolders = [new File("./src/java/reports")]
 
-//grails.plugin.location.'risk-analytics-core' = "../risk-analytics-core-1.9.x-local"
+//grails.plugin.location.'risk-analytics-core' = "../risk-analytics-core-master"
 
 codenarc.maxPriority1Violations = 0
 codenarc.maxPriority2Violations = 0
