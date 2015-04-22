@@ -19,9 +19,13 @@ grails.project.dependency.resolution = {
         mavenRepo (name:"zh-artisan-test" , url:"http://zh-artisan-test.art-allianz.com:8085/nexus/content/groups/public/") {
             updatePolicy System.getProperty('snapshotUpdatePolicy') ?: 'daily'
         }
+        grailsCentral()
+        mavenCentral()
+        mavenRepo "http://repo.spring.io/milestone/" //needed for spring-security-core 2.0-rc2 plugin
+        mavenRepo "https://ci.canoo.com/nexus/content/repositories/public-releases"
     }
 
-    String ulcVersion = "7.2.0.8.thawte"
+    String ulcVersion = "7.2.0.8"
 
     plugins {
         runtime ":background-thread:1.3"
@@ -35,13 +39,13 @@ grails.project.dependency.resolution = {
         // NB Doh! Must manually keep build.xml in sync with version number here!
         // (Target: 'jar' for the ...extensions-client.jar in build.xml)
         //
-        runtime("org.pillarone:pillar-one-ulc-extensions:1.10") { transitive = false }
+        runtime("org.pillarone:pillar-one-ulc-extensions:1.11") { transitive = false }
 
         test ":code-coverage:1.2.7"
         test ":codenarc:0.20"
 
         if (appName == 'RiskAnalyticsApplication') {
-            runtime "org.pillarone:risk-analytics-core:1.10.0-SNAPSHOT"
+            runtime "org.pillarone:risk-analytics-core:1.10-SNAPSHOT"
         }
 
     }
@@ -58,7 +62,7 @@ grails.project.dependency.resolution = {
         test 'org.mortbay.jetty:jetty-util:6.1.21', 'org.mortbay.jetty:jetty-naming:6.1.21'
         test 'hsqldb:hsqldb:1.8.0.10'
 
-        test("org.grails:grails-plugin-testing:2.2.3.FIXED")
+        test("org.grails:grails-plugin-testing:2.2.4")
         test("org.springframework:spring-test:3.2.4.RELEASE")
 
         //see http://jira.grails.org/browse/GRAILS-10671
