@@ -70,6 +70,8 @@ class CsvExportAction extends ExportItemAction {
         } catch( IllegalStateException e){
             if(e.message?.startsWith("CSV ")){
                 showInfoAlert("CSV file exceeds limits", "Sorry, " + e.message)
+            } else if(e.message.startsWith(ResultAccessor.MISSING_DIR_PREFIX)){
+                showWarnAlert("Cant find iterations folder", e.message, true)
             } else {
                 LOG.error("Export failed: " + t.message, t)
                 showAlert("exportError")
