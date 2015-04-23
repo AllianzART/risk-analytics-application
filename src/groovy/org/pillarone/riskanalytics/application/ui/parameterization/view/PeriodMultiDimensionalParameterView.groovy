@@ -175,7 +175,7 @@ class PeriodMultiDimensionalParameterView extends AbstractMultiDimensionalParame
         Set<String> result = new HashSet<String>()
         PeriodMatrixMultiDimensionalParameter pmmdp = (PeriodMatrixMultiDimensionalParameter) model.multiDimensionalParameter
         List titles = pmmdp.getTitles()
-        if (titles.get(0) instanceof List) {
+        if (titles && titles.get(0) instanceof List) {
             titles.get(0).each {String title ->
                 result.add(title)
             }
