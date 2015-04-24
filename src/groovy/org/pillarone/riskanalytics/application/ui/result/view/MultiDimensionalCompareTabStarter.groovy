@@ -9,6 +9,8 @@ import com.ulcjava.base.application.event.ActionEvent
 import com.ulcjava.base.application.event.IActionListener
 import com.ulcjava.base.application.event.KeyEvent
 import com.ulcjava.base.application.util.KeyStroke
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.parameterization.action.TabStarter
 import org.pillarone.riskanalytics.application.ui.parameterization.model.CompareParameterizationTableTreeNode
 import org.pillarone.riskanalytics.application.ui.parameterization.model.MultiDimensionalParameterCompareViewModel
@@ -16,6 +18,7 @@ import org.pillarone.riskanalytics.application.ui.parameterization.model.MultiDi
 import org.pillarone.riskanalytics.application.ui.parameterization.view.MultiDimensionalParameterCompareView
 import org.pillarone.riskanalytics.application.ui.parameterization.view.TabIdentifier
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
+import org.pillarone.riskanalytics.core.simulation.item.ParameterNotFoundException
 import org.pillarone.riskanalytics.core.simulation.item.parameter.MultiDimensionalParameterHolder
 import org.pillarone.riskanalytics.core.simulation.item.parameter.ParameterHolder
 import org.pillarone.riskanalytics.application.ui.base.action.ExceptionSafeAction
@@ -23,6 +26,7 @@ import org.pillarone.riskanalytics.core.parameterization.AbstractMultiDimensiona
 import org.pillarone.riskanalytics.core.simulation.item.ParametrizedItem
 
 class MultiDimensionalCompareTabStarter extends ExceptionSafeAction {
+    static Log LOG = LogFactory.getLog(MultiDimensionalCompareTabStarter)
 
     CompareParameterizationsView parameterView
     Map openTabs = [:]
@@ -45,7 +49,14 @@ class MultiDimensionalCompareTabStarter extends ExceptionSafeAction {
                 if (index == null) {
 
                     List<ParametrizedItem> parametrizedItems = lastComponent.itemsToCompare
-                    List<ParameterHolder> referenceParameters = parametrizedItems[1].getParameterHoldersForAllPeriods(lastComponent.parameterPath) //0 index seems to be for the tree
+                    List<ParameterHolder> referenceParameters
+                    try{
+                        referenceParameters = parametrizedItems[1].getParameterHoldersForAllPeriods(lastComponent.parameterPath) //0 index seems to be for the tree
+                    }catch(ParameterNotFoundException e){
+                        //[AR-146] First of the compared p14ns is missing the parameter; yielding a pointless technical alert
+                        LOG.info("Can't open drilldown comparison: "+e.message)
+                        return
+                    }
                     List<List<MultiDimensionalParameterHolder>> parametersToCompare = []
                     for(int i = 2; i < parametrizedItems.size(); i++) {
                         parametersToCompare << parametrizedItems[i].getParameterHoldersForAllPeriods(lastComponent.parameterPath)
