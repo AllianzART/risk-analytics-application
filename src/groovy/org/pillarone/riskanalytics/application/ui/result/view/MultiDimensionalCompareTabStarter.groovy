@@ -54,12 +54,17 @@ class MultiDimensionalCompareTabStarter extends ExceptionSafeAction {
                         referenceParameters = parametrizedItems[1].getParameterHoldersForAllPeriods(lastComponent.parameterPath) //0 index seems to be for the tree
                     }catch(ParameterNotFoundException e){
                         //[AR-146] First of the compared p14ns is missing the parameter; yielding a pointless technical alert
-                        LOG.info("Can't open drilldown comparison: "+e.message)
+                        LOG.warn("Can't drilldown (missing referenceParameters) : "+e.message)
                         return
                     }
                     List<List<MultiDimensionalParameterHolder>> parametersToCompare = []
                     for(int i = 2; i < parametrizedItems.size(); i++) {
-                        parametersToCompare << parametrizedItems[i].getParameterHoldersForAllPeriods(lastComponent.parameterPath)
+                        try{
+                            parametersToCompare << parametrizedItems[i].getParameterHoldersForAllPeriods(lastComponent.parameterPath)
+                        }catch(ParameterNotFoundException e){
+                            LOG.warn("Can't drilldown (missing parametersToCompare) : "+e.message)
+                            return
+                        }
                     }
 
                     int periodIndex = lastComponent.getPeriodIndex(tree.selectedColumn + 1)
