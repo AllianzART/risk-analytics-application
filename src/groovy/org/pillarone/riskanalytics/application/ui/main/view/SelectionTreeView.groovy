@@ -1,5 +1,4 @@
 package org.pillarone.riskanalytics.application.ui.main.view
-
 import com.canoo.ulc.community.fixedcolumntabletree.server.ULCFixedColumnTableTree
 import com.google.common.eventbus.Subscribe
 import com.ulcjava.base.application.ULCBoxPane
@@ -29,7 +28,6 @@ import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 import javax.annotation.Resource
-
 /**
  * @author fouad.jaada@intuitive-collaboration.com
  */
@@ -37,14 +35,25 @@ import javax.annotation.Resource
 @Component
 class SelectionTreeView {
 
-    final static int TREE_FIRST_COLUMN_WIDTH = 350
-    private ModellingItemSelectionListener modellingItemSelectionListener
+    static int TREE_FIRST_COLUMN_WIDTH = 390
+    // Avoid building whole app just to tweak these settings
+    //
+    static {
+        try{
+            TREE_FIRST_COLUMN_WIDTH = Integer.parseInt( System.getProperty("GUI_TREE_FIRST_COLUMN_WIDTH", "390") )
+        } catch( NumberFormatException e){
+            TREE_FIRST_COLUMN_WIDTH = 390
+        }
+
+    }
+
     ULCFixedColumnTableTree tree
     ULCBoxPane content
     @Resource
     RiskAnalyticsEventBus riskAnalyticsEventBus
     @Resource
     NavigationTableTreeModel navigationTableTreeModel
+    private ModellingItemSelectionListener modellingItemSelectionListener
 
     boolean ascOrder = true
 

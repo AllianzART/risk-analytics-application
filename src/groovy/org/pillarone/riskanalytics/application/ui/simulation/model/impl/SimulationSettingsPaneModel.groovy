@@ -183,7 +183,7 @@ class SimulationSettingsPaneModel implements ISimulationProvider, ISimulationPro
 
         String name = simulationName
         if (name == null || name.trim().length() == 0) {
-            name = parameterization.name + " " + DateFormatUtils.getDateFormat("yyyy.MM.dd HH:mm:ss").print(new DateTime())
+            name = parameterization.nameAndVersion + " " + DateFormatUtils.getDateFormat("yyyyMMdd HH:mm:ss").print(new DateTime())
         }
         Simulation simulation = new Simulation(name)
         simulation.modelClass = modelClass //does also set model version number

@@ -103,19 +103,20 @@ class SimulationInfoPaneModel {
         }
         StringBuffer text = new StringBuffer();
         for (String exceptionMessage : messages) {
-            List words = exceptionMessage.split(' ') as List
-            int lineLength = 0
-            for (String s in words) {
-                if (lineLength + s.length() > 70) {
-                    text << '\n'
-                    lineLength = 0
-                }
-                text << s + ' '
-                lineLength += (s.length() + 1)
-            }
-            text << '\n';
+            text << exceptionMessage << '\n'
+//            List words = exceptionMessage.split(' ') as List
+//            int lineLength = 0
+//            for (String s in words) {
+//                if (lineLength + s.length() > 70) {
+//                    text << '\n'
+//                    lineLength = 0
+//                }
+//                text << s + ' '
+//                lineLength += (s.length() + 1)
+//            }
+//            text << '\n';
         }
-        text.toString()
+        return text.toString()
     }
 
     Person getSimulationOwner() {

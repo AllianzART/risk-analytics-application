@@ -8,24 +8,24 @@ grails.project.fork = [test: false, run: false]
 
 grails.project.dependency.resolution = {
     inherits("global") { // inherit Grails' default dependencies
-        excludes "grails-plugin-testing"
+//        excludes "grails-plugin-testing"
     }
     log "warn"
 
     repositories {
         grailsHome()
-        grailsCentral()
-        mavenCentral()
+        mavenLocal()
 
-        mavenRepo "https://repository.intuitive-collaboration.com/nexus/content/repositories/pillarone-public/"
-        mavenRepo("https://repository.intuitive-collaboration.com/nexus/content/repositories/pillarone-public-snapshot/") {
+        mavenRepo (name:"zh-artisan-test" , url:"http://zh-artisan-test.art-allianz.com:8085/nexus/content/groups/public/") {
             updatePolicy System.getProperty('snapshotUpdatePolicy') ?: 'daily'
         }
+        grailsCentral()
+        mavenCentral()
         mavenRepo "http://repo.spring.io/milestone/" //needed for spring-security-core 2.0-rc2 plugin
         mavenRepo "https://ci.canoo.com/nexus/content/repositories/public-releases"
     }
 
-    String ulcVersion = "7.2.0.8"
+    String ulcVersion = "7.2.0.9"
 
     plugins {
         runtime ":background-thread:1.3"
@@ -39,13 +39,13 @@ grails.project.dependency.resolution = {
         // NB Doh! Must manually keep build.xml in sync with version number here!
         // (Target: 'jar' for the ...extensions-client.jar in build.xml)
         //
-        runtime("org.pillarone:pillar-one-ulc-extensions:1.10") { transitive = false }
+        runtime("org.pillarone:pillar-one-ulc-extensions:1.12") { transitive = false }
 
         test ":code-coverage:1.2.7"
         test ":codenarc:0.20"
 
         if (appName == 'RiskAnalyticsApplication') {
-            runtime "org.pillarone:risk-analytics-core:1.9-SNAPSHOT"
+            runtime "org.pillarone:risk-analytics-core:1.10-SNAPSHOT"
         }
 
     }
@@ -62,13 +62,15 @@ grails.project.dependency.resolution = {
         test 'org.mortbay.jetty:jetty-util:6.1.21', 'org.mortbay.jetty:jetty-naming:6.1.21'
         test 'hsqldb:hsqldb:1.8.0.10'
 
-        test("org.grails:grails-plugin-testing:2.2.3.FIXED")
+//        test("org.grails:grails-plugin-testing:2.2.4")
         test("org.springframework:spring-test:3.2.4.RELEASE")
 
         //see http://jira.grails.org/browse/GRAILS-10671
         build "com.lowagie:itext:2.1.7"
     }
 }
+
+grails.project.repos.default = "pillarone"
 
 grails.project.dependency.distribution = {
     String password = ""
@@ -110,7 +112,7 @@ coverage {
 
 reportFolders = [new File("./src/java/reports")]
 
-//grails.plugin.location.'risk-analytics-core' = "../risk-analytics-core"
+//grails.plugin.location.'risk-analytics-core' = "../risk-analytics-core-master"
 
 codenarc.maxPriority1Violations = 0
 codenarc.maxPriority2Violations = 0

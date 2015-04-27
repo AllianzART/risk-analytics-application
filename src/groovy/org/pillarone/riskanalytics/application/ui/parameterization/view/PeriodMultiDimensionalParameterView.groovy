@@ -35,6 +35,7 @@ class PeriodMultiDimensionalParameterView extends AbstractMultiDimensionalParame
     static Log LOG = LogFactory.getLog(PeriodMultiDimensionalParameterView)
     ULCButton applyButton, selectComponentButton
     ULCTextField periodTextField
+    ULCLabel periodLabel
     ULCLabel path
     ULCPopupMenu componentPopupMenu
     private Map<String, String> components
@@ -59,6 +60,7 @@ class PeriodMultiDimensionalParameterView extends AbstractMultiDimensionalParame
     @Override
     protected void initComponents() {
         path = new ULCLabel(model.getPathAsString())
+        periodLabel = new ULCLabel(getText("periodLabel"))
         content = new ULCBoxPane(1, 0)
         this.table = new MultiDimensionalTable(this, model.getTableModel())
         table.setName("multiDimTable")
@@ -105,6 +107,8 @@ class PeriodMultiDimensionalParameterView extends AbstractMultiDimensionalParame
         bp.add(new ULCFiller(10, 10))
 
         //Period selection textfield
+        bp.add(ULCBoxPane.BOX_LEFT_BOTTOM, periodLabel)
+
         int periods = getSelectedNumberPeriodsFromModel()
         periodTextField = new ULCTextField(3)
         periodTextField.setToolTipText(getText('periodTooltip'))
@@ -123,7 +127,8 @@ class PeriodMultiDimensionalParameterView extends AbstractMultiDimensionalParame
                 try {
                     period = periodTextField.getText().toInteger()
                 } catch (Exception e) {
-                    LOG.error("Invalid period..", e)
+                    LOG.warn("Invalid period.." + e.getMessage())
+                    periodTextField.setText("!!")
                     return
                 }
                 List<String> components = getSelectedComponents()
@@ -175,7 +180,7 @@ class PeriodMultiDimensionalParameterView extends AbstractMultiDimensionalParame
         Set<String> result = new HashSet<String>()
         PeriodMatrixMultiDimensionalParameter pmmdp = (PeriodMatrixMultiDimensionalParameter) model.multiDimensionalParameter
         List titles = pmmdp.getTitles()
-        if (titles.get(0) instanceof List) {
+        if (titles && titles.get(0) instanceof List) {
             titles.get(0).each {String title ->
                 result.add(title)
             }

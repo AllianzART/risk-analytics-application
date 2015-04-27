@@ -18,10 +18,9 @@ public class UIManagerHelper {
             setWindowsLookAndFeel();
         } else if (isLinux()) {
             setLinuxLookAndFeel();
-        } //else if (isMacOS()) {
-          //  setMacLookAndFeel();
-        //}
-        else setSystemLookAndFeel();
+        } else if (isMacOS()) {
+            setMacLookAndFeel();
+        } else setSystemLookAndFeel();
 
         ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
 
@@ -33,6 +32,7 @@ public class UIManagerHelper {
     private static boolean isWindowsOS() {
         return getOS().indexOf("windows") > -1;
     }
+
     private static boolean isMacOS() {
         return getOS().startsWith("mac");
     }
@@ -50,8 +50,7 @@ public class UIManagerHelper {
     private static void setLookAndFeel(LookAndFeel lookAndFeel) {
         try {
             UIManager.setLookAndFeel(lookAndFeel);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -59,17 +58,14 @@ public class UIManagerHelper {
     public static void setSystemLookAndFeel() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    /* disabled temporarily to make it run on hudson where there are not Aqua classes.... (dk)
+
     public static void setMacLookAndFeel() {
-        setLookAndFeel(new CUIAquaLookAndFeel());
-        UIManager.put("TextFieldUI", CUIAquaTextField.class.getName());
+        setLinuxLookAndFeel();
     }
-    */
 
     private static void setWindowsLookAndFeel() {
         setLookAndFeel(new WindowsLookAndFeel());

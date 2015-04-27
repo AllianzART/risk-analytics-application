@@ -11,9 +11,9 @@
 
     <property name="GRAILS_JVM_OPTS" value="-Xmx2g -XX:MaxPermSize=512m -Duser.language='en'" />
 
-    <get src="https://raw.githubusercontent.com/pillarone/risk-analytics-core/master/scripts/build.xml" dest="_build.xml" skipexisting="true" ignoreerrors="true"/>
+    <get src="https://raw.githubusercontent.com/AllianzART/risk-analytics-core/master/scripts/build.xml" dest="_build.xml" skipexisting="true" ignoreerrors="true"/>
 
-    <copy tofile="_build.xml" overwrite="true" failonerror="false">
+    <copy tofile="_build.xml" overwrite="false" failonerror="false">
         <fileset dir=".." includes="local-plugins/${app.name}-master/risk-analytics-core*/scripts/build.xml" />
     </copy>
     <import file="_build.xml" />
@@ -58,6 +58,8 @@
         <property name="signjar.keystore" value="pillarone.keystore" />
         <property name="signjar.storepass" value="nopasswd" />
         <property name="signjar.keypass" value="nopasswd" />
+        <property name="signjar.keystoretype" value="JKS" />
+        <!--<property name="signjar.keystoretype" value="PKCS12" />-->
     </target>
 
     <target name="jar-client" depends="-self-signed-cert" description="--> Create clientside jar files">
@@ -78,7 +80,7 @@
                      runtime("org.pillarone:pillar-one-ulc-extensions:1.9") { transitive = false }
                  Dunno why it can't pull the version here from BuildConfig ?!
             -->
-            <fileset dir="${plugin.dir}/pillar-one-ulc-extensions-1.10/src/java" includes="**/close-*.png" />
+            <fileset dir="${plugin.dir}/pillar-one-ulc-extensions-1.12/src/java" includes="**/close-*.png" />
         </jar>
 
         <jar jarfile="${webapp.lib.dir}/${app.name}-client.jar">
@@ -106,9 +108,11 @@
         </foreach>
         <!-- has to be replaced with a trusted certificate issued for the builder of the jar files -->
         <!-- this is a self signed certificate and won't work with a strict security policy -->
-        <signjar alias="${signjar.alias}"  storetype="PKCS12" keystore="${signjar.keystore}" storepass="${signjar.storepass}"
+        <signjar alias="${signjar.alias}"  storetype="${signjar.keystoretype}" keystore="${signjar.keystore}" storepass="${signjar.storepass}"
             keypass="${signjar.keypass}" lazy="false" tsaurl="http://tsa.starfieldtech.com/">
             <fileset dir="${webapp.lib.dir}" includes="*.jar" />
+            <sysproperty key="http.proxyHost" value="${signjar.proxyHost}"/>
+            <sysproperty key="http.proxyPort" value="${signjar.proxyPort}"/>
         </signjar>
     </target>
 
@@ -117,6 +121,7 @@
             <manifest>
                 <attribute name="Codebase" value="*" />
                 <attribute name="Permissions" value="all-permissions" />
+                <attribute name="Application-Name" value="AllianzART" />
             </manifest>
         </jar>
     </target>

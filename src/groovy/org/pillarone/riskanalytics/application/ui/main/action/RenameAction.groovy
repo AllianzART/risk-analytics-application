@@ -55,8 +55,7 @@ class RenameAction extends SingleItemAction {
         } else if( isWorkflow ){
             showInfoAlert("Cannot rename Workflow models",
                           "Sorry, ${selectedItem.nameAndVersion} is a Workflow model.", true)
-        }
-        else {
+        } else {
             NodeNameDialog dialog = new NodeNameDialog(UlcUtilities.getWindowAncestor(tree), selectedItem)
             dialog.title = dialog.getText("renameTitle") + " " + selectedItem.name
 

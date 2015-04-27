@@ -53,7 +53,7 @@ class AboutDialog {
     private ULCComponent createMainTab() {
         ULCBoxPane pane = new ULCBoxPane(1, 6, 5, 5)
         pane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5))
-        pane.add(new ULCLabel(UIUtils.getIcon("PillarOneLogoSmall.png")), ULCBoxPane.BOX_RIGHT_TOP)
+        pane.add(new ULCLabel(UIUtils.getIcon("ArtisanLogo37k.png")), ULCBoxPane.BOX_RIGHT_TOP)
         Properties infoProperties = new PropertiesUtils().getProperties("/version.properties")
         String appName = "RiskAnalytics ${infoProperties.getProperty("version", "N/A")}"
         ULCLabel appNameLabel = new ULCLabel(appName)
@@ -93,6 +93,8 @@ class AboutDialog {
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
         pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Hartmann Stephan, Munich Re Group"));
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
+        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Huber Martin, Canoo Engineering AG"));
+        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
         pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Huber Matthias, Canoo Engineering AG"));
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
         pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Jaada Fouad, Intuitive Collaboration AG"));
@@ -114,6 +116,8 @@ class AboutDialog {
         pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Noe Michael, Munich Re Group"));
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
         pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Parten Simon, Allianz Risk Transfer"));
+        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
+        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Porzelt Martin, Canoo Engineering AG"));
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
         pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Rahman Fazl, Allianz Risk Transfer"));
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
@@ -145,6 +149,23 @@ class AboutDialog {
     }
 
     private ULCComponent createUsedLibrariesTab() {
+        def usedLibs = [
+                ["Apache Commons","http://commons.apache.org"],
+                ["COLT","http://acs.lbl.gov/~hoschek/colt"],
+                ["Grails","http://www.grails.org"],
+                ["Groovy","http://groovy.codehaus.org"],
+                ["Hibernate","http://www.hibernate.org"],
+                ["JasperReports","http://www.jasperforge.org"],
+                ["Java","http://java.sun.com"],
+                ["java-wikipedia-parser","http://code.google.com/p/java-wikipedia-parser"],
+                ["JFreechart","http://www.jfree.org"],
+                ["JodaTime","http://joda.sourceforge.net"],
+                ["Lucene","http://lucene.apache.org"],
+                ["POI","http://poi.apache.org"],
+                ["Spring<","http://www.springsource.org"],
+                ["SSJ","http://www.iro.umontreal.ca/~simardr/ssj"],
+                ["UltraLightClient (ULC)","http://canoo.com/ulc"]
+        ]
         ULCBoxPane pane = new ULCBoxPane(2, 0)
         pane.background = Color.white
         pane.border = BorderFactory.createEmptyBorder(5, 5, 5, 5)
@@ -153,51 +174,11 @@ class AboutDialog {
         builder.append(getText("usedLibraries"))
         builder.append("</b></p><br>")
         builder.append("<table>")
-        builder.append("<tr><td align='left' >Java</td>")
-        builder.append("<td align='left' ><a href='http://java.sun.com/'>http://java.sun.com</a></td> ")
-        builder.append("</tr>")
-        builder.append("<tr><td align='left' >Grails</td>")
-        builder.append("<td align='left' ><a href='http://www.grails.org'>http://www.grails.org</a></td> ")
-        builder.append("</tr>")
-        builder.append("<tr><td align='left' >Groovy</td>")
-        builder.append("<td align='left' ><a href='http://groovy.codehaus.org/'>http://groovy.codehaus.org/</a></td> ")
-        builder.append("</tr>")
-        builder.append("<tr><td align='left' >Spring<</td>")
-        builder.append("<td align='left' ><a href='http://www.springsource.org'>http://www.springsource.org</a></td>")
-        builder.append("</tr>")
-        builder.append("<tr><td align='left' >Hibernate</td>")
-        builder.append("<td align='left' ><a href='http://www.hibernate.org'>http://www.hibernate.org</a></td>")
-        builder.append("</tr>")
-        builder.append("<tr><td align='left' >JFreechart</td>")
-        builder.append(" <td align='left' ><a href='http://www.jfree.org'>http://www.jfree.org</a></td>")
-        builder.append("</tr>")
-        builder.append("<tr><td align='left' >JasperReports</td>")
-        builder.append("<td align='left' ><a href='http://www.jasperforge.org'>http://www.jasperforge.org</a></td>")
-        builder.append(" </tr>")
-        builder.append(" <tr><td align='left' >JodaTime</td>")
-        builder.append(" <td align='left' ><a href='http://joda.sourceforge.net'>http://joda.sourceforge.net</a></td>")
-        builder.append("</tr>")
-        builder.append(" <tr><td align='left' >UltraLightClient (ULC)</td>")
-        builder.append("<td align='left' ><a href='http://canoo.com/ulc'>http://canoo.com/ulc</a></td>")
-        builder.append("</tr>")
-        builder.append("<tr><td align='left' >Apache Commons Math,<br> Logging</td>")
-        builder.append(" <td align='left' ><a href='http://commons.apache.org'>http://commons.apache.org</a></td>")
-        builder.append("</tr>")
-        builder.append("<tr><td align='left' >POI</td>")
-        builder.append(" <td align='left' ><a href='http://poi.apache.org'>http://poi.apache.org</a></td>")
-        builder.append("</tr>")
-        builder.append("<tr><td align='left' >SSJ</td>")
-        builder.append(" <td align='left' ><a href='http://www.iro.umontreal.ca/~simardr/ssj'>http://www.iro.umontreal.ca/~simardr/ssj</a></td>")
-        builder.append("</tr>")
-        builder.append("<tr><td align='left' >COLT</td>")
-        builder.append(" <td align='left' ><a href='http://acs.lbl.gov/~hoschek/colt'>http://acs.lbl.gov/~hoschek/colt</a></td>")
-        builder.append("</tr>")
-        builder.append("<tr><td align='left' >Lucene</td>")
-        builder.append(" <td align='left' ><a href='http://lucene.apache.org'>http://lucene.apache.org</a></td>")
-        builder.append("</tr>")
-        builder.append("<tr><td align='left' >java-wikipedia-parser</td>")
-        builder.append(" <td align='left' ><a href='http://code.google.com/p/java-wikipedia-parser'>http://code.google.com/p/java-wikipedia-parser</a></td>")
-        builder.append("</tr>")
+        usedLibs.each { name, url ->
+            builder.append("<tr><td align='left' >$name</td>")
+            builder.append("<td align='left' ><a href='$url'>$url</a></td> ")
+            builder.append("</tr>")
+        }
         builder.append("</table>")
 
         FollowLinkPane htmlPane = new FollowLinkPane()

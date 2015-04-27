@@ -2,6 +2,7 @@ package org.pillarone.riskanalytics.application.ui.main.action
 
 import com.ulcjava.base.application.ULCAlert
 import com.ulcjava.base.application.ULCTableTree
+import com.ulcjava.base.application.UlcUtilities
 import com.ulcjava.base.application.event.ActionEvent
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -29,7 +30,7 @@ class OpenItemAction extends SelectionTreeAction {
         if(items.size() > maxItemsOpenableInOneClick ){
             LOG.info("User tried to open ${items.size()} items, but maxItemsOpenableInOneClick=$maxItemsOpenableInOneClick (nb is sysprop)")
             showInfoAlert( "Too many items selected",
-                           "Please select $maxItemsOpenableInOneClick or fewer items to open.)" )
+                           "Please select $maxItemsOpenableInOneClick or fewer items to open." )
         } else {
             for( AbstractUIItem item : items ){
                 if (item != null) {

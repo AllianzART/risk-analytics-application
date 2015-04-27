@@ -1,4 +1,5 @@
 package org.pillarone.riskanalytics.application.ui.simulation.model.impl.action
+
 import com.ulcjava.base.application.ULCCheckBox
 import com.ulcjava.base.application.ULCTextField
 import com.ulcjava.base.application.event.IValueChangedListener
@@ -9,7 +10,11 @@ import org.pillarone.riskanalytics.application.ui.simulation.model.impl.Simulati
 import org.pillarone.riskanalytics.application.ui.util.I18NAlert
 import org.pillarone.riskanalytics.application.util.prefs.UserPreferences
 import org.pillarone.riskanalytics.application.util.prefs.UserPreferencesFactory
+
 /**
+ * Configured by SimulationSettingsPane.initConfigProperties() where this object is
+ * added as value change listener to the ULCTextfield random seed.
+ *
  * A IValueChangedListener which is used for the random seed check box and text field.
  * If the event is fired from the TextField the new value is written to the model.
  * If it is fired from the checkbox, the model value is set to null (if disabled) or to the last entered value (if any) if enabled.
@@ -17,7 +22,6 @@ import org.pillarone.riskanalytics.application.util.prefs.UserPreferencesFactory
 class RandomSeedAction implements IValueChangedListener {
 
     private static Log LOG = LogFactory.getLog(RandomSeedAction)
-    private final static Integer ONE = 1;  // TODO is this a bad idea in context of a VM ? Will it hinder GC ?
 
     private SimulationSettingsPaneModel model;
     private Integer oldRandomSeed
@@ -50,38 +54,38 @@ class RandomSeedAction implements IValueChangedListener {
     }
 
     private handleEvent(ULCTextField textField) {
-        try {
-            Integer randomSeed = Integer.valueOf(textField?.text)
-            if (randomSeed > 0) {
-                model.randomSeed = randomSeed
-                userPreferences.putPropertyValue(UserPreferences.RANDOM_SEED_USER_VALUE, "" + randomSeed)
-                LOG.info("User defined random seed changed to ${randomSeed}.")
-                // Mission accomplished
-                //
-                return
-            }
-        } catch( NumberFormatException e ){
+        Integer randomSeed = convert(textField.text)
+        if (randomSeed != null && randomSeed > 0) {
+            model.randomSeed = randomSeed
+            userPreferences.putPropertyValue(UserPreferences.RANDOM_SEED_USER_VALUE, "" + randomSeed)
+        } else {
+            randomSeed = 1
+            new I18NAlert("NoInteger").show()
+            textField.value = randomSeed
+            model.randomSeed = randomSeed
         }
-        // Number parse failure or number <= 0 brings us here..
-        //
-        new I18NAlert("NoInteger").show()
-        textField.value = ONE
-        model.randomSeed = ONE
-        LOG.info("User defined random seed changed to 1.")
+        if (textField.value != model.randomSeed) {
+            textField.value = model.randomSeed
+        }
+        LOG.info("User defined random seed changed to ${randomSeed}.")
     }
 
     private Integer getRandomSeed() {
         if (!oldRandomSeed) {
             String value = userPreferences.getPropertyValue(UserPreferences.RANDOM_SEED_USER_VALUE)
-            if (value){
-                try {
-                    return Integer.valueOf(value)
-                }catch(NumberFormatException e){
-                    // Foo bar yuk yuk bad number stored
-                }
-            }
-            return null
+            return convert(value)
         }
         return oldRandomSeed
+    }
+
+    private Integer convert(String value) {
+        if (!value) {
+            return null
+        }
+        try {
+            return Integer.valueOf(value)
+        } catch (Throwable ignored) {
+            return null
+        }
     }
 }

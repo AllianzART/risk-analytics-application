@@ -5,6 +5,7 @@ import groovy.util.logging.Log
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.pillarone.riskanalytics.application.ui.UlcSessionScope
 import org.pillarone.riskanalytics.application.ui.simulation.model.impl.queue.SimulationInfoPaneModel
+import org.pillarone.riskanalytics.application.ui.simulation.view.impl.finished.action.OpenResultsAction
 import org.pillarone.riskanalytics.application.ui.simulation.view.impl.queue.action.OpenCurrentResultsAction
 import org.pillarone.riskanalytics.application.ui.util.I18NUtilities
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
@@ -39,6 +40,7 @@ class SimulationInfoPane {
 
     @Resource
     GrailsApplication grailsApplication
+
     @Resource
     SimulationInfoPaneModel simulationInfoPaneModel
     private final Map<SimulationState, Closure> uiStates = [:]
@@ -180,7 +182,7 @@ class SimulationInfoPane {
     }
 
     void showAlert() {
-        new ULCAlert(UlcUtilities.getWindowAncestor(content), "Error occured during simulation", I18NUtilities.getExceptionText(simulationInfoPaneModel.errorMessage), "Ok").show()
+        new ULCAlert(UlcUtilities.getWindowAncestor(content), "Error during simulation", I18NUtilities.getExceptionText(simulationInfoPaneModel.errorMessage), "Ok").show()
     }
 
     ULCBoxPane getContent() {
@@ -191,7 +193,14 @@ class SimulationInfoPane {
         @Override
         void simulationStateChanged(SimulationState simulationState) {
             if (simulationState != currentUISimulationState) {
-                log.info "Updating UI to ${simulationState.toString()}"
+                // Avoid spamming logfile from every session.
+                //
+                boolean isOwner = currentUser?.username == simulationInfoPaneModel?.simulationOwner?.username 
+                if( isOwner ){
+                    log.info "Updating owner UI to ${simulationState.toString()}" // TODO Want to see simulation name here too
+                } else {
+                    log.debug "Updating non-owner UI to ${simulationState.toString()}"
+                }
             }
             uiStates[simulationState].call()
             currentUISimulationState = simulationState

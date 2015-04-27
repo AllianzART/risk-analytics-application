@@ -15,7 +15,6 @@ import org.pillarone.riskanalytics.application.ui.main.view.RiskAnalyticsMainVie
 import org.pillarone.riskanalytics.application.ui.search.ModellingItemCache
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
 import org.pillarone.riskanalytics.core.log.TraceLogManager
-import org.pillarone.riskanalytics.core.model.registry.ModelRegistry
 import org.pillarone.ulc.server.ULCMinimalSizeFrame
 
 import static com.ulcjava.base.shared.IWindowConstants.DO_NOTHING_ON_CLOSE

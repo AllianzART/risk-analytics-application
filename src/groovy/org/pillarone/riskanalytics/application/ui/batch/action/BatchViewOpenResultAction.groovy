@@ -1,5 +1,4 @@
 package org.pillarone.riskanalytics.application.ui.batch.action
-
 import com.ulcjava.base.application.event.ActionEvent
 import org.pillarone.riskanalytics.application.ui.base.action.ResourceBasedAction
 import org.pillarone.riskanalytics.application.ui.batch.model.BatchRowInfo
