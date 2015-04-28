@@ -2,12 +2,15 @@ package org.pillarone.riskanalytics.application.ui.parameterization.view
 import com.canoo.ulc.community.ulcclipboard.server.ULCClipboard
 import com.ulcjava.base.application.ULCBoxPane
 import com.ulcjava.base.application.ULCFrame
-import com.ulcjava.base.application.event.IActionListener
 import com.ulcjava.base.application.event.KeyEvent
 import com.ulcjava.base.application.util.KeyStroke
+import com.ulcjava.testframework.operator.ComponentByNameChooser
+import com.ulcjava.testframework.operator.ULCFrameOperator
+import com.ulcjava.testframework.operator.ULCTableTreeOperator
 import models.core.CoreModel
 import org.pillarone.riskanalytics.application.AbstractSimpleFunctionalTest
 import org.pillarone.riskanalytics.application.dataaccess.item.ModellingItemFactory
+import org.pillarone.riskanalytics.application.ui.main.action.SaveAction
 import org.pillarone.riskanalytics.application.ui.main.view.item.AbstractUIItem
 import org.pillarone.riskanalytics.application.ui.parameterization.model.ParameterViewModel
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
@@ -51,7 +54,7 @@ class SaveAlreadyUsedParameterizationTests extends AbstractSimpleFunctionalTest 
         ParameterViewModel parameterViewModel = new ParameterViewModel(model, parameterization, structure)
 
         ULCBoxPane content = new ParameterView(parameterViewModel).content
-        IActionListener saveAction = content.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false))
+        SaveAction saveAction = content.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false))
         saveAction.metaClass.save = { AbstractUIItem modellingItem ->
             parameterization.changed = false
         }
@@ -65,13 +68,13 @@ class SaveAlreadyUsedParameterizationTests extends AbstractSimpleFunctionalTest 
     }
 
     public void testSave() {
-        //TODO hope we do not forget to fix it and to reactivate it :-)
-//        ULCFrameOperator frameOperator = new ULCFrameOperator(new ComponentByNameChooser("test"))
-//        ULCTableTreeOperator componentTree = new ULCTableTreeOperator(frameOperator, new ComponentByNameChooser("parameterTreeRowHeader"))
-//
-//        assertNotNull componentTree
-//
-//        componentTree.pushKey(KeyEvent.VK_S, KeyEvent.CTRL_MASK)
-//        assertFalse parameterization.changed
+        ULCFrameOperator frameOperator = new ULCFrameOperator(new ComponentByNameChooser("test"))
+        ULCTableTreeOperator componentTree = new ULCTableTreeOperator(frameOperator, new ComponentByNameChooser("parameterTreeRowHeader"))
+
+        assertNotNull componentTree
+
+        componentTree.pushKey(KeyEvent.VK_S, KeyEvent.CTRL_MASK)
+        //the paramerization should be changed, because the save fails (isUsedInSimulation returns true...)
+        assertTrue parameterization.changed
     }
 }
