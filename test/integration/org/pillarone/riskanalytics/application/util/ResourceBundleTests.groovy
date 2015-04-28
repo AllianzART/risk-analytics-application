@@ -24,7 +24,7 @@ class ResourceBundleTests {
         ResourceBundle bundle = LocaleResources.getBundle("org.pillarone.riskanalytics.application.applicationResources")
 
         assertFalse bundle instanceof ResourceBundleDecorator
-        assertEquals "About RiskAnalytics", bundle.getString("AboutDialog.about")
+        assertEquals "About Artisan", bundle.getString("AboutDialog.about")
         assertEquals "System Properties", bundle.getString("AboutDialog.sysProps")
 
         ResourceBundleFactory.addReplacement("org.pillarone.riskanalytics.application.applicationResources", "org.pillarone.riskanalytics.application.example.resources")

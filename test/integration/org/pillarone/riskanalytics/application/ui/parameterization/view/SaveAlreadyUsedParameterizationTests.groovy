@@ -49,16 +49,18 @@ class SaveAlreadyUsedParameterizationTests extends AbstractSimpleFunctionalTest 
         dao = ModelStructureDAO.findByModelClassName(model.class.name)
         ModelStructure structure = ModellingItemFactory.getModelStructure(dao)
         structure.load()
-        parameterization.metaClass.isUsedInSimulation = {-> return true}
+        parameterization.metaClass.isUsedInSimulation = {->
+            return true
+        }
 
         ParameterViewModel parameterViewModel = new ParameterViewModel(model, parameterization, structure)
 
         ULCBoxPane content = new ParameterView(parameterViewModel).content
         IActionListener saveAction = content.getActionForKeyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false))
-        saveAction.metaClass.save = {AbstractUIItem modellingItem ->
+        saveAction.metaClass.save = { AbstractUIItem modellingItem ->
             parameterization.changed = false
         }
-        saveAction.metaClass.saveItem = {AbstractUIItem modellingItem ->
+        saveAction.metaClass.saveItem = { AbstractUIItem modellingItem ->
             parameterization.changed = false
         }
         frame.setContentPane(content)
