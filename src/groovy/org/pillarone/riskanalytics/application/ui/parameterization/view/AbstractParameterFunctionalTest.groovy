@@ -5,6 +5,7 @@ import com.ulcjava.base.application.event.KeyEvent
 import com.ulcjava.testframework.operator.*
 import grails.util.Holders
 import models.application.ApplicationModel
+import org.netbeans.jemmy.TimeoutExpiredException
 import org.pillarone.riskanalytics.application.AbstractSimpleFunctionalTest
 import org.pillarone.riskanalytics.application.dataaccess.item.ModellingItemFactory
 import org.pillarone.riskanalytics.application.ui.main.view.DetailViewManager
@@ -120,7 +121,12 @@ abstract class AbstractParameterFunctionalTest extends AbstractSimpleFunctionalT
     }
 
     protected save() {
-        tree.getFocus()
+        try{
+            tree.getFocus()
+        }catch( TimeoutExpiredException e ){
+            // So we give it two attempts..
+            tree.getFocus()
+        }
         tree.pressKey(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
     }
 }
