@@ -56,6 +56,9 @@ grails.project.dependency.resolution = {
             transitive = false
         }
         compile group: 'com.miglayout', name: 'miglayout', version: "3.7.3.1"
+        compile('org.scijava:jep:2.4.1') {
+                 excludes 'jama'
+        }
 
         //required for ulc tests
         test 'org.mortbay.jetty:jetty:6.1.21', 'org.mortbay.jetty:jetty-plus:6.1.21'
