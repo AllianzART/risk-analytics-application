@@ -11,6 +11,8 @@ import org.pillarone.riskanalytics.core.simulation.engine.SimulationQueueEntry
 import org.pillarone.riskanalytics.core.simulation.engine.SimulationQueueService
 import org.pillarone.riskanalytics.functional.AbstractFunctionalTestCase
 
+import java.util.concurrent.CountDownLatch
+
 class RunSimulationTests extends AbstractFunctionalTestCase {
 
     private SimulationQueueListener listener = new SimulationQueueListener()
@@ -41,10 +43,16 @@ class RunSimulationTests extends AbstractFunctionalTestCase {
         assert listener.offered.any {
             it.context.simulationTask.simulation.numberOfIterations == 11
         }
+        listener.waitTillFinished()
     }
 }
 
 class SimulationQueueListener implements QueueListener<SimulationQueueEntry> {
+    CountDownLatch latch
+
+    void waitTillFinished() {
+        latch.await()
+    }
 
     List<SimulationQueueEntry> offered = []
 
@@ -55,7 +63,7 @@ class SimulationQueueListener implements QueueListener<SimulationQueueEntry> {
 
     @Override
     void finished(UUID id) {
-
+        latch.countDown()
     }
 
     @Override
@@ -65,6 +73,7 @@ class SimulationQueueListener implements QueueListener<SimulationQueueEntry> {
 
     @Override
     void offered(SimulationQueueEntry entry) {
+        latch = new CountDownLatch(1)
         offered.add(entry)
     }
 }
