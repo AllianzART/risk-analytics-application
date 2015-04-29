@@ -5,7 +5,6 @@ import com.ulcjava.base.application.event.KeyEvent
 import com.ulcjava.testframework.operator.*
 import grails.util.Holders
 import models.application.ApplicationModel
-import org.netbeans.jemmy.TimeoutExpiredException
 import org.pillarone.riskanalytics.application.AbstractSimpleFunctionalTest
 import org.pillarone.riskanalytics.application.dataaccess.item.ModellingItemFactory
 import org.pillarone.riskanalytics.application.ui.main.view.DetailViewManager
@@ -121,19 +120,7 @@ abstract class AbstractParameterFunctionalTest extends AbstractSimpleFunctionalT
     }
 
     protected save() {
-        // DuplicateDynamicComponentTests fail in jenkins but not in IDEA builds
-        // TimeoutExpiredException thrown from getFocus() call below
-        //
-        int focusAttempts = 10;
-        while( focusAttempts >0){
-            try{
-                tree.getFocus()
-            }catch( TimeoutExpiredException e ){
-                --focusAttempts
-                continue
-            }
-            break
-        }
+        tree.getFocus()
         tree.pressKey(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
     }
 }
