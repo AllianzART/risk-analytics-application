@@ -12,7 +12,7 @@ class DuplicateDynamicComponentTests extends AbstractParameterFunctionalTest {
         assert 0 == parameterization.getParameters('dynamicComponent:subDuplicatedComponent:subFirstComponent:parmValue').size()
 
         duplicateParameter(['dynamic Component'], 'Test', "duplicated component")
-        save()
+        Thread.sleep(500)
         save()
         ParameterizationDAO.withNewSession {
             Parameterization parameterization = findParameterizationById()
@@ -62,5 +62,6 @@ class DuplicateDynamicComponentTests extends AbstractParameterFunctionalTest {
         ULCDialogOperator alert = new ULCDialogOperator(frame)
         ULCButtonOperator okButton = new ULCButtonOperator(alert)
         okButton.clickMouse()
+        Thread.sleep(500)
     }
 }

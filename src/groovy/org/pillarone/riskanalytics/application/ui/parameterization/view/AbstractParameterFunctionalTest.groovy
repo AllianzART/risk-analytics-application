@@ -120,6 +120,7 @@ abstract class AbstractParameterFunctionalTest extends AbstractSimpleFunctionalT
     }
 
     protected save() {
+        tree.getFocus()
         tree.pressKey(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
     }
 }
