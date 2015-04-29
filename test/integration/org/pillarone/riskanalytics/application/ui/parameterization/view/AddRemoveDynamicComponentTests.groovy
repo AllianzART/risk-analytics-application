@@ -14,6 +14,7 @@ class AddRemoveDynamicComponentTests extends AbstractParameterFunctionalTest {
 
         tree.clickOnCell(4, 0, 1, InputEvent.BUTTON1_MASK)
         tree.clickOnCell(4, 0, 1, InputEvent.BUTTON3_MASK)
+        Thread.sleep(500)
 
         ULCPopupMenuOperator popupMenu = new ULCPopupMenuOperator(frame, new ComponentByNameChooser("popup.expand"))
         ULCMenuItemOperator menuItem = new ULCMenuItemOperator(popupMenu, "Add")
@@ -29,6 +30,7 @@ class AddRemoveDynamicComponentTests extends AbstractParameterFunctionalTest {
 
         tree.clickOnCell(6, 0, 1, InputEvent.BUTTON1_MASK)
         tree.clickOnCell(6, 0, 1, InputEvent.BUTTON3_MASK)
+        Thread.sleep(500)
 
         popupMenu = new ULCPopupMenuOperator(frame, new ComponentByNameChooser("popup.remove"))
         menuItem = new ULCMenuItemOperator(popupMenu, "Remove")
