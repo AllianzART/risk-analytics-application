@@ -6,43 +6,68 @@ import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
 
 class ViewLockService {
-    private Map<ModellingUIItem, String> lockMap = new HashMap<>()
+    private final Map<ModellingUIItem, Set<String>> lockMap = new HashMap<>()
     private static final Log LOG = LogFactory.getLog(ViewLockService)
 
     /**
      *
      * @param item to lock
      * @param session to lock the item for
-     * @return null if the lock could be obtained, otherwise the users name to which the item is locked for.
+     * @return the users names to which the item is locked for (including new user). Null if either username or item was null
      */
-    public synchronized String lock(ModellingUIItem item, String username) {
-        if(StringUtils.isEmpty(username) || item == null) {
+    public Set<String> lock(ModellingUIItem item, String username) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item must not be null")
+        }
+        if (StringUtils.isEmpty(username)) {
             LOG.warn("Cannot acquire lock. Either username or item is null.")
-            return
+            return new HashSet<String>()
         }
-        if (lockMap.containsKey(item)) {
-            return lockMap.get(item)
-        } else {
-            lockMap.put(item, username)
-            return null
+        synchronized (lockMap) {
+            if (lockMap.containsKey(item)) {
+                Set<String> names = lockMap.get(item)
+                names.add(username)
+                return names
+            } else {
+                Set<String> names = new HashSet<String>()
+                names.add(username)
+                lockMap.put(item, names)
+                return names
+            }
         }
     }
 
-    public synchronized void release(ModellingUIItem item) {
-        if(lockMap.containsKey(item)) {
-            lockMap.remove(item)
+    public void release(ModellingUIItem item, String username) {
+        synchronized (lockMap) {
+            if (item != null && lockMap.containsKey(item)) {
+                Set<String> names = lockMap.get(item)
+                if (names.contains(username)) {
+                    if (names.size() == 1) {
+                        lockMap.remove(item)
+                    } else {
+                        names.remove(username)
+                    }
+                }
+            }
         }
     }
 
-    public synchronized void releaseAll(String username) {
+    public void releaseAll(String username) {
         if(StringUtils.isEmpty(username)) {
             return
         }
-        Iterator<MapEntry> iterator = lockMap.iterator()
-        while (iterator.hasNext()) {
-            Map.Entry mapEntry = iterator.next()
-            if(username.equals(mapEntry.getValue())) {
-                iterator.remove()
+        synchronized (lockMap) {
+            Iterator<MapEntry> iterator = lockMap.iterator()
+            while (iterator.hasNext()) {
+                Map.Entry<ModellingUIItem, Set<String>> mapEntry = iterator.next()
+                Set<String> names = (Set<String>)mapEntry.getValue()
+                if (names != null && names.contains(username)) {
+                    if (names.size() == 1) {
+                        iterator.remove()
+                    } else {
+                        names.remove(username)
+                    }
+                }
             }
         }
     }
