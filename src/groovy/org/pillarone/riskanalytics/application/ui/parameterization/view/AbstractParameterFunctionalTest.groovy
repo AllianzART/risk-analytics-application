@@ -121,11 +121,18 @@ abstract class AbstractParameterFunctionalTest extends AbstractSimpleFunctionalT
     }
 
     protected save() {
-        try{
-            tree.getFocus()
-        }catch( TimeoutExpiredException e ){
-            // So we give it two attempts..
-            tree.getFocus()
+        // DuplicateDynamicComponentTests fail in jenkins but not in IDEA builds
+        // TimeoutExpiredException thrown from getFocus() call below
+        //
+        int focusAttempts = 10;
+        while( focusAttempts >0){
+            try{
+                tree.getFocus()
+            }catch( TimeoutExpiredException e ){
+                --focusAttempts
+                continue
+            }
+            break
         }
         tree.pressKey(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
     }
