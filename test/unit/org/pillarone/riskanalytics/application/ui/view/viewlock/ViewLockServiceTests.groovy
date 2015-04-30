@@ -19,8 +19,7 @@ class ViewLockServiceTests {
 
         def lockedNames = viewLockService.lock(new ParameterizationUIItem(new Parameterization("p", ApplicationModel)), "user1")
 
-        assertEquals("wrong result size", 1, lockedNames.size())
-        assertTrue("should be locked to user1", lockedNames.contains("user1"))
+        assertEquals("wrong result size", 0, lockedNames.size())
     }
 
     @Test
@@ -31,9 +30,8 @@ class ViewLockServiceTests {
 
         Set<String> lockedNames = viewLockService.lock(item, "user2")
 
-        assertEquals("wrong result size", 2, lockedNames.size())
+        assertEquals("wrong result size", 1, lockedNames.size())
         assertTrue("should be locked to user1", lockedNames.contains("user1"))
-        assertTrue("should be locked to user2", lockedNames.contains("user2"))
     }
 
     @Test
@@ -45,8 +43,7 @@ class ViewLockServiceTests {
         viewLockService.release(item, "user1")
         Set<String> lockedNames = viewLockService.lock(item, "user2")
 
-        assertEquals("wrong result size", 1, lockedNames.size())
-        assertTrue("should be locked to user2", lockedNames.contains("user2"))
+        assertEquals("wrong result size", 0, lockedNames.size())
     }
 
     @Test
@@ -61,10 +58,8 @@ class ViewLockServiceTests {
 
         Set<String> paramItemLock = viewLockService.lock(paramItem, "user2")
         Set<String> resourceItemLock = viewLockService.lock(resourceItem, "user2")
-        assertEquals("wrong result size", 1, paramItemLock.size())
-        assertEquals("wrong result size", 1, resourceItemLock.size())
-        assertTrue("paramItem should be locked to user2", paramItemLock.contains("user2"))
-        assertTrue("resourceItem should be locked to user2", resourceItemLock.contains("user2"))
+        assertEquals("wrong result size", 0, paramItemLock.size())
+        assertEquals("wrong result size", 0, resourceItemLock.size())
     }
 
     @Test
@@ -78,12 +73,10 @@ class ViewLockServiceTests {
         viewLockService.releaseAll("user1")
 
         Set<String> paramItemLock = viewLockService.lock(paramItem, "user3")
-        assertEquals("wrong result size", 1, paramItemLock.size())
-        assertTrue("should be locked to user3", paramItemLock.contains("user3"))
+        assertEquals("wrong result size", 0, paramItemLock.size())
 
         Set<String> resourceItemLock = viewLockService.lock(resourceItem, "user3")
-        assertEquals("wrong result size", 2, resourceItemLock.size())
-        assertTrue("should be locked to user3", resourceItemLock.contains("user3"))
+        assertEquals("wrong result size", 1, resourceItemLock.size())
         assertTrue("should be locked to user2", resourceItemLock.contains("user2"))
     }
 }

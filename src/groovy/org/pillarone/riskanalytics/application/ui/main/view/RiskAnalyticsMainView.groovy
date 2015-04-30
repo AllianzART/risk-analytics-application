@@ -20,10 +20,13 @@ import org.pillarone.riskanalytics.application.ui.main.eventbus.event.ModellingI
 import org.pillarone.riskanalytics.application.ui.main.eventbus.event.OpenDetailViewEvent
 import org.pillarone.riskanalytics.application.ui.main.view.item.*
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
+import org.pillarone.riskanalytics.application.ui.view.viewlock.ViewLockService
 import org.pillarone.riskanalytics.core.model.Model
 import org.pillarone.riskanalytics.core.search.CacheItemEvent
 import org.pillarone.riskanalytics.core.simulation.item.IModellingItemChangeListener
 import org.pillarone.riskanalytics.core.simulation.item.ModellingItem
+import org.pillarone.riskanalytics.core.user.Person
+import org.pillarone.riskanalytics.core.user.UserManagement
 import org.pillarone.ulc.server.ULCVerticalToggleButton
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
@@ -86,6 +89,8 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
     RiskAnalyticsEventBus riskAnalyticsEventBus
     @Resource(name = 'ulcApplicationContext')
     ApplicationContext applicationContext
+    @Resource
+    private ViewLockService viewLockService
 
     private ToggleSplitPaneAction navigationSplitPaneAction
     private CommentsSwitchAction validationSplitPaneAction
@@ -101,6 +106,10 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
     @PreDestroy
     void close() {
         riskAnalyticsEventBus.unregister(this)
+        Person currentUser = UserManagement.getCurrentUser()
+        if(currentUser != null) {
+            viewLockService.releaseAll(currentUser.getUsername())
+        }
     }
 
     @Subscribe

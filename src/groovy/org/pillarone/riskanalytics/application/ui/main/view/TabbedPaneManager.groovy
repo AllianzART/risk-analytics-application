@@ -1,16 +1,24 @@
 package org.pillarone.riskanalytics.application.ui.main.view
 
 import com.canoo.ulc.detachabletabbedpane.server.ULCDetachableTabbedPane
-import com.ulcjava.base.application.*
+import com.ulcjava.base.application.ULCAlert
+import com.ulcjava.base.application.ULCComponent
+import com.ulcjava.base.application.ULCContainer
+import com.ulcjava.base.application.UlcUtilities
 import com.ulcjava.base.application.event.ActionEvent
 import com.ulcjava.base.application.event.IWindowListener
 import com.ulcjava.base.application.event.WindowEvent
 import grails.util.Holders
+import groovy.util.logging.Log
 import org.pillarone.riskanalytics.application.ui.main.action.SaveAction
 import org.pillarone.riskanalytics.application.ui.main.view.item.AbstractUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
 import org.pillarone.riskanalytics.application.ui.util.I18NAlert
+import org.pillarone.riskanalytics.application.ui.view.viewlock.ViewLockService
+import org.pillarone.riskanalytics.core.user.Person
+import org.pillarone.riskanalytics.core.user.UserManagement
 
+@Log
 class TabbedPaneManager {
 
     private ULCDetachableTabbedPane tabbedPane
@@ -32,6 +40,10 @@ class TabbedPaneManager {
         Holders.grailsApplication.mainContext.getBean('riskAnalyticsMainView', RiskAnalyticsMainView)
     }
 
+    private ViewLockService getViewLockService() {
+        Holders.grailsApplication.mainContext.getBean('viewLockService', ViewLockService)
+    }
+
     /**
      * Creates a new tab for the given item
      * The content of a card is currently a TabbedPane.
@@ -39,6 +51,28 @@ class TabbedPaneManager {
      * @param model
      */
     void addTab(AbstractUIItem item) {
+        Person currentUser = getCurrentUser()
+        if(currentUser != null && item instanceof ModellingUIItem) {
+            Set<String> names = viewLockService.lock(item, currentUser.getUsername())
+            if(names.size() > 0) {
+                I18NAlert alert = new I18NAlert(null, "ViewLockedAlert", [names.join(", ")])
+                alert.addWindowListener([windowClosing: { WindowEvent windowEvent ->
+                    def value = windowEvent.source.value
+                    if (value.equals(alert.firstButtonLabel)) {
+                        addTabInternal(item)
+                    }
+                    if (value.equals(alert.secondButtonLabel)) {
+                        viewLockService.release(item, currentUser.getUsername())
+                    }
+                }] as IWindowListener)
+                alert.show()
+            }
+        } else {
+            addTabInternal(item)
+        }
+    }
+
+    private void addTabInternal(AbstractUIItem item) {
         IDetailView detailView = detailViewManager.createDetailViewForItem(item)
         if (item instanceof ModellingUIItem) {
             item.addModellingItemChangeListener(riskAnalyticsMainView)
@@ -52,10 +86,20 @@ class TabbedPaneManager {
         tabbedPane.setToolTipTextAt(tabIndex, item.toolTip)
     }
 
+    protected Person getCurrentUser() {
+        UserManagement.getCurrentUser()
+    }
+
     void closeTab(ULCComponent component) {
         AbstractUIItem item = getAbstractItem(component)
         if (item) {
             closeTabForItem(item)
+            Person currentUser = getCurrentUser()
+            if(currentUser != null && item instanceof ModellingUIItem) {
+                viewLockService.release(item, currentUser.getUsername())
+            }
+        } else {
+            log.warning("item null for component " + component)
         }
     }
 

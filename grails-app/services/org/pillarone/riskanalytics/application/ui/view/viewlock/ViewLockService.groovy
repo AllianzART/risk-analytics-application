@@ -1,13 +1,10 @@
 package org.pillarone.riskanalytics.application.ui.view.viewlock
 
 import org.apache.commons.lang.StringUtils
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
 
 class ViewLockService {
     private final Map<ModellingUIItem, Set<String>> lockMap = new HashMap<>()
-    private static final Log LOG = LogFactory.getLog(ViewLockService)
 
     /**
      *
@@ -20,26 +17,31 @@ class ViewLockService {
             throw new IllegalArgumentException("Item must not be null")
         }
         if (StringUtils.isEmpty(username)) {
-            LOG.warn("Cannot acquire lock. Either username or item is null.")
-            return new HashSet<String>()
+            throw new IllegalArgumentException("User name must not be null or empty")
         }
         synchronized (lockMap) {
             if (lockMap.containsKey(item)) {
                 Set<String> names = lockMap.get(item)
                 names.add(username)
-                return names
+                return names - username
             } else {
                 Set<String> names = new HashSet<String>()
                 names.add(username)
                 lockMap.put(item, names)
-                return names
+                return new HashSet<String>()
             }
         }
     }
 
     public void release(ModellingUIItem item, String username) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item must not be null")
+        }
+        if (StringUtils.isEmpty(username)) {
+            throw new IllegalArgumentException("User name must not be null or empty")
+        }
         synchronized (lockMap) {
-            if (item != null && lockMap.containsKey(item)) {
+            if (lockMap.containsKey(item)) {
                 Set<String> names = lockMap.get(item)
                 if (names.contains(username)) {
                     if (names.size() == 1) {
@@ -54,7 +56,7 @@ class ViewLockService {
 
     public void releaseAll(String username) {
         if(StringUtils.isEmpty(username)) {
-            return
+            throw new IllegalArgumentException("User name must not be null or empty")
         }
         synchronized (lockMap) {
             Iterator<MapEntry> iterator = lockMap.iterator()

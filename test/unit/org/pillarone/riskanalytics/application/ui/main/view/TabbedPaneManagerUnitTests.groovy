@@ -4,13 +4,13 @@ import com.canoo.ulc.detachabletabbedpane.server.ULCDetachableTabbedPane
 import com.ulcjava.base.application.ULCBoxPane
 import com.ulcjava.base.application.ULCComponent
 import com.ulcjava.base.application.ULCContainer
-import com.ulcjava.base.application.ULCTabbedPane
 import com.ulcjava.testframework.standalone.AbstractSimpleStandaloneTestCase
 import grails.test.mixin.TestMixin
 import org.pillarone.riskanalytics.application.GrailsUnitTestMixinWithAnnotationSupport
 import org.pillarone.riskanalytics.application.ui.P1UnitTestMixin
 import org.pillarone.riskanalytics.application.ui.main.eventbus.RiskAnalyticsEventBus
 import org.pillarone.riskanalytics.application.ui.main.view.item.BatchUIItem
+import org.pillarone.riskanalytics.application.ui.view.viewlock.ViewLockService
 import org.pillarone.riskanalytics.core.simulation.item.Batch
 
 /**
@@ -29,13 +29,17 @@ class TabbedPaneManagerUnitTests extends AbstractSimpleStandaloneTestCase {
             detailViewManager(DetailViewManager)
             riskAnalyticsEventBus(RiskAnalyticsEventBus)
             riskAnalyticsMainView(NullFactoryBean,RiskAnalyticsMainView)
+            viewLockService(ViewLockService)
         }
         inTestFrame(createContentPane())
     }
 
     ULCComponent createContentPane() {
-        ULCTabbedPane tabbedPane = new ULCDetachableTabbedPane()
+        ULCDetachableTabbedPane tabbedPane = new ULCDetachableTabbedPane()
         TabbedPaneManager tabbedPaneManager = new TabbedPaneManager(tabbedPane)
+        tabbedPaneManager.metaClass.getCurrentUser() { ->
+            return null
+        }
 
         assertEquals "tabCount must be 0", 0, tabbedPane.tabCount
 
