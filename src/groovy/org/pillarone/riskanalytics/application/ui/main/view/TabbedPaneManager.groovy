@@ -9,7 +9,8 @@ import com.ulcjava.base.application.event.ActionEvent
 import com.ulcjava.base.application.event.IWindowListener
 import com.ulcjava.base.application.event.WindowEvent
 import grails.util.Holders
-import groovy.util.logging.Log
+import org.apache.commons.logging.LogFactory
+import org.apache.commons.logging.Log
 import org.pillarone.riskanalytics.application.ui.main.action.SaveAction
 import org.pillarone.riskanalytics.application.ui.main.view.item.AbstractUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
@@ -18,8 +19,8 @@ import org.pillarone.riskanalytics.application.ui.view.viewlock.ViewLockService
 import org.pillarone.riskanalytics.core.user.Person
 import org.pillarone.riskanalytics.core.user.UserManagement
 
-@Log
 class TabbedPaneManager {
+    private static Log LOG = LogFactory.getLog(TabbedPaneManager)
 
     private ULCDetachableTabbedPane tabbedPane
     private DependentFramesManager dependentFramesManager
@@ -55,10 +56,12 @@ class TabbedPaneManager {
         if(currentUser != null && item instanceof ModellingUIItem) {
             Set<String> alreadyEditingUsers = viewLockService.lock(item, currentUser.getUsername())
             if(alreadyEditingUsers.size() > 0) {
+                final String multiEditWarning = "Opening ${item.nameAndVersion} despite already open for editing by ${alreadyEditingUsers.join(", ")}"
                 I18NAlert alert = new I18NAlert(null, "ViewLockedAlert", [item.nameAndVersion, alreadyEditingUsers.join(", ")])
                 alert.addWindowListener([windowClosing: { WindowEvent windowEvent ->
                     def value = windowEvent.source.value
                     if (value.equals(alert.firstButtonLabel)) {
+                        LOG.warn(multiEditWarning)
                         addTabInternal(item)
                     }
                     if (value.equals(alert.secondButtonLabel)) {
