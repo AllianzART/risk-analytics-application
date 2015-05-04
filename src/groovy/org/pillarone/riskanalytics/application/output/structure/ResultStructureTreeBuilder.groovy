@@ -6,9 +6,9 @@ import org.pillarone.riskanalytics.application.output.structure.item.ResultStruc
 import org.pillarone.riskanalytics.application.ui.base.model.SimpleTableTreeNode
 import org.pillarone.riskanalytics.application.ui.result.model.ResultStructureTableTreeNode
 import org.pillarone.riskanalytics.application.ui.result.model.ResultTableTreeNode
+import org.pillarone.riskanalytics.core.model.Model
 import org.pillarone.riskanalytics.core.output.ICollectingModeStrategy
 import org.pillarone.riskanalytics.core.simulation.item.Simulation
-import org.pillarone.riskanalytics.core.model.Model
 
 /**
  * This class process the ResultTree file replacing variables with p14n specific values. The user may define any
@@ -102,7 +102,7 @@ class ResultStructureTreeBuilder {
 
     private void obtainReplacements(List<ResultNode> leafs) {
         for (ResultNode leaf in leafs) {
-            if (leaf.resultPath.contains("[%")) {
+            if (leaf.resultPath?.contains("[%")) {
                 obtainReplacementsRecursive(existingPathsRoot, leaf.resultPath.split(":"), 1, leaf.path)
             }
         }
