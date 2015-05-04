@@ -55,7 +55,7 @@ class TabbedPaneManager {
         if(currentUser != null && item instanceof ModellingUIItem) {
             Set<String> alreadyEditingUsers = viewLockService.lock(item, currentUser.getUsername())
             if(alreadyEditingUsers.size() > 0) {
-                I18NAlert alert = new I18NAlert(null, "ViewLockedAlert", [alreadyEditingUsers.join(", ")])
+                I18NAlert alert = new I18NAlert(null, "ViewLockedAlert", [item.nameAndVersion, alreadyEditingUsers.join(", ")])
                 alert.addWindowListener([windowClosing: { WindowEvent windowEvent ->
                     def value = windowEvent.source.value
                     if (value.equals(alert.firstButtonLabel)) {
