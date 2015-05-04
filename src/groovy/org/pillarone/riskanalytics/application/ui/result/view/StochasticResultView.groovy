@@ -65,7 +65,7 @@ class StochasticResultView extends ResultView {
         splitPane.setResizeWeight(1)
         splitPane.setDividerSize(10)
 
-        splitPane.setDividerLocation(ParameterView.DIVIDER)
+        splitPane.setDividerLocation(ParameterView.NO_DIVIDER)
         mainContentPane.add(ULCBoxPane.BOX_EXPAND_EXPAND, splitPane)
 
         tabbedPane.removeAll()
