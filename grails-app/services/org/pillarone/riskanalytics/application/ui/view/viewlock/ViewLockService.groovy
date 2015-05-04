@@ -10,7 +10,7 @@ class ViewLockService {
      *
      * @param item to lock
      * @param session to lock the item for
-     * @return the users names to which the item is locked for (including new user). Null if either username or item was null
+     * @return the users names to which the item is locked for (excluding new user). IllegalArgumentException if username or item null
      */
     public Set<String> lock(ModellingUIItem item, String username) {
         if (item == null) {
