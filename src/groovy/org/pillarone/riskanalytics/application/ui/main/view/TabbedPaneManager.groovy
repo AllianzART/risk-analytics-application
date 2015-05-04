@@ -53,9 +53,9 @@ class TabbedPaneManager {
     void addTab(AbstractUIItem item) {
         Person currentUser = getCurrentUser()
         if(currentUser != null && item instanceof ModellingUIItem) {
-            Set<String> names = viewLockService.lock(item, currentUser.getUsername())
-            if(names.size() > 0) {
-                I18NAlert alert = new I18NAlert(null, "ViewLockedAlert", [names.join(", ")])
+            Set<String> alreadyEditingUsers = viewLockService.lock(item, currentUser.getUsername())
+            if(alreadyEditingUsers.size() > 0) {
+                I18NAlert alert = new I18NAlert(null, "ViewLockedAlert", [alreadyEditingUsers.join(", ")])
                 alert.addWindowListener([windowClosing: { WindowEvent windowEvent ->
                     def value = windowEvent.source.value
                     if (value.equals(alert.firstButtonLabel)) {
@@ -66,10 +66,11 @@ class TabbedPaneManager {
                     }
                 }] as IWindowListener)
                 alert.show()
+                return
             }
-        } else {
-            addTabInternal(item)
         }
+        // If there is no need to show the 'already being edited' warning, just go ahead
+        addTabInternal(item)
     }
 
     private void addTabInternal(AbstractUIItem item) {

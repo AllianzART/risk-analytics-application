@@ -130,7 +130,7 @@ abstract class AbstractParameterizationTreeView extends AbstractModellingTreeVie
         splitPane.setResizeWeight(1)
         splitPane.setDividerSize(10)
 
-        splitPane.setDividerLocation(DIVIDER)
+        splitPane.setDividerLocation(NO_DIVIDER)
         contentPane.add(ULCBoxPane.BOX_EXPAND_EXPAND, splitPane)
         tabbedPane.removeAll()
         tabbedPane.addTab(model.treeModel.root.name, UIUtils.getIcon("treeview-active.png"), content)
