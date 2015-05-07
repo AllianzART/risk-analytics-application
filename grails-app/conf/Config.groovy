@@ -115,6 +115,8 @@ environments {
                 'varProfitFunction'       : [99, 99.5],
                 'tvarProfitFunction'      : [99, 99.5]
         ]
+        nodeMappingStrategy = LocalNodesStrategy
+        numberOfParallelJobsPerNode = 1
     }
     mysql {
 //        models = ["CoreModel", "ResourceModel", 'ApplicationModel', 'DeterministicApplicationModel', 'MigratableCoreModel']
