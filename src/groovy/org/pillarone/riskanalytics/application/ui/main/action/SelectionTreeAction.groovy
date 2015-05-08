@@ -272,21 +272,30 @@ abstract class SelectionTreeAction extends ResourceBasedAction {
         return "Selected paths ($num): ${tree?.selectedPaths}"
     }
 
-    // Helper methods for Action subclasses
+    // Helper methods for Action subclasses - nb default log argument didn't work
     //
-    protected void showInfoAlert( String title, String msg, boolean log = false ){
+    protected void showInfoAlert( String title, String msg ){
+        showInfoAlert( title, msg, false )
+    }
+    protected void showWarnAlert( String title, String msg ){
+        showWarnAlert( title, msg, false )
+    }
+    protected void showErrorAlert( String title, String msg ){
+        showErrorAlert( title, msg, false )
+    }
+    protected void showInfoAlert( String title, String msg, boolean log ){
         if( log ){
             LOG.info(msg)
         }
         UIUtils.showAlert( UlcUtilities.getWindowAncestor(tree), title,msg,ULCAlert.INFORMATION_MESSAGE)
     }
-    protected void showWarnAlert( String title, String msg, boolean log = false ){
+    protected void showWarnAlert( String title, String msg, boolean log  ){
         if( log ){
             LOG.warn(msg)
         }
         UIUtils.showAlert(UlcUtilities.getWindowAncestor(tree), title,msg,ULCAlert.WARNING_MESSAGE )
     }
-    protected void showErrorAlert( String title, String msg, boolean log = false ){
+    protected void showErrorAlert( String title, String msg, boolean log ){
         if( log ){
             LOG.error(msg)
         }
