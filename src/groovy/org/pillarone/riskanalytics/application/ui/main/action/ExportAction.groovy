@@ -163,7 +163,7 @@ abstract class ExportAction extends SelectionTreeAction {
                 showAlert("tooManyRowsError")
             } catch (IllegalStateException t) {
                 if(t.message.startsWith(ResultAccessor.MISSING_DIR_PREFIX)){
-                    showWarnAlert("Cant find iterations folder", t.message, true)
+                    showWarnAlert("Cant find iterations folder", t.message )
                 } else {
                     LOG.error("Export failed: " + t.message, t)
                     showAlert("exportError")
