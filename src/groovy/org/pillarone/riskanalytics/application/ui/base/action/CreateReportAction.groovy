@@ -38,8 +38,8 @@ public class CreateReportAction extends SelectionTreeAction {
     @Override
     void doActionPerformed(ActionEvent event) {
         IReportData reportData = getReportData()
-        LOG.info("Creating ${reportModel.getDefaultReportFileNameWithoutExtension(reportData)}")
         try {
+            LOG.info("Creating ${reportModel.getDefaultReportFileNameWithoutExtension(reportData)}") //throws if >1 items
             byte[] report = ReportFactory.createReport(reportModel, reportData, reportFormat)
             saveReport(report, reportData)
         } catch (UnsupportedReportParameterException e) {
