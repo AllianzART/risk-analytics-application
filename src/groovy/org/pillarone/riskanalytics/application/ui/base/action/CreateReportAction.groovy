@@ -37,6 +37,7 @@ public class CreateReportAction extends SelectionTreeAction {
 
     @Override
     void doActionPerformed(ActionEvent event) {
+        LOG.info("Creating ${reportModel.getDefaultReportFileNameWithoutExtension()}")
         IReportData reportData = getReportData()
         try {
             byte[] report = ReportFactory.createReport(reportModel, reportData, reportFormat)
@@ -44,6 +45,9 @@ public class CreateReportAction extends SelectionTreeAction {
         } catch (UnsupportedReportParameterException e) {
             LOG.error "Unsupported input to report: ${e}", e
             new I18NAlert(UlcUtilities.getWindowAncestor(event.source), "UnsupportedReportInput", e.getMessage()).show()
+        } catch( Exception e){
+            LOG.error("Unexpected error: ", e.getMessage())
+            throw e
         }
     }
 
