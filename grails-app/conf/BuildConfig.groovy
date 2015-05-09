@@ -16,8 +16,8 @@ grails.project.dependency.resolution = {
         grailsHome()
         mavenLocal()
 
-        mavenRepo (name:"zh-artisan-test" , url:"http://zh-artisan-test.art-allianz.com:8085/nexus/content/groups/public/") {
-            updatePolicy System.getProperty('snapshotUpdatePolicy') ?: 'daily'
+        mavenRepo (name:"pillarone" , url:"http://zh-artisan-test.art-allianz.com:8085/nexus/content/groups/public/") {
+            updatePolicy System.getProperty('snapshotUpdatePolicy') ?: 'always'
         }
         grailsCentral()
         mavenCentral()
