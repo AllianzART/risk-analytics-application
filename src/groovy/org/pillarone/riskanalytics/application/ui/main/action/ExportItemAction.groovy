@@ -28,19 +28,12 @@ class ExportItemAction extends ExportAction {
 
 
     protected void doAction(List<ModellingItem> items) {
-        if (atLeastOneItemChanged(items)) {
+        boolean atLeastOneItemChanged = items.any {it.changed}
+        if ( atLeastOneItemChanged ) {
             new I18NAlert("UnsavedExport").show()
         } else {
             exportAll(items)
         }
-    }
-
-    private boolean atLeastOneItemChanged(List<ModellingItem> items) {
-        for (ModellingItem item : items) {
-            if (item.changed)
-                return true
-        }
-        return false
     }
 
     protected void doAction(Simulation item) {
