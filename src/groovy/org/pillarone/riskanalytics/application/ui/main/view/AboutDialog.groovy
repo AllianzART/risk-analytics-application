@@ -117,7 +117,7 @@ class AboutDialog {
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
         pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Parten Simon, Allianz Risk Transfer"));
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Porzelt Martin, Canoo Engineering AG"));
+        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Porzelt Johannes, Canoo Engineering AG"));
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
         pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Rahman Fazl, Allianz Risk Transfer"));
         pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
