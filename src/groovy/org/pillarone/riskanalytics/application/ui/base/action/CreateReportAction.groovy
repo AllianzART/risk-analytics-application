@@ -43,7 +43,7 @@ public class CreateReportAction extends SelectionTreeAction {
             byte[] report = ReportFactory.createReport(reportModel, reportData, reportFormat)
             saveReport(report, reportData)
         } catch (UnsupportedReportParameterException e) {
-            LOG.error "Unsupported input to report: ${e}"
+            LOG.warn "Unsupported input to report: ${e}"
             new I18NAlert(UlcUtilities.getWindowAncestor(event.source), "UnsupportedReportInput", [e.getMessage()]).show()
         } catch( Exception e){
             LOG.error("Unexpected error: ${e.getMessage()}")
