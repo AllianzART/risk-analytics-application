@@ -14,6 +14,7 @@ import org.apache.commons.logging.Log
 import org.pillarone.riskanalytics.application.ui.main.action.SaveAction
 import org.pillarone.riskanalytics.application.ui.main.view.item.AbstractUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
+import org.pillarone.riskanalytics.application.ui.main.view.item.SimulationSettingsUIItem
 import org.pillarone.riskanalytics.application.ui.util.I18NAlert
 import org.pillarone.riskanalytics.application.ui.view.viewlock.ViewLockService
 import org.pillarone.riskanalytics.core.user.Person
@@ -53,7 +54,8 @@ class TabbedPaneManager {
      */
     void addTab(AbstractUIItem item) {
         Person currentUser = getCurrentUser()
-        if(currentUser != null && item instanceof ModellingUIItem) {
+        if(currentUser != null && item instanceof ModellingUIItem &&
+                                ! item instanceof SimulationSettingsUIItem ) { // Exclude Sim Pane!
             Set<String> alreadyEditingUsers = viewLockService.lock(item, currentUser.getUsername())
             if(alreadyEditingUsers.size() > 0) {
                 final String multiEditWarning = "Opening ${item.nameAndVersion} despite already open for editing by ${alreadyEditingUsers.join(", ")}"
