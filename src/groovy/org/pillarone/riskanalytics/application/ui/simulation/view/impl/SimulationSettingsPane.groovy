@@ -215,9 +215,9 @@ class SimulationSettingsPane implements ISimulationListener {
     }
 
     protected initConfigProperties(ULCBoxPane innerPane) {
-        userDefinedRandomSeed = new ULCCheckBox(model.getText(USER_DEFINED_RANDOM_SEED_KEY), false)
+        userDefinedRandomSeed = new ULCCheckBox(model.getText(USER_DEFINED_RANDOM_SEED_KEY), true)
         userDefinedRandomSeed.name = "userDefinedRandomSeed"
-        userDefinedRandomSeed.selected = Boolean.parseBoolean(userPreferences.getDefaultValue(UserPreferences.RANDOM_SEED_USE_USER_DEFINED, "" + Boolean.FALSE))
+        userDefinedRandomSeed.selected = Boolean.parseBoolean(userPreferences.getDefaultValue(UserPreferences.RANDOM_SEED_USE_USER_DEFINED, "" + Boolean.TRUE))
         userDefinedRandomSeed.addValueChangedListener([valueChanged: { ValueChangedEvent e ->
             userPreferences.putPropertyValue(UserPreferences.RANDOM_SEED_USE_USER_DEFINED, "" + userDefinedRandomSeed.selected)
             model.notifyConfigurationChanged()
