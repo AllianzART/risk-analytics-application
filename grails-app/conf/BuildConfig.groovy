@@ -1,5 +1,5 @@
 //Use a custom plugins dir, because different branches use different plugin versions
-grails.project.plugins.dir = "../local-plugins/RiskAnalyticsApplication-master"
+grails.project.plugins.dir = "../local-plugins/RiskAnalyticsApplication-release-1.10"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 
