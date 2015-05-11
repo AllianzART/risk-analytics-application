@@ -216,12 +216,14 @@ class SimulationSettingsPane implements ISimulationListener {
 
     protected initConfigProperties(ULCBoxPane innerPane) {
         userDefinedRandomSeed = new ULCCheckBox(model.getText(USER_DEFINED_RANDOM_SEED_KEY), true)
-        userDefinedRandomSeed.name = "userDefinedRandomSeed"
-        userDefinedRandomSeed.selected = Boolean.parseBoolean(userPreferences.getDefaultValue(UserPreferences.RANDOM_SEED_USE_USER_DEFINED, "" + Boolean.TRUE))
-        userDefinedRandomSeed.addValueChangedListener([valueChanged: { ValueChangedEvent e ->
-            userPreferences.putPropertyValue(UserPreferences.RANDOM_SEED_USE_USER_DEFINED, "" + userDefinedRandomSeed.selected)
-            model.notifyConfigurationChanged()
-        }] as IValueChangedListener)
+        userDefinedRandomSeed.selected = Boolean.TRUE
+        userDefinedRandomSeed.enabled = Boolean.FALSE
+//        userDefinedRandomSeed.name = "userDefinedRandomSeed"
+//        userDefinedRandomSeed.selected = Boolean.parseBoolean(userPreferences.getDefaultValue(UserPreferences.RANDOM_SEED_USE_USER_DEFINED, "" + Boolean.TRUE))
+//        userDefinedRandomSeed.addValueChangedListener([valueChanged: { ValueChangedEvent e ->
+//            userPreferences.putPropertyValue(UserPreferences.RANDOM_SEED_USE_USER_DEFINED, "" + userDefinedRandomSeed.selected)
+//            model.notifyConfigurationChanged()
+//        }] as IValueChangedListener)
 
         randomSeed = new ULCTextField()
         randomSeed.preferredSize = dimension
@@ -237,13 +239,14 @@ class SimulationSettingsPane implements ISimulationListener {
         randomSeed.addValueChangedListener(model.randomSeedAction)
         model.addPropertyChangeListener('randomSeed', { PropertyChangeEvent event ->
             if (event.newValue != null) {
-                userDefinedRandomSeed.selected = true
+//                userDefinedRandomSeed.selected = true
                 randomSeed.value = event.newValue
-            } else {
-                if (event.oldValue != null) {
-                    userDefinedRandomSeed.selected = false
-                }
             }
+//            else {
+//                if (event.oldValue != null) {
+//                    userDefinedRandomSeed.selected = false
+//                }
+//            }
         } as PropertyChangeListener)
 
         model.randomSeedAction.userDefinedRandomSeedCheckBox = userDefinedRandomSeed
@@ -300,7 +303,7 @@ class SimulationSettingsPane implements ISimulationListener {
         beginOfFirstPeriod?.enabled = false
         numberOfIterations.enabled = false
         randomSeed.enabled = false
-        userDefinedRandomSeed.enabled = false
+//        userDefinedRandomSeed.enabled = false
     }
 
     /**
@@ -324,8 +327,8 @@ class SimulationSettingsPane implements ISimulationListener {
     protected void enableConfigProperties() {
         beginOfFirstPeriod?.enabled = true
         numberOfIterations.enabled = true
-        randomSeed.enabled = userDefinedRandomSeed.selected
-        userDefinedRandomSeed.enabled = true
+        randomSeed.enabled = true //userDefinedRandomSeed.selected
+//        userDefinedRandomSeed.enabled = true
     }
 
     ULCContainer getContent() {
