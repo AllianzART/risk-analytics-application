@@ -47,33 +47,33 @@ class SimulationSettingsPaneTests extends AbstractSimpleFunctionalTest {
     public void stop() {
         LocaleResources.testMode = false
     }
-
+    //[AR-125] UserDefinedSeed checkbox now permanently selected and disabled
     public void testRandomSeed() {
         ULCFrameOperator frame = new ULCFrameOperator("test")
         assertNotNull frame
 
-        ULCCheckBoxOperator userDefinedSeed = new ULCCheckBoxOperator(frame, new ComponentByNameChooser("userDefinedRandomSeed"))
-        assertNotNull userDefinedSeed
+//        ULCCheckBoxOperator userDefinedSeed = new ULCCheckBoxOperator(frame, new ComponentByNameChooser("userDefinedRandomSeed"))
+//        assertNotNull userDefinedSeed
 
         ULCTextFieldOperator randomSeed = new ULCTextFieldOperator(frame, new ComponentByNameChooser("randomSeed"))
         assertNotNull randomSeed
         assertTrue randomSeed.enabled
 
-        userDefinedSeed.clickMouse()
-        assertFalse randomSeed.enabled
+//        userDefinedSeed.clickMouse()
+//        assertFalse randomSeed.enabled
 
-        userDefinedSeed.clickMouse()
-        assertTrue randomSeed.enabled
+//        userDefinedSeed.clickMouse()
+//        assertTrue randomSeed.enabled
 
         randomSeed.enterText("1234")
         assertEquals 1234, pane.model.randomSeed
 
-        userDefinedSeed.clickMouse()
-        assertFalse randomSeed.enabled
-        assertNull pane.model.randomSeed
+//        userDefinedSeed.clickMouse()
+//        assertFalse randomSeed.enabled
+//        assertNull pane.model.randomSeed
 
-        userDefinedSeed.clickMouse()
-        assertEquals 1234, pane.model.randomSeed
+//        userDefinedSeed.clickMouse()
+//        assertEquals 1234, pane.model.randomSeed
 
     }
 
@@ -126,7 +126,7 @@ class SimulationSettingsPaneTests extends AbstractSimpleFunctionalTest {
         ULCComboBoxOperator param = new ULCComboBoxOperator(frame, new ComponentByNameChooser("parameterizationNames"))
         param.selectItem "CoreMultiPeriodParameters"
 
-        ULCCheckBoxOperator userDefinedSeed = new ULCCheckBoxOperator(frame, new ComponentByNameChooser("userDefinedRandomSeed"))
+//        ULCCheckBoxOperator userDefinedSeed = new ULCCheckBoxOperator(frame, new ComponentByNameChooser("userDefinedRandomSeed"))
 //        userDefinedSeed.clickMouse()
         ULCTextFieldOperator randomSeed = new ULCTextFieldOperator(frame, new ComponentByNameChooser("randomSeed"))
         randomSeed.enterText("1234")
