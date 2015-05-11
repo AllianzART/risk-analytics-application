@@ -14,6 +14,7 @@ import org.apache.commons.logging.Log
 import org.pillarone.riskanalytics.application.ui.main.action.SaveAction
 import org.pillarone.riskanalytics.application.ui.main.view.item.AbstractUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
+import org.pillarone.riskanalytics.application.ui.main.view.item.ParameterizationUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.SimulationSettingsUIItem
 import org.pillarone.riskanalytics.application.ui.util.I18NAlert
 import org.pillarone.riskanalytics.application.ui.view.viewlock.ViewLockService
@@ -47,35 +48,90 @@ class TabbedPaneManager {
     }
 
     /**
-     * Creates a new tab for the given item
-     * The content of a card is currently a TabbedPane.
-     * A TabbedPaneManager needs to be created here as well.
-     * @param model
+     * Creates a new tab for the given item - general case
+     * Use ViewLockService to detect edit collisions if user available (production env).
+     * SimulationSettings pane and P14n handled separately.
+     * @item AbstractUIItem for which to add a tab
      */
     void addTab(AbstractUIItem item) {
         Person currentUser = getCurrentUser()
-        if(currentUser != null && item instanceof ModellingUIItem &&
-                                ! (item instanceof SimulationSettingsUIItem) ) { // Exclude Sim Pane!
+        if(currentUser != null && item instanceof ModellingUIItem ) {
+            handleEditCollisionWarningIfNeededBeforeOpening(item, currentUser)
+        } else {
+            // test env (user null) or not modelling item
+            addTabInternal(item)
+        }
+    }
+    /**
+     * Creates a new tab for given simulation settings pane.
+     * Does not use ViewLockService's edit collision detection.
+     */
+    void addTab(SimulationSettingsUIItem item) {
+        addTabInternal(item)
+    }
+
+    /**
+     * Creates a new tab for the given P14n
+     * If P14n is opening for editing then use ViewLockService's edit collision detection.
+     * See OpenItemAction.openItem(ParameterizationUIItem) and OpenItemDialog for clues.
+     * @item ParameterizationUIItem for which to add a tab
+     */
+    void addTab(ParameterizationUIItem item) {
+        Person currentUser = getCurrentUser()
+        if( currentUser == null ){
+            // test environment
+            addTabInternal(item)
+            return
+        }
+
+        if( isReadOnlyP14n(item)    )
+        {
+            addTabInternal(item)
+        } else {
+            handleEditCollisionWarningIfNeededBeforeOpening(item, currentUser)
+        }
+    }
+
+    private boolean  isReadOnlyP14n(ParameterizationUIItem parameterizationUIItem){
+
+        // TODO Ask Hannes: OpenItemAction.openItem() uses synchronized block and a DB transaction around similar logic
+        synchronized (parameterizationUIItem){
+            boolean usedInSimulation = parameterizationUIItem.isUsedInSimulation()
+            if(usedInSimulation){
+                return true
+            }
+            boolean editableState = parameterizationUIItem.newVersionAllowed() //NONE or DATA_ENTRY states can be edited
+            if(!editableState){
+                return true
+            }
+        }
+        return false
+    }
+
+    // Do not call this with a null user
+    //
+    private void handleEditCollisionWarningIfNeededBeforeOpening(AbstractUIItem item, Person currentUser) {
             Set<String> alreadyEditingUsers = viewLockService.lock(item, currentUser.getUsername())
             if(alreadyEditingUsers.size() > 0) {
-                final String multiEditWarning = "Opening ${item.nameAndVersion} despite already open for editing by ${alreadyEditingUsers.join(", ")}"
-                I18NAlert alert = new I18NAlert(null, "ViewLockedAlert", [item.nameAndVersion, alreadyEditingUsers.join(", ")])
+            final String alreadyCsv = alreadyEditingUsers.join(", ")
+            final String warning = "Opening ${item.nameAndVersion} DESPITE already opened by ${alreadyCsv}"
+            final String cancel = "Canceled opening ${item.nameAndVersion} - already opened by ${alreadyCsv}"
+            I18NAlert alert = new I18NAlert(null, "ViewLockedAlert", [item.nameAndVersion, alreadyCsv])
                 alert.addWindowListener([windowClosing: { WindowEvent windowEvent ->
                     def value = windowEvent.source.value
                     if (value.equals(alert.firstButtonLabel)) {
-                        LOG.warn(multiEditWarning)
+                    LOG.warn(warning)
                         addTabInternal(item)
                     }
                     if (value.equals(alert.secondButtonLabel)) {
+                    LOG.info(cancel)
                         viewLockService.release(item, currentUser.getUsername())
                     }
                 }] as IWindowListener)
                 alert.show()
-                return
+        } else {
+            addTabInternal(item)
             }
-        }
-        // If there is no need to show the 'already being edited' warning, just go ahead
-        addTabInternal(item)
     }
 
     private void addTabInternal(AbstractUIItem item) {
