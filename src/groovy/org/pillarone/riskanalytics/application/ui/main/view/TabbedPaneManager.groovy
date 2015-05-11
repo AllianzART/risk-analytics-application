@@ -55,7 +55,7 @@ class TabbedPaneManager {
     void addTab(AbstractUIItem item) {
         Person currentUser = getCurrentUser()
         if(currentUser != null && item instanceof ModellingUIItem &&
-                                ! item instanceof SimulationSettingsUIItem ) { // Exclude Sim Pane!
+                                ! (item instanceof SimulationSettingsUIItem) ) { // Exclude Sim Pane!
             Set<String> alreadyEditingUsers = viewLockService.lock(item, currentUser.getUsername())
             if(alreadyEditingUsers.size() > 0) {
                 final String multiEditWarning = "Opening ${item.nameAndVersion} despite already open for editing by ${alreadyEditingUsers.join(", ")}"
