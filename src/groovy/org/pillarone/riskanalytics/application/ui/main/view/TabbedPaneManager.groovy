@@ -15,6 +15,7 @@ import org.pillarone.riskanalytics.application.ui.main.action.SaveAction
 import org.pillarone.riskanalytics.application.ui.main.view.item.AbstractUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.ParameterizationUIItem
+import org.pillarone.riskanalytics.application.ui.main.view.item.SimulationResultUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.SimulationSettingsUIItem
 import org.pillarone.riskanalytics.application.ui.util.I18NAlert
 import org.pillarone.riskanalytics.application.ui.view.viewlock.ViewLockService
@@ -67,6 +68,14 @@ class TabbedPaneManager {
      * Does not use ViewLockService's edit collision detection.
      */
     void addTab(SimulationSettingsUIItem item) {
+        addTabInternal(item)
+    }
+
+    /**
+     * Creates a new tab for given sim result.
+     * Does not use ViewLockService's edit collision detection.
+     */
+    void addTab(SimulationResultUIItem item) {
         addTabInternal(item)
     }
 
