@@ -9,14 +9,10 @@ import com.ulcjava.base.application.event.ActionEvent
 import com.ulcjava.base.application.event.IWindowListener
 import com.ulcjava.base.application.event.WindowEvent
 import grails.util.Holders
-import org.apache.commons.logging.LogFactory
 import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.main.action.SaveAction
-import org.pillarone.riskanalytics.application.ui.main.view.item.AbstractUIItem
-import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
-import org.pillarone.riskanalytics.application.ui.main.view.item.ParameterizationUIItem
-import org.pillarone.riskanalytics.application.ui.main.view.item.SimulationResultUIItem
-import org.pillarone.riskanalytics.application.ui.main.view.item.SimulationSettingsUIItem
+import org.pillarone.riskanalytics.application.ui.main.view.item.*
 import org.pillarone.riskanalytics.application.ui.util.I18NAlert
 import org.pillarone.riskanalytics.application.ui.view.viewlock.ViewLockService
 import org.pillarone.riskanalytics.core.user.Person
@@ -119,7 +115,7 @@ class TabbedPaneManager {
 
     // Do not call this with a null user
     //
-    private void handleEditCollisionWarningIfNeededBeforeOpening(AbstractUIItem item, Person currentUser) {
+    private void handleEditCollisionWarningIfNeededBeforeOpening(ModellingUIItem item, Person currentUser) {
             Set<String> alreadyEditingUsers = viewLockService.lock(item, currentUser.getUsername())
             if(alreadyEditingUsers.size() > 0) {
             final String alreadyCsv = alreadyEditingUsers.join(", ")
