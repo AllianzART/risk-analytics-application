@@ -147,6 +147,7 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
     void layoutComponents() {
         ULCCardPane modelPane = cardPaneManager.cardPane
         modelPane.preferredSize = new Dimension(TOPRIGHT_PANE_HEIGHT, TOPRIGHT_PANE_WIDTH)
+        modelPane.addCard("BackgroundCard", getBgCard())
         ULCBoxPane treePane = new ULCBoxPane(1, 1)
         treePane.add(BOX_EXPAND_EXPAND, selectionTreeView.content)
         ULCSplitPane splitPane = new ULCSplitPane(HORIZONTAL_SPLIT)
@@ -193,6 +194,12 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
         }
         headerView.windowMenu.addSeparator()
         content.selectedName = DEFAULT_CARD_NAME
+    }
+
+    ULCComponent getBgCard() {
+        ULCLabel bgLabel = new ULCLabel(UIUtils.getIcon("ArtisanLogo37k.png"))
+        bgLabel.setTranslucency(0.5f)
+        return bgLabel
     }
 
     void attachListeners() {
