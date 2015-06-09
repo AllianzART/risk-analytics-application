@@ -24,7 +24,12 @@ class ResultIterationDataViewModel extends QueryPaneModel {
 
     private List temporaryResults
 
-    public ResultIterationDataViewModel(SimulationRun simulationRun, List nodes, boolean autoQueryOnCreate, boolean enablePeriodComboBox, boolean showPeriodLabels, ResultView resultView) {
+    public ResultIterationDataViewModel(SimulationRun simulationRun,
+                                        List nodes,
+                                        boolean autoQueryOnCreate,
+                                        boolean enablePeriodComboBox,
+                                        boolean showPeriodLabels,
+                                        ResultView resultView) {
         super(simulationRun, nodes, false, enablePeriodComboBox, showPeriodLabels)
         resultTableModel = new ResultIterationDataTableModel()
         criterias.clear() //PMO-2226
@@ -37,20 +42,18 @@ class ResultIterationDataViewModel extends QueryPaneModel {
     }
 
     public List getRawData() {
+        if( !temporaryResults ){//criteria changed since last query
+            query()
+        }
         List lines = []
         List rawData = temporaryResults
-        if(rawData == null) { //criteria has been changed since last query
-            query()
-            rawData = temporaryResults
-        }
-
         List headers = getColumnHeader()
 
         for (List rawDataLine in rawData) {
             Map excelLine = [:]
             int index = 0
             for (value in rawDataLine) {
-                excelLine[headers[index]] = value
+                excelLine[ headers[index] ] = value
                 index++
             }
             lines << excelLine
