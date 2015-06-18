@@ -46,7 +46,7 @@ public class CreateReportAction extends SelectionTreeAction {
             LOG.warn "Unsupported input to report: ${e}"
             new I18NAlert(UlcUtilities.getWindowAncestor(event.source), "UnsupportedReportInput", [e.getMessage()]).show()
         } catch( Exception e){
-            LOG.error("Unexpected error: ${e.getMessage()}")
+            showErrorAlert("Unexpected error", e.getMessage(), true );
             throw e
         }
     }
