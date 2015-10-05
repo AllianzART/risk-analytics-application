@@ -1,5 +1,5 @@
 //Use a custom plugins dir, because different branches use different plugin versions
-grails.project.plugins.dir = "../local-plugins/RiskAnalyticsApplication-release-1.10"
+grails.project.plugins.dir = "../local-plugins/RiskAnalyticsApplication-master"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 
@@ -45,7 +45,7 @@ grails.project.dependency.resolution = {
         test ":codenarc:0.20"
 
         if (appName == 'RiskAnalyticsApplication') {
-            runtime "org.pillarone:risk-analytics-core:1.10.1"
+            runtime "org.pillarone:risk-analytics-core:1.10-SNAPSHOT"
         }
 
     }
@@ -69,7 +69,6 @@ grails.project.dependency.resolution = {
         build "com.lowagie:itext:2.1.7"
     }
 }
-//grails.plugin.location.'risk-analytics-core' = "../risk-analytics-core-release-1.10"
 
 grails.project.repos.default = "pillarone"
 
@@ -93,7 +92,7 @@ grails.project.dependency.distribution = {
             authentication username: user, password: password
         }
     } catch (Throwable t) {
-        println "Error: (Maybe deployInfo.properties not found?) $t.message"
+        println "Error: deployInfo.properties not found? $t.message"
     }
 }
 
@@ -112,6 +111,8 @@ coverage {
 }
 
 reportFolders = [new File("./src/java/reports")]
+
+//grails.plugin.location.'risk-analytics-core' = "../risk-analytics-core-master"
 
 codenarc.maxPriority1Violations = 0
 codenarc.maxPriority2Violations = 0
@@ -190,3 +191,4 @@ codenarc.ruleSetFiles = [
         'rulesets/size.xml',
         'rulesets/unnecessary.xml',
         'rulesets/unused.xml'].join(',').toString()
+

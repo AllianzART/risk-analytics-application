@@ -5,13 +5,13 @@
     <property file="application.properties" />
     <property file="${user.home}/cert.properties" />
     <!-- plugin.dir must match entry 'grails.project.plugins.dir' in BuildConfig.groovy -->
-    <property name="plugin.dir" value="${basedir}/../local-plugins/${app.name}-release-1.10" />
+    <property name="plugin.dir" value="${basedir}/../local-plugins/${app.name}-master" />
     <property name="resources.prod.dir" value="src/java" />
     <property name="webapp.lib.dir" value="web-app/lib" />
 
     <property name="GRAILS_JVM_OPTS" value="-Xmx2g -XX:MaxPermSize=512m -Duser.language='en'" />
 
-    <get src="https://raw.githubusercontent.com/AllianzART/risk-analytics-core/release-1.10/scripts/build.xml" dest="_build.xml" skipexisting="true" ignoreerrors="true"/>
+    <get src="https://raw.githubusercontent.com/AllianzART/risk-analytics-core/master/scripts/build.xml" dest="_build.xml" skipexisting="true" ignoreerrors="true"/>
 
     <import file="_build.xml" />
 
