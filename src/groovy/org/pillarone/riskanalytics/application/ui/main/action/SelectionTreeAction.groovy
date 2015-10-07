@@ -14,7 +14,6 @@ import org.pillarone.riskanalytics.application.ui.base.action.ResourceBasedActio
 import org.pillarone.riskanalytics.application.ui.base.model.ItemGroupNode
 import org.pillarone.riskanalytics.application.ui.base.model.ItemNode
 import org.pillarone.riskanalytics.application.ui.base.model.ModelNode
-import org.pillarone.riskanalytics.application.ui.main.view.RiskAnalyticsMainView
 import org.pillarone.riskanalytics.application.ui.main.view.item.AbstractUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
@@ -30,7 +29,7 @@ abstract class SelectionTreeAction extends ResourceBasedAction {
     //TODO FR Even better: 1) cater for bools as well as numerics, and 2) also allow overrides via external properties file
     //
     static{
-        maxItemsOpenableInOneClick = RiskAnalyticsMainView.setIntFromSystemProperty("maxItemsOpenableInOneClick",5)
+        maxItemsOpenableInOneClick = UIUtils.getAndLogIntConfig("maxItemsOpenableInOneClick",5)
     }
 
     static List<ModellingUIItem> getSelectedUIItems(ULCTableTree tree) {

@@ -7,7 +7,6 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.apache.poi.ss.usermodel.Sheet
 import org.pillarone.riskanalytics.application.dataaccess.item.ModellingItemFactory
-import org.pillarone.riskanalytics.application.ui.main.view.RiskAnalyticsMainView
 import org.pillarone.riskanalytics.application.ui.util.DateFormatUtils
 import org.pillarone.riskanalytics.application.ui.util.ExcelExporter
 import org.pillarone.riskanalytics.application.ui.util.I18NAlert
@@ -36,7 +35,7 @@ abstract class ExportAction extends SelectionTreeAction {
     // PMO-2824 Should move out of RiskAnalyticsMainView to a utility class
     //
     static {
-        EXPORT_TRANSFER_MAX_BYTES = RiskAnalyticsMainView.setIntFromSystemProperty("EXPORT_TRANSFER_MAX_BYTES", 200 * ONE_MEG)
+        EXPORT_TRANSFER_MAX_BYTES = UIUtils.getAndLogIntConfig("EXPORT_TRANSFER_MAX_BYTES", 200 * ONE_MEG)
     }
 
     UserPreferences userPreferences

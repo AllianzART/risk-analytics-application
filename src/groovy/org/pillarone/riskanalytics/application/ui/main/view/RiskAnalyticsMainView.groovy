@@ -5,7 +5,6 @@ import com.ulcjava.applicationframework.application.ApplicationContext
 import com.ulcjava.base.application.*
 import com.ulcjava.base.application.util.Dimension
 import com.ulcjava.base.application.util.KeyStroke
-import grails.util.Holders
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.UlcSessionScope
@@ -54,63 +53,16 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
     private static int TOPRIGHT_PANE_HEIGHT = 600;
     private static int TOPRIGHT_PANE_WIDTH = 600;
 
-    private static final String imageLogo = getAndLogStringConfig("GUI_BACKGROUND_LOGO", "ArtisanLogo37k.png");
+    private static final String imageLogo = UIUtils.getAndLogStringConfig("GUI_BACKGROUND_LOGO", "ArtisanLogo37k.png");
 
-    // I forget standard precedence?  I guess: -D switch overrules config file entry, right ?
-    //
-    static String getAndLogStringConfig(String key, String defaultValue) {
-        String s = System.getProperty(key)?.trim()
-        if( s != null && s.size() > 0 ){
-            LOG.info("System property recognised: -D${key}=${s}")
-            return s
-        }
-
-        s = Holders.config.get(key)?.toString()?.trim()
-        if( s != null && s.size() > 0 ){
-            LOG.info("Config key (not -D switch) found: ${key}=${s}")
-            return s
-        }
-
-        LOG.info("No useful config or -D switch found for '$key', defaulting to $defaultValue")
-        return defaultValue
-    }
     // Avoid building whole app just to tweak these settings
     //
     static {
-        TOPRIGHT_PANE_HEIGHT = setIntFromSystemProperty("GUI_TOPRIGHT_PANE_HEIGHT", 600)
-        TOPRIGHT_PANE_WIDTH = setIntFromSystemProperty("GUI_TOPRIGHT_PANE_WIDTH", 600)
-        SIM_QUEUE_HEIGHT = setIntFromSystemProperty("GUI_SIM_QUEUE_HEIGHT", 450)
+        TOPRIGHT_PANE_HEIGHT = UIUtils.getAndLogIntConfig("GUI_TOPRIGHT_PANE_HEIGHT", 600)
+        TOPRIGHT_PANE_WIDTH = UIUtils.getAndLogIntConfig("GUI_TOPRIGHT_PANE_WIDTH", 600)
+        SIM_QUEUE_HEIGHT = UIUtils.getAndLogIntConfig("GUI_SIM_QUEUE_HEIGHT", 450)
     }
 
-    static int setIntFromSystemProperty(String key, int defaultValue) {
-        String s = System.getProperty(key)?.trim()
-        if( s != null && s.size() > 0 ){
-            try {
-                int i = Integer.parseInt(s)
-                LOG.info("System property recognised: -D${key}=${i}")
-                return i
-            } catch (NumberFormatException e) { // Typo maybe
-                LOG.warn("NOT an int - supplied system property '-D${key}=${s}', defaulting to $defaultValue")
-                return defaultValue
-            }
-        }
-
-        s = Holders.config.get(key)?.toString()?.trim()
-        if( s != null && s.size() > 0 ){
-            LOG.info("Config key (not -D switch) found: ${key}=${s}")
-            try {
-                int i = Integer.parseInt(s)
-                LOG.info("System property recognised: -D${key}=${i}")
-                return i
-            } catch (NumberFormatException e) { // Typo maybe
-                LOG.warn("NOT an int - supplied system property '-D${key}=${s}', defaulting to $defaultValue")
-                return defaultValue
-            }
-        }
-
-        LOG.info("No useful config or -D switch found for '$key', defaulting to $defaultValue")
-        return defaultValue
-    }
 
     final ULCCardPane content = new ULCCardPane()
 

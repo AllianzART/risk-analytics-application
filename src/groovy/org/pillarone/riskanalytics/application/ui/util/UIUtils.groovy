@@ -279,4 +279,53 @@ class UIUtils {
         alert.messageType = severity
         alert.show()
     }
+
+    // I forget standard precedence?  I guess: -D switch overrules config file entry, right ?
+    //
+    static String getAndLogStringConfig(String key, String defaultValue) {
+        String s = System.getProperty(key)?.trim()
+        if( s != null && s.size() > 0 ){
+            LOG.info("System property recognised: -D${key}=${s}")
+            return s
+        }
+
+        s = Holders.config.get(key)?.toString()?.trim()
+        if( s != null && s.size() > 0 ){
+            LOG.info("Config key (not -D switch) found: ${key}=${s}")
+            return s
+        }
+
+        LOG.info("No useful config or -D switch found for '$key', defaulting to $defaultValue")
+        return defaultValue
+    }
+
+    static int getAndLogIntConfig(String key, int defaultValue) {
+        String s = System.getProperty(key)?.trim()
+        if( s != null && s.size() > 0 ){
+            try {
+                int i = Integer.parseInt(s)
+                LOG.info("System property recognised: -D${key}=${i}")
+                return i
+            } catch (NumberFormatException e) { // Typo maybe
+                LOG.warn("NOT an int - supplied system property '-D${key}=${s}', defaulting to $defaultValue")
+                return defaultValue
+            }
+        }
+
+        s = Holders.config.get(key)?.toString()?.trim()
+        if( s != null && s.size() > 0 ){
+            LOG.info("Config key (not -D switch) found: ${key}=${s}")
+            try {
+                int i = Integer.parseInt(s)
+                LOG.info("System property recognised: -D${key}=${i}")
+                return i
+            } catch (NumberFormatException e) { // Typo maybe
+                LOG.warn("NOT an int - supplied system property '-D${key}=${s}', defaulting to $defaultValue")
+                return defaultValue
+            }
+        }
+
+        LOG.info("No useful config or -D switch found for '$key', defaulting to $defaultValue")
+        return defaultValue
+    }
 }
