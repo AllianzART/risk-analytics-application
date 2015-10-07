@@ -21,16 +21,12 @@ import org.pillarone.riskanalytics.core.model.Model
 import org.pillarone.riskanalytics.core.simulation.item.ModellingItem
 import org.pillarone.riskanalytics.core.user.Person
 import org.pillarone.riskanalytics.core.user.UserManagement
+import org.pillarone.riskanalytics.core.util.Configuration
 
 abstract class SelectionTreeAction extends ResourceBasedAction {
     private static Log LOG = LogFactory.getLog(SelectionTreeAction)
-    protected static int maxItemsOpenableInOneClick = 5;
+    protected static final int maxItemsOpenableInOneClick = Configuration.coreGetAndLogIntConfig("maxItemsOpenableInOneClick",5);
 
-    //TODO FR Even better: 1) cater for bools as well as numerics, and 2) also allow overrides via external properties file
-    //
-    static{
-        maxItemsOpenableInOneClick = UIUtils.getAndLogIntConfig("maxItemsOpenableInOneClick",5)
-    }
 
     static List<ModellingUIItem> getSelectedUIItems(ULCTableTree tree) {
         List<ModellingUIItem> selectedObjects = []  //Similarly, this should be list of ModellingUIItem!

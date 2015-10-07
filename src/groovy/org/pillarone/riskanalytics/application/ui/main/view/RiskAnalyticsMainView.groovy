@@ -27,6 +27,7 @@ import org.pillarone.riskanalytics.core.simulation.item.IModellingItemChangeList
 import org.pillarone.riskanalytics.core.simulation.item.ModellingItem
 import org.pillarone.riskanalytics.core.user.Person
 import org.pillarone.riskanalytics.core.user.UserManagement
+import org.pillarone.riskanalytics.core.util.Configuration
 import org.pillarone.ulc.server.ULCVerticalToggleButton
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
@@ -49,20 +50,10 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
 
     static final String DEFAULT_CARD_NAME = 'Main'
 
-    private static int SIM_QUEUE_HEIGHT = 450;  //Sorry, actually the height of the pane above the sim queue
-    private static int TOPRIGHT_PANE_HEIGHT = 600;
-    private static int TOPRIGHT_PANE_WIDTH = 600;
-
-    private static final String imageLogo = UIUtils.getAndLogStringConfig("GUI_BACKGROUND_LOGO", "ArtisanLogo37k.png");
-
-    // Avoid building whole app just to tweak these settings
-    //
-    static {
-        TOPRIGHT_PANE_HEIGHT = UIUtils.getAndLogIntConfig("GUI_TOPRIGHT_PANE_HEIGHT", 600)
-        TOPRIGHT_PANE_WIDTH = UIUtils.getAndLogIntConfig("GUI_TOPRIGHT_PANE_WIDTH", 600)
-        SIM_QUEUE_HEIGHT = UIUtils.getAndLogIntConfig("GUI_SIM_QUEUE_HEIGHT", 450)
-    }
-
+    private static final int SIM_QUEUE_HEIGHT = Configuration.coreGetAndLogIntConfig("GUI_SIM_QUEUE_HEIGHT", 450) //Actually, height of pane above sim queue
+    private static final int TOPRIGHT_PANE_HEIGHT = Configuration.coreGetAndLogIntConfig("GUI_TOPRIGHT_PANE_HEIGHT", 600)
+    private static final int TOPRIGHT_PANE_WIDTH = Configuration.coreGetAndLogIntConfig("GUI_TOPRIGHT_PANE_WIDTH", 600)
+    private static final String imageLogo = Configuration.coreGetAndLogStringConfig("GUI_BACKGROUND_LOGO", "ArtisanLogo37k.png");
 
     final ULCCardPane content = new ULCCardPane()
 
