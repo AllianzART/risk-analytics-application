@@ -45,7 +45,7 @@ class ResultSettingsView {
         ULCBoxPane settings = boxLayout(getText('settings')) { ULCBoxPane box ->
 
             ULCBoxPane content = new ULCBoxPane(3, 0)
-            addLabels(content, getText('name') + ":", "$simulation.name", new ULCFiller())
+            addLabels(content, getText('name') + ":", "$simulation.name (id: ${simulation.id ?: 'N/A'})", new ULCFiller()) //AR-168 show sim id
             addLabels(content, getText('creationDate') + ":", DateFormatUtils.formatDetailed(simulation.start), new ULCFiller())
             // TODO (msp): adjust to new user concept
             addLabels(content, "", "", new ULCFiller())

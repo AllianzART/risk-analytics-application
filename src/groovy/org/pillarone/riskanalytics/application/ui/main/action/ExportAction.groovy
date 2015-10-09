@@ -3,17 +3,19 @@ import com.ulcjava.base.application.*
 import com.ulcjava.base.application.util.IFileChooseHandler
 import com.ulcjava.base.application.util.IFileStoreHandler
 import com.ulcjava.base.shared.FileChooserConfig
+
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.apache.poi.ss.usermodel.Sheet
+
 import org.pillarone.riskanalytics.application.dataaccess.item.ModellingItemFactory
-import org.pillarone.riskanalytics.application.ui.main.view.RiskAnalyticsMainView
 import org.pillarone.riskanalytics.application.ui.util.DateFormatUtils
 import org.pillarone.riskanalytics.application.ui.util.ExcelExporter
 import org.pillarone.riskanalytics.application.ui.util.I18NAlert
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
 import org.pillarone.riskanalytics.application.util.prefs.UserPreferences
 import org.pillarone.riskanalytics.application.util.prefs.UserPreferencesFactory
+
 import org.pillarone.riskanalytics.core.ParameterizationDAO
 import org.pillarone.riskanalytics.core.dataaccess.ResultAccessor
 import org.pillarone.riskanalytics.core.dataaccess.ResultPathDescriptor
@@ -22,6 +24,7 @@ import org.pillarone.riskanalytics.core.output.SingleValueResultPOJO
 import org.pillarone.riskanalytics.core.output.SimulationRun
 import org.pillarone.riskanalytics.core.output.SingleValueResult
 import org.pillarone.riskanalytics.core.simulation.item.*
+import org.pillarone.riskanalytics.core.util.Configuration
 import org.pillarone.riskanalytics.core.util.IConfigObjectWriter
 import org.springframework.transaction.TransactionStatus
 
@@ -31,13 +34,7 @@ import java.util.regex.Pattern
  */
 abstract class ExportAction extends SelectionTreeAction {
     protected static final int ONE_MEG = 1024 * 1024
-    protected static final long EXPORT_TRANSFER_MAX_BYTES = 200 * ONE_MEG
-    // Avoid needing to build whole app just to tweak settings
-    // PMO-2824 Should move out of RiskAnalyticsMainView to a utility class
-    //
-    static {
-        EXPORT_TRANSFER_MAX_BYTES = RiskAnalyticsMainView.setIntFromSystemProperty("EXPORT_TRANSFER_MAX_BYTES", 200 * ONE_MEG)
-    }
+    protected static final long EXPORT_TRANSFER_MAX_BYTES = Configuration.coreGetAndLogIntConfig("EXPORT_TRANSFER_MAX_BYTES", 200 * ONE_MEG)
 
     UserPreferences userPreferences
     protected String fileExtension = 'xlsx'

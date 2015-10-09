@@ -22,6 +22,8 @@ import org.pillarone.riskanalytics.application.ui.main.action.*
 import org.pillarone.riskanalytics.application.ui.main.eventbus.RiskAnalyticsEventBus
 import org.pillarone.riskanalytics.application.ui.main.eventbus.event.ModellingItemEvent
 import org.pillarone.riskanalytics.application.ui.parameterization.view.CenteredHeaderRenderer
+import org.pillarone.riskanalytics.core.util.Configuration
+
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 
@@ -35,17 +37,7 @@ import javax.annotation.Resource
 @Component
 class SelectionTreeView {
 
-    static int TREE_FIRST_COLUMN_WIDTH = 390
-    // Avoid building whole app just to tweak these settings
-    //
-    static {
-        try{
-            TREE_FIRST_COLUMN_WIDTH = Integer.parseInt( System.getProperty("GUI_TREE_FIRST_COLUMN_WIDTH", "390") )
-        } catch( NumberFormatException e){
-            TREE_FIRST_COLUMN_WIDTH = 390
-        }
-
-    }
+    final static int TREE_FIRST_COLUMN_WIDTH = Configuration.coreGetAndLogIntConfig("GUI_TREE_FIRST_COLUMN_WIDTH", 390)
 
     ULCFixedColumnTableTree tree
     ULCBoxPane content

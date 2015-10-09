@@ -234,7 +234,7 @@ class UIUtils {
             default: return Color.black
         }
     }
-
+    // Pathetic - what if one of the pieces called str is bigger than maxLength ?!
     public static String addBreakLines(String origin, int maxLength, String separator) {
         if (!origin || origin.length() < maxLength) return origin
         StringBuilder result = new StringBuilder()
@@ -279,4 +279,5 @@ class UIUtils {
         alert.messageType = severity
         alert.show()
     }
+
 }

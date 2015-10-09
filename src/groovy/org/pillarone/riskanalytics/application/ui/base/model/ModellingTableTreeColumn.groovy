@@ -10,6 +10,7 @@ import org.pillarone.riskanalytics.core.simulation.item.ModellingItem
 import org.pillarone.riskanalytics.core.simulation.item.Parameterization
 import org.pillarone.riskanalytics.core.simulation.item.Resource
 import org.pillarone.riskanalytics.core.simulation.item.Simulation
+import org.pillarone.riskanalytics.core.util.Configuration
 
 /**
  * @author fouad.jaada@intuitive-collaboration.com
@@ -17,8 +18,8 @@ import org.pillarone.riskanalytics.core.simulation.item.Simulation
 public class ModellingTableTreeColumn {
     //Can disable optimisation by setting -DskipNameLookupForNegativeDealIds=false
     //
-    private static boolean skipNameLookupForNegativeDealIds =
-            System.getProperty("skipNameLookupForNegativeDealIds", "true").equalsIgnoreCase("true");
+    private final static boolean skipNameLookupForNegativeDealIds =
+        Configuration.coreGetAndLogStringConfig("skipNameLookupForNegativeDealIds", "true").equalsIgnoreCase("true");
 
     private static final Log LOG = LogFactory.getLog(ModellingTableTreeColumn)
 

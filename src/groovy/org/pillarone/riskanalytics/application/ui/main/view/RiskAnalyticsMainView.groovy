@@ -27,6 +27,7 @@ import org.pillarone.riskanalytics.core.simulation.item.IModellingItemChangeList
 import org.pillarone.riskanalytics.core.simulation.item.ModellingItem
 import org.pillarone.riskanalytics.core.user.Person
 import org.pillarone.riskanalytics.core.user.UserManagement
+import org.pillarone.riskanalytics.core.util.Configuration
 import org.pillarone.ulc.server.ULCVerticalToggleButton
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
@@ -49,28 +50,10 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
 
     static final String DEFAULT_CARD_NAME = 'Main'
 
-    private static int SIM_QUEUE_HEIGHT = 450;  //Sorry, actually the height of the pane above the sim queue
-    private static int TOPRIGHT_PANE_HEIGHT = 600;
-    private static int TOPRIGHT_PANE_WIDTH = 600;
-
-    // Avoid building whole app just to tweak these settings
-    //
-    static {
-        TOPRIGHT_PANE_HEIGHT = setIntFromSystemProperty("GUI_TOPRIGHT_PANE_HEIGHT", 600)
-        TOPRIGHT_PANE_WIDTH = setIntFromSystemProperty("GUI_TOPRIGHT_PANE_WIDTH", 600)
-        SIM_QUEUE_HEIGHT = setIntFromSystemProperty("GUI_SIM_QUEUE_HEIGHT", 450)
-    }
-
-    static int setIntFromSystemProperty(String key, int defaultValue) {
-        try {
-            int i = Integer.parseInt(System.getProperty(key, "" + defaultValue))
-            LOG.info("System property recognised: -D${key}=${i}")
-            return i
-        } catch (NumberFormatException e) { // Typo in configs
-            LOG.warn("NOT an int - supplied system property '$key', defaulting to $defaultValue")
-        }
-        return defaultValue
-    }
+    private static final int SIM_QUEUE_HEIGHT = Configuration.coreGetAndLogIntConfig("GUI_SIM_QUEUE_HEIGHT", 450) //Actually, height of pane above sim queue
+    private static final int TOPRIGHT_PANE_HEIGHT = Configuration.coreGetAndLogIntConfig("GUI_TOPRIGHT_PANE_HEIGHT", 600)
+    private static final int TOPRIGHT_PANE_WIDTH = Configuration.coreGetAndLogIntConfig("GUI_TOPRIGHT_PANE_WIDTH", 600)
+    private static final String imageLogo = Configuration.coreGetAndLogStringConfig("GUI_BACKGROUND_LOGO", "ArtisanLogo37k.png");
 
     final ULCCardPane content = new ULCCardPane()
 
@@ -147,6 +130,7 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
     void layoutComponents() {
         ULCCardPane modelPane = cardPaneManager.cardPane
         modelPane.preferredSize = new Dimension(TOPRIGHT_PANE_HEIGHT, TOPRIGHT_PANE_WIDTH)
+        modelPane.addCard("BackgroundCard", getBgCard())
         ULCBoxPane treePane = new ULCBoxPane(1, 1)
         treePane.add(BOX_EXPAND_EXPAND, selectionTreeView.content)
         ULCSplitPane splitPane = new ULCSplitPane(HORIZONTAL_SPLIT)
@@ -193,6 +177,12 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
         }
         headerView.windowMenu.addSeparator()
         content.selectedName = DEFAULT_CARD_NAME
+    }
+
+    ULCComponent getBgCard() {
+        ULCLabel bgLabel = new ULCLabel(UIUtils.getIcon(imageLogo))
+        bgLabel.setTranslucency(0.5f)
+        return bgLabel
     }
 
     void attachListeners() {

@@ -18,6 +18,7 @@ import org.pillarone.riskanalytics.core.simulation.item.Parameterization
 import org.pillarone.riskanalytics.core.simulation.item.Simulation
 import org.pillarone.riskanalytics.core.simulation.item.VersionNumber
 import org.pillarone.riskanalytics.core.simulation.item.parameter.comment.EnumTagType
+import org.pillarone.riskanalytics.core.util.Configuration
 import org.pillarone.riskanalytics.core.workflow.Status
 
 /**
@@ -27,9 +28,10 @@ class TagsListView extends AbstractView {
 
     private static Log LOG = LogFactory.getLog(TagsListView )
 
-    // Set -DquarterTagsAreSpecial=false to activate extra Quarter Tag validation on Workflow p14ns
+    // Set -DquarterTagsAreSpecial=false to disable Quarter Tag validations on Workflow p14ns etc
     //
-    static boolean quarterTagsAreSpecial = System.getProperty("quarterTagsAreSpecial","true").equalsIgnoreCase("true");
+    final static boolean quarterTagsAreSpecial =
+        Configuration.coreGetAndLogStringConfig("quarterTagsAreSpecial","true").equalsIgnoreCase("true");
 
     private ULCWindow parent
     public ULCBoxPane content

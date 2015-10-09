@@ -5,14 +5,16 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.core.simulation.item.Parameterization
 import org.pillarone.riskanalytics.core.simulation.item.VersionNumber
+import org.pillarone.riskanalytics.core.util.Configuration
 import org.pillarone.riskanalytics.core.workflow.Status
 import org.pillarone.riskanalytics.core.workflow.WorkflowException
 
 class CreateNewWorkflowVersionAction extends AbstractWorkflowAction {
     protected static Log LOG = LogFactory.getLog(CreateNewWorkflowVersionAction)
 
-    // forbid meddling via -DCreateNewWorkflowVersion.promiscuous=false
-    private static boolean promiscuous = System.getProperty("CreateNewWorkflowVersion.promiscuous","true").equalsIgnoreCase("true") //breaks tests when false!
+    // forbid meddling by non-workflow-owners via -DCreateNewWorkflowVersion.promiscuous=false
+    private final static boolean promiscuous =                  //breaks tests when false so by default it's set to true
+        Configuration.coreGetAndLogStringConfig("CreateNewWorkflowVersion.promiscuous","true").equalsIgnoreCase("true")
 
     CreateNewWorkflowVersionAction(ULCTableTree tree) {
         super("NewWorkflowVersion", tree)
