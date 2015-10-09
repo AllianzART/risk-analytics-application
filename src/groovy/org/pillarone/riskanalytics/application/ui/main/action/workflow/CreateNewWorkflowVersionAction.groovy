@@ -14,7 +14,7 @@ class CreateNewWorkflowVersionAction extends AbstractWorkflowAction {
 
     // forbid meddling by non-workflow-owners via -DCreateNewWorkflowVersion.promiscuous=false
     private final static boolean promiscuous =                  //breaks tests when false so by default it's set to true
-        Configuration.coreGetAndLogStringConfig("CreateNewWorkflowVersion.promiscuous","true").equalsIgnoreCase("true")
+        Configuration.coreGetAndLogStringConfig("CreateNewWorkflowVersionPromiscuous","true").equalsIgnoreCase("true")
 
     CreateNewWorkflowVersionAction(ULCTableTree tree) {
         super("NewWorkflowVersion", tree)
