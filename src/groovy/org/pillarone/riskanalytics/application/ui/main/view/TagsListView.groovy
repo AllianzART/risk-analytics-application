@@ -153,12 +153,33 @@ class TagsListView extends AbstractView {
         } else if (modellingItem instanceof Simulation){
 
             Simulation simulation = modellingItem as Simulation
-            return isTagOnDeal(simulation, tag)
+            return simAlreadyQtrTagged(simulation, tag) || // same sim can't be in two different quarters (AR-192)
+                   isTagOnDeal(simulation, tag)            // qtr run can only have one sim for each deal
+
         } else {
             return false
         }
     }
 
+    // AR-192
+    // Does the sim Janet wants to tag already have a quarter tag?
+    //
+    private boolean simAlreadyQtrTagged( Simulation sim, Tag newTag ){
+        if( !sim.loaded ){
+            sim.load(true) //includes comments, params and **tags**
+        }
+
+        Tag oldTag = sim?.tags?.find {it.isQuarterTag()}  //collect {it.isQuarterTag()} //any { it.isQuarterTag() }
+        if(oldTag){
+            String firstLine= "Cant add ${newTag.name} tag to '${sim.name}' :"
+            String secondLine = "Sim result already carries tag ${oldTag.name}"
+            LOG.warn(firstLine + " " + secondLine)
+            LOG.info("To disable qtr tag checks, override -DquarterTagsAreSpecial=false ")
+            UIUtils.showWarnAlert(parent, "Sim result cannot be in two different quarters", firstLine + "\n" + secondLine)
+            return true
+        }
+        return false
+    }
     // PMO-2741
     // Does proposed tag already exist for current deal ?
     // Or, should tag not be allowed owing to no deal ?
@@ -166,7 +187,7 @@ class TagsListView extends AbstractView {
     private boolean isTagOnDeal( Simulation simulation, Tag tag ){
 
         if( !simulation.loaded ){
-            simulation.load(false)
+            simulation.load(false) //skips comments, params and tags
         }
         if( !simulation?.parameterization?.loaded){
             simulation?.parameterization?.load(false)
