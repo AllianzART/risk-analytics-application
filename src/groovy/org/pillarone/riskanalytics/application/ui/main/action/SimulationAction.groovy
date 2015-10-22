@@ -55,7 +55,7 @@ class SimulationAction extends SelectionTreeAction {
                 parameterization = existingResult.parameterization
                 template = existingResult.template
                 overrideDefaultSimSettings = true
-                LOG.info("Using p14n: '$parameterization.nameAndVersion}' & template: '${template.nameAndVersion}'")
+                LOG.info("Using p14n: '${parameterization.nameAndVersion}' & template: '${template.nameAndVersion}'")
             }
             riskAnalyticsEventBus.post(new OpenDetailViewEvent(new SimulationSettingsUIItem(simulation)))
             SimulationConfigurationView view = detailViewManager.openDetailView as SimulationConfigurationView
