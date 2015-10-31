@@ -88,13 +88,22 @@ class ResultSettingsView {
         holder.add(ULCBoxPane.BOX_EXPAND_TOP, settings)
         holder.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
 
-        content = new ULCBoxPane()
-        content.add(ULCBoxPane.BOX_EXPAND_TOP, holder)
+        ULCBoxPane box = new ULCBoxPane()
+        box.add(ULCBoxPane.BOX_EXPAND_TOP, holder)
         if (hasRuntimeParameters) {
-            content.add(ULCBoxPane.BOX_EXPAND_TOP, runtimeParameters)
+            box.add(ULCBoxPane.BOX_EXPAND_TOP, runtimeParameters)
         }
-        content.add(ULCBoxPane.BOX_EXPAND_EXPAND, new ULCFiller())
+        box.add(ULCBoxPane.BOX_EXPAND_EXPAND, new ULCFiller())
 
+
+        // AR-168 See https://ulc.canoo.com/developerzone/doc/ULCCore/8.0.2.2/apidoc/index.html
+        //
+        ULCScrollPane scrollPane = new ULCScrollPane(box)
+        scrollPane.horizontalScrollBar.blockIncrement = 180            // page-up/down size
+        scrollPane.verticalScrollBar.blockIncrement = 180              // page-up/down size
+
+        content = new ULCBoxPane()
+        content.add(ULCBoxPane.BOX_EXPAND_EXPAND, scrollPane)
     }
 
     private String formatParameter(def parameter) {
@@ -109,17 +118,7 @@ class ResultSettingsView {
         riskAnalyticsEventBus.post(new OpenDetailViewEvent(UIItemFactory.createItem(item)))
     }
 
-    private void addLabels(ULCBoxPane container, String key, ULCTextArea value) {
-        def keyLabel = new ULCLabel(key)
-        container.add(ULCBoxPane.BOX_LEFT_CENTER, spaceAround(keyLabel, 5, 10, 0, 0))
-        ULCScrollPane scrollPane = new ULCScrollPane(value)
-        scrollPane.setPreferredSize(new Dimension(270, 60))
-        scrollPane.border = BorderFactory.createEmptyBorder(5, 10, 0, 0)
-        scrollPane.setVerticalScrollBarPolicy(ULCScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED)
-        container.add(2, ULCBoxPane.BOX_LEFT_EXPAND, scrollPane)
-    }
-
-    private void addLabels(ULCBoxPane container, String key, String value, ULCComponent thirdComponent) {
+    private void addLabels(ULCBoxPane container, String key, String value, ULCComponent thirdComponent ) {
         def keyLabel = new ULCLabel(key)
         container.add(ULCBoxPane.BOX_LEFT_CENTER, spaceAround(keyLabel, 5, 10, 0, 0))
         def valueLabel = new ULCLabel(value)
