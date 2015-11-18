@@ -26,7 +26,7 @@ import org.pillarone.riskanalytics.core.util.Configuration
 public class CreateReportAction extends SelectionTreeAction {
 
     private static Log LOG = LogFactory.getLog(CreateReportAction)
-    private static boolean warnExperimentalReports = (Configuration.coreGetAndLogStringConfig("warnExperimentalReports", "false")=="true");
+    private static boolean warnExperimentalReports = (Configuration.coreGetAndLogStringConfig("warnExperimentalReports", "true")=="true");
 
 
     IReportModel reportModel
@@ -39,27 +39,29 @@ public class CreateReportAction extends SelectionTreeAction {
         putValue(IAction.NAME, reportModel.getName() + " " + reportFormat.getRenderedFormatSuchAsPDF())
     }
 
-    // Temporary till we've debugged it ..
     // If it's Parameter Summary Report on A2M model throw up a warning alert: Experimental!
     //
+    // (Temporary till we've debugged it ..)
+    //
     private void warnParameterSummaryA2Experimental(IReportData reportData){
-        // Workaroudn may be to use class name compared to string values?
+
+        // Use ArtisanParameterSummaryReportModel report class name, as app plugin doesnt know about reports plugin
         //
-        // OF COURSE NOW WE HIT THE SNAG THAT APP DOESNT KNOW ABOUT REPORTS PLUGIN...
-//        if(reportModel instanceof com.allianz.art.reports.ArtisanParameterSummaryReportModel){
+        if(reportModel.getClass().getSimpleName().equals("ArtisanParameterSummaryReportModel") ){
             if(reportData instanceof ModellingItemReportData){
                 ModellingItem item = (reportData as ModellingItemReportData).item;
-                // OF COURSE NOW WE HIT THE SNAG THAT APP DOESNT KNOW ABOUT MODELS PLUGIN...
-//                if( item.modelClass instanceof Artisan2Model ){
-                    showInfoAlert(
-                        "Experimental Functionality",
-                        "Parameter Summary Report on Artisan2Model p14ns is under development.\n"+
-                        "Your feedback (to Faz or Paolo please) would be appreciated!",
+                // Use Artisan2Model class name, as app plugin doesnt know about models plugin either..
+                //
+                if( item.modelClass.getSimpleName().equals("Artisan2Model") ){
+                    showWarnAlert(
+                        "Please note: *Experimental*",
+                        "Parameter Summary Report on Artisan2Model p14ns is still under development.\n"+
+                        "Please help us by giving feedback (to Faz or Paolo please)!",
                         true
                     )
-//                }
+                }
             }
-//        }
+        }
 
     }
     @Override
