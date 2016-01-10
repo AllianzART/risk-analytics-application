@@ -20,10 +20,14 @@ import org.pillarone.riskanalytics.core.report.UnsupportedReportParameterExcepti
 import org.pillarone.riskanalytics.core.report.impl.ModellingItemReportData
 import org.pillarone.riskanalytics.core.report.impl.ReportDataCollection
 import org.pillarone.riskanalytics.core.simulation.item.ModellingItem
+import org.pillarone.riskanalytics.core.simulation.item.Parameterization
+import org.pillarone.riskanalytics.core.util.Configuration
 
 public class CreateReportAction extends SelectionTreeAction {
 
     private static Log LOG = LogFactory.getLog(CreateReportAction)
+    private static boolean warnExperimentalReports = (Configuration.coreGetAndLogStringConfig("warnExperimentalReports", "true")=="true");
+
 
     IReportModel reportModel
     ReportFactory.ReportFormat reportFormat
@@ -35,9 +39,37 @@ public class CreateReportAction extends SelectionTreeAction {
         putValue(IAction.NAME, reportModel.getName() + " " + reportFormat.getRenderedFormatSuchAsPDF())
     }
 
+    // If it's Parameter Summary Report on A2M model throw up a warning alert: Experimental!
+    //
+    // (Temporary till we've debugged it ..)
+    //
+    private void warnParameterSummaryA2Experimental(IReportData reportData){
+
+        // Use ArtisanParameterSummaryReportModel report class name, as app plugin doesnt know about reports plugin
+        //
+        if(reportModel.getClass().getSimpleName().equals("ArtisanParameterSummaryReportModel") ){
+            if(reportData instanceof ModellingItemReportData){
+                ModellingItem item = (reportData as ModellingItemReportData).item;
+                // Use Artisan2Model class name, as app plugin doesnt know about models plugin either..
+                //
+                if( item.modelClass.getSimpleName().equals("Artisan2Model") ){
+                    showWarnAlert(
+                        "Please note: *Experimental*",
+                        "Parameter Summary Report on Artisan2Model p14ns is still under development.\n"+
+                        "Please help us by giving feedback (to Faz or Paolo please)!",
+                        true
+                    )
+                }
+            }
+        }
+
+    }
     @Override
     void doActionPerformed(ActionEvent event) {
         IReportData reportData = getReportData()
+        if(warnExperimentalReports){
+            warnParameterSummaryA2Experimental(reportData)
+        }
         try {
             LOG.info("Creating ${reportModel.getDefaultReportFileNameWithoutExtension(reportData)}") //throws if >1 items
             byte[] report = ReportFactory.createReport(reportModel, reportData, reportFormat)

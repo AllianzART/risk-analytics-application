@@ -21,6 +21,7 @@ import org.pillarone.riskanalytics.application.ui.util.UIUtils
 import org.pillarone.riskanalytics.application.util.prefs.UserPreferences
 import org.pillarone.riskanalytics.application.util.prefs.UserPreferencesFactory
 import org.pillarone.riskanalytics.core.simulation.item.Simulation
+import org.pillarone.riskanalytics.core.util.Configuration
 
 class StochasticResultView extends ResultView {
 
@@ -35,6 +36,8 @@ class StochasticResultView extends ResultView {
     final static String FUNCTION_VALUE = "functionValue_"
     private @Lazy
     TableView tableView = { new TableView(model.model, model.item) }()
+
+    private static boolean tableViewEnabled = (Configuration.coreGetAndLogStringConfig("tableViewEnabled",'true')=='true')
 
     @Lazy
     MeanFunction meanFunction
@@ -61,11 +64,11 @@ class StochasticResultView extends ResultView {
     protected ULCContainer layoutContent(ULCContainer content) {
         ULCBoxPane mainContentPane = new ULCBoxPane(1, 1)
         splitPane = new ULCSplitPane(ULCSplitPane.VERTICAL_SPLIT)
-        splitPane.oneTouchExpandable = true
+        splitPane.oneTouchExpandable = true // Provides mini control arrows to open/close comments in sim results
         splitPane.setResizeWeight(1)
         splitPane.setDividerSize(10)
 
-        splitPane.setDividerLocation(ParameterView.NO_DIVIDER)
+        splitPane.setDividerLocation(ParameterView.NO_DIVIDER) //AR-129 suppress comments on freshly opened results
         mainContentPane.add(ULCBoxPane.BOX_EXPAND_EXPAND, splitPane)
 
         tabbedPane.removeAll()
@@ -75,12 +78,13 @@ class StochasticResultView extends ResultView {
         contentPane.add(ULCBoxPane.BOX_LEFT_TOP, functionPane)
         contentPane.add(ULCBoxPane.BOX_EXPAND_EXPAND, content)
 
-        tabbedPane.addTab(getText("TreeView"), UIUtils.getIcon(getText("TreeView.icon")), contentPane)
+        // AR-168 See https://ulc.canoo.com/developerzone/doc/ULCCore/8.0.2.2/apidoc/index.html
+        //
+        ULCScrollPane scrollPane = new ULCScrollPane(contentPane)
+        scrollPane.horizontalScrollBar.blockIncrement = 180    // page-up/down size
+        scrollPane.verticalScrollBar.blockIncrement = 180      // page-up/down size
 
-        boolean tableViewEnabled = false
-        if (Holders.config.containsKey("tableViewEnabled")) {
-            tableViewEnabled = Holders.config.tableViewEnabled
-        }
+        tabbedPane.addTab(getText("TreeView"), UIUtils.getIcon(getText("TreeView.icon")), scrollPane)
 
         if (tableViewEnabled) {
             tabbedPane.addTab("Table", UIUtils.getIcon(getText("Settings.icon")), tableView.content)

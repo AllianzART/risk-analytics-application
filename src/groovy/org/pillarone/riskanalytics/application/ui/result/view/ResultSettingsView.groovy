@@ -45,10 +45,8 @@ class ResultSettingsView {
         ULCBoxPane settings = boxLayout(getText('settings')) { ULCBoxPane box ->
 
             ULCBoxPane content = new ULCBoxPane(3, 0)
-            addLabels(content, getText('name') + ":", "$simulation.name (id: ${simulation.id ?: 'N/A'})", new ULCFiller()) //AR-168 show sim id
-            addLabels(content, getText('creationDate') + ":", DateFormatUtils.formatDetailed(simulation.start), new ULCFiller())
-            // TODO (msp): adjust to new user concept
-            addLabels(content, "", "", new ULCFiller())
+            addLabels(content, getText('name') + ":", "$simulation.name (id: ${simulation.id ?: 'N/A'})" ) //AR-168 show sim id
+            addLabels(content, getText('creationDate') + ":", DateFormatUtils.formatDetailed(simulation.start) )
             addLabels(content, getText('modelLabel') + ":", "$simulation.modelClass.simpleName v${simulation.modelVersionNumber.toString()}", new ULCButton(new ExportModelItemAction(simulation)))
             addLabels(content, getText('structure') + ":", "$simulation.structure.name v${simulation.structure.versionNumber.toString()}", new ULCButton(new ExportStructureAction(simulation.structure)))
             ULCButton openParams = new ULCButton(getText('open'))
@@ -59,14 +57,14 @@ class ResultSettingsView {
             openTemplate.addActionListener([actionPerformed: { event -> openItem(simulation.template) }] as IActionListener)
             addLabels(content, getText('template') + ":", "$simulation.template.name v${simulation.template.versionNumber.toString()}", openTemplate)
             if (!DeterministicModel.isAssignableFrom(simulation.modelClass)) {
-                addLabels(content, getText('randomSeed') + ":", "$simulation.randomSeed", new ULCFiller())
+                addLabels(content, getText('randomSeed') + ":", "$simulation.randomSeed")
             } else {
-                addLabels(content, getText('firstPeriod') + ":", DateTimeFormat.forPattern('dd.MM.yyyy').print(simulation.beginOfFirstPeriod), new ULCFiller())
+                addLabels(content, getText('firstPeriod') + ":", DateTimeFormat.forPattern('dd.MM.yyyy').print(simulation.beginOfFirstPeriod) )
             }
-            addLabels(content, getText('periods') + ":", simulation.periodCount.toString(), new ULCFiller())
-            addLabels(content, getText('modelVersion') + ":", simulation.modelVersionNumber.toString(), new ULCFiller())
+            addLabels(content, getText('periods') + ":", simulation.periodCount.toString() )
+            addLabels(content, getText('modelVersion') + ":", simulation.modelVersionNumber.toString() )
             int simulationDuration = (simulation.end.getMillis() - simulation.start.getMillis()) / 1000
-            addLabels(content, getText('completedIterations') + ":", "${simulation.numberOfIterations.toString()} in ${simulationDuration} secs", new ULCFiller())
+            addLabels(content, getText('completedIterations') + ":", "${simulation.numberOfIterations.toString()} in ${simulationDuration} secs" )
 
             box.add(content)
         }
@@ -88,13 +86,22 @@ class ResultSettingsView {
         holder.add(ULCBoxPane.BOX_EXPAND_TOP, settings)
         holder.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
 
-        content = new ULCBoxPane()
-        content.add(ULCBoxPane.BOX_EXPAND_TOP, holder)
+        ULCBoxPane box = new ULCBoxPane()
+        box.add(ULCBoxPane.BOX_EXPAND_TOP, holder)
         if (hasRuntimeParameters) {
-            content.add(ULCBoxPane.BOX_EXPAND_TOP, runtimeParameters)
+            box.add(ULCBoxPane.BOX_EXPAND_TOP, runtimeParameters)
         }
-        content.add(ULCBoxPane.BOX_EXPAND_EXPAND, new ULCFiller())
+        box.add(ULCBoxPane.BOX_EXPAND_EXPAND, new ULCFiller())
 
+
+        // AR-168 See https://ulc.canoo.com/developerzone/doc/ULCCore/8.0.2.2/apidoc/index.html
+        //
+        ULCScrollPane scrollPane = new ULCScrollPane(box)
+        scrollPane.horizontalScrollBar.blockIncrement = 180            // page-up/down size
+        scrollPane.verticalScrollBar.blockIncrement = 180              // page-up/down size
+
+        content = new ULCBoxPane()
+        content.add(ULCBoxPane.BOX_EXPAND_EXPAND, scrollPane)
     }
 
     private String formatParameter(def parameter) {
@@ -109,17 +116,14 @@ class ResultSettingsView {
         riskAnalyticsEventBus.post(new OpenDetailViewEvent(UIItemFactory.createItem(item)))
     }
 
-    private void addLabels(ULCBoxPane container, String key, ULCTextArea value) {
+    private void addLabels(ULCBoxPane container, String key, String value ) {
         def keyLabel = new ULCLabel(key)
         container.add(ULCBoxPane.BOX_LEFT_CENTER, spaceAround(keyLabel, 5, 10, 0, 0))
-        ULCScrollPane scrollPane = new ULCScrollPane(value)
-        scrollPane.setPreferredSize(new Dimension(270, 60))
-        scrollPane.border = BorderFactory.createEmptyBorder(5, 10, 0, 0)
-        scrollPane.setVerticalScrollBarPolicy(ULCScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED)
-        container.add(2, ULCBoxPane.BOX_LEFT_EXPAND, scrollPane)
+        def valueLabel = new ULCLabel(value)
+        container.add(2, ULCBoxPane.BOX_LEFT_CENTER, spaceAround(valueLabel, 5, 10, 0, 0)) //Spans 2 cells
     }
 
-    private void addLabels(ULCBoxPane container, String key, String value, ULCComponent thirdComponent) {
+    private void addLabels(ULCBoxPane container, String key, String value, ULCComponent thirdComponent ) {
         def keyLabel = new ULCLabel(key)
         container.add(ULCBoxPane.BOX_LEFT_CENTER, spaceAround(keyLabel, 5, 10, 0, 0))
         def valueLabel = new ULCLabel(value)
