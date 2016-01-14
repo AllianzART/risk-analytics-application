@@ -16,9 +16,11 @@ import org.pillarone.riskanalytics.application.ui.util.I18NAlert
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
 import org.pillarone.riskanalytics.core.components.Component
 import org.pillarone.riskanalytics.core.components.NonUniqueComponentNameException
+import org.pillarone.riskanalytics.core.util.Configuration
 
 class AddDynamicSubComponent extends ResourceBasedAction {
 
+    private static boolean suppressAR107Fix = (Configuration.coreGetAndLogStringConfig("suppressAR107Fix","false") == "true");
     def tree
     ParameterViewModel model
 
@@ -54,8 +56,10 @@ class AddDynamicSubComponent extends ResourceBasedAction {
                     // AR-207 Don't even create a component nor name it till you know the name is OK!
                     //
                     String basePath = [ComponentUtils.removeModelFromPath(node.path, model.model), name].join(":")
-                    if(model.parametrizedItem.notDeletedParameterHolders.find { it.path.contains(basePath+':')} ){
-                        throw new NonUniqueComponentNameException("A non-deleted parameter starting with '${name}' already exists! \n(Clicking before looking?)")
+                    if(!suppressAR107Fix){ // remove test next release if no issues found
+                        if(model.parametrizedItem.notDeletedParameterHolders.find { it.path.contains(basePath+':')} ){
+                            throw new NonUniqueComponentNameException("A non-deleted parameter starting with '${name}' already exists! \n(Clicking before looking?)")
+                        }
                     }
                     Component component = node.component.createDefaultSubComponent()
                     component.name = name
