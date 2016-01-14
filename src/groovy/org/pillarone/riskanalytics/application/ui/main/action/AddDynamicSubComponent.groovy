@@ -42,7 +42,6 @@ class AddDynamicSubComponent extends ResourceBasedAction {
         dialog.title = UIUtils.getText(this.class, "newDynamicSubComponent") + ": " + (node ? node.getDisplayName() : "dynamic component")
         dialog.okAction = {
             ExceptionSafe.protect {
-                Component component = node.component.createDefaultSubComponent()
                 String name = dialog.nameInput.text.trim()
                 name = ComponentUtils.getSubComponentName(name)
 
@@ -52,8 +51,15 @@ class AddDynamicSubComponent extends ResourceBasedAction {
                     return
                 }
                 try {
+                    // AR-207 Don't even create a component nor name it till you know the name is OK!
+                    //
+                    String basePath = [ComponentUtils.removeModelFromPath(node.path, model.model), name].join(":")
+                    if(model.parametrizedItem.notDeletedParameterHolders.find { it.path.contains(basePath+':')} ){
+                        throw new NonUniqueComponentNameException("A non-deleted parameter starting with '${name}' already exists! \n(Clicking before looking?)")
+                    }
+                    Component component = node.component.createDefaultSubComponent()
                     component.name = name
-                    model.parametrizedItem.addComponent([ComponentUtils.removeModelFromPath(node.path, model.model), name].join(":"), component)
+                    model.parametrizedItem.addComponent(basePath, component)
                 } catch (NonUniqueComponentNameException e) {
                     ULCAlert alert = new I18NAlert(UlcUtilities.getWindowAncestor(tree), "UniqueSubComponent")
                     alert.show()
