@@ -42,11 +42,11 @@ public class TreeNodeDuplicator extends TreeNodeAction {
                     component.name = newName
                     model.parametrizedItem.copyComponent(oldPath, newPath, component, withComments)
                 } else {
-                    String msg = "Supply a new name (not '${newName}') for the clone, THEN click OK..."
+                    String msg = "Supply a new name (not '${newName.substring(3)}') for the clone, THEN click OK..."
                     LOG.warn(msg)
                     UIUtils.showAlert(
                             UlcUtilities.getWindowAncestor(tree),
-                            "Clone needs new name",
+                            "New name needed!",
                             msg,
                             ULCAlert.WARNING_MESSAGE
                     )
