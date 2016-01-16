@@ -16,9 +16,11 @@ import org.pillarone.riskanalytics.application.ui.util.I18NAlert
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
 import org.pillarone.riskanalytics.core.components.Component
 import org.pillarone.riskanalytics.core.components.NonUniqueComponentNameException
+import org.pillarone.riskanalytics.core.util.Configuration
 
 class AddDynamicSubComponent extends ResourceBasedAction {
 
+    private static boolean suppressAR207Fix = (Configuration.coreGetAndLogStringConfig("suppressAR207Fix","false") == "true");
     def tree
     ParameterViewModel model
 
@@ -42,7 +44,6 @@ class AddDynamicSubComponent extends ResourceBasedAction {
         dialog.title = UIUtils.getText(this.class, "newDynamicSubComponent") + ": " + (node ? node.getDisplayName() : "dynamic component")
         dialog.okAction = {
             ExceptionSafe.protect {
-                Component component = node.component.createDefaultSubComponent()
                 String name = dialog.nameInput.text.trim()
                 name = ComponentUtils.getSubComponentName(name)
 
@@ -52,8 +53,17 @@ class AddDynamicSubComponent extends ResourceBasedAction {
                     return
                 }
                 try {
+                    // AR-207 Don't even create a component nor name it till you know the name is OK!
+                    //
+                    String basePath = [ComponentUtils.removeModelFromPath(node.path, model.model), name].join(":")
+                    if(!suppressAR207Fix){ // remove test next release if no issues found
+                        if(model.parametrizedItem.notDeletedParameterHolders.find { it.path.contains(basePath+':')} ){
+                            throw new NonUniqueComponentNameException("A non-deleted parameter starting with '${name}' already exists! \n(Clicking before looking?)")
+                        }
+                    }
+                    Component component = node.component.createDefaultSubComponent()
                     component.name = name
-                    model.parametrizedItem.addComponent([ComponentUtils.removeModelFromPath(node.path, model.model), name].join(":"), component)
+                    model.parametrizedItem.addComponent(basePath, component)
                 } catch (NonUniqueComponentNameException e) {
                     ULCAlert alert = new I18NAlert(UlcUtilities.getWindowAncestor(tree), "UniqueSubComponent")
                     alert.show()
