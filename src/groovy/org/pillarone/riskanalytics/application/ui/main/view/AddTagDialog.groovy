@@ -5,21 +5,22 @@ import com.ulcjava.base.application.event.IActionListener
 import com.ulcjava.base.application.tabletree.AbstractTableTreeModel
 
 import com.ulcjava.base.application.util.Dimension
-
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
-import org.pillarone.riskanalytics.application.ui.util.UIUtils
-
 import com.ulcjava.base.application.*
 
 /**
  * @author fouad.jaada@intuitive-collaboration.com
  */
 class AddTagDialog {
+    private static final Log LOG = LogFactory.getLog(AddTagDialog)
     private ULCWindow parent
     ULCTableTree tree
     AbstractTableTreeModel model
     ULCDialog dialog
     TagsListView tagsListView
+    String tagFilter = null
     ULCTextField newTag
 
     private ULCButton applyButton
@@ -36,10 +37,11 @@ class AddTagDialog {
 
     // TagsAction creates, inits it then makes this visible
     //
-    public AddTagDialog(ULCTableTree tree, List<ModellingUIItem> modellingUIItems) {
+    public AddTagDialog(ULCTableTree tree, List<ModellingUIItem> modellingUIItems, String tagFilter = null) {
         this.tree = tree
         this.model = tree.model
         this.modellingUIItems = modellingUIItems
+        this.tagFilter = tagFilter
         load()
     }
 
@@ -57,11 +59,14 @@ class AddTagDialog {
     }
 
     private void initComponents() {
-        if (tree)
+        if (tree){
             this.parent = UlcUtilities.getWindowAncestor(tree)
+        }else{
+            LOG.warn("No tree field - cannot get parent window")
+        }
         dialog = new ULCDialog(parent, "Edit tags dialog", true)
         dialog.name = 'AddTagDialog'                                // Beware - names may be used in tests
-        tagsListView = new TagsListView(modellingUIItems*.item, parent)
+        tagsListView = new TagsListView(modellingUIItems*.item, parent,  tagFilter )
         tagsListView.init()
         newTag = new ULCTextField()
         newTag.name = 'newTag'
@@ -108,7 +113,7 @@ class AddTagDialog {
         }] as IActionListener)
         addNewButton.addActionListener([actionPerformed: { ActionEvent evt ->
             String tagName = newTag.getText()
-            tagsListView.addTag(tagName)
+            tagsListView.createNewTag(tagName)
 
         }] as IActionListener)
         applyButton.addActionListener([actionPerformed: { ActionEvent evt ->

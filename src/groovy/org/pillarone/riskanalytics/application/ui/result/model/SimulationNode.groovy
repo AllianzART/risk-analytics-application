@@ -9,8 +9,10 @@ import org.pillarone.riskanalytics.application.ui.base.model.ItemNode
 import org.pillarone.riskanalytics.application.ui.main.action.*
 import org.pillarone.riskanalytics.application.ui.main.view.EnabledCheckingMenuItem
 import org.pillarone.riskanalytics.application.ui.main.view.MainSelectionTableTreeCellRenderer
+import static org.pillarone.riskanalytics.application.ui.main.view.TagsListView.quarterTagsAreSpecial
 import org.pillarone.riskanalytics.application.ui.main.view.item.SimulationResultUIItem
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
+import static org.pillarone.riskanalytics.core.parameter.comment.Tag.qtrTagMatcherRegex
 import org.pillarone.riskanalytics.core.simulation.item.ModellingItem
 
 @CompileStatic
@@ -37,6 +39,10 @@ class SimulationNode extends ItemNode implements IReportableNode {
         simulationNodePopUpMenu.add(new EnabledCheckingMenuItem(new RenameAction(tree))) //PMO-2764
         simulationNodePopUpMenu.add(new EnabledCheckingMenuItem(new CompareSimulationsAction(tree)))
         simulationNodePopUpMenu.addSeparator()
+//      simulationNodePopUpMenu.add(AbstractParameterNodePopupMenu.createTagsMenu(tree))
+        if( quarterTagsAreSpecial ){
+            simulationNodePopUpMenu.add(new ULCMenuItem(new TagsAction(tree, 'QuarterTagsAction', qtrTagMatcherRegex)))
+        }
         simulationNodePopUpMenu.add(new ULCMenuItem(new TagsAction(tree)))
         addReportMenus(simulationNodePopUpMenu, tree, true)
         simulationNodePopUpMenu.addSeparator()

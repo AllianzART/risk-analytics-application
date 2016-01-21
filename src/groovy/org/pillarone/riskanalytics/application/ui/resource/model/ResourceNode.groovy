@@ -10,7 +10,9 @@ import org.pillarone.riskanalytics.application.ui.base.model.ItemNode
 import org.pillarone.riskanalytics.application.ui.main.action.*
 import org.pillarone.riskanalytics.application.ui.main.action.workflow.StartWorkflowAction
 import org.pillarone.riskanalytics.application.ui.main.view.EnabledCheckingMenuItem
+import static org.pillarone.riskanalytics.application.ui.main.view.TagsListView.quarterTagsAreSpecial
 import org.pillarone.riskanalytics.application.ui.main.view.item.ResourceUIItem
+import static org.pillarone.riskanalytics.core.parameter.comment.Tag.qtrTagMatcherRegex
 import org.pillarone.riskanalytics.core.workflow.Status
 
 @CompileStatic
@@ -38,6 +40,10 @@ class ResourceNode extends ItemNode {
         parameterNodePopUpMenu.name = RESOURCE_NODE_POP_UP_MENU
         parameterNodePopUpMenu.add(new ULCMenuItem(new OpenItemAction(tree)))
         parameterNodePopUpMenu.addSeparator()
+//      parameterNodePopUpMenu.add(AbstractParameterNodePopupMenu.createTagsMenu(tree))
+        if( quarterTagsAreSpecial ){
+            parameterNodePopUpMenu.add(new ULCMenuItem(new TagsAction(tree, 'QuarterTagsAction', qtrTagMatcherRegex)))
+        }
         parameterNodePopUpMenu.add(new ULCMenuItem(new TagsAction(tree)))
         parameterNodePopUpMenu.addSeparator()
         parameterNodePopUpMenu.add(new EnabledCheckingMenuItem(new RenameAction(tree)))
