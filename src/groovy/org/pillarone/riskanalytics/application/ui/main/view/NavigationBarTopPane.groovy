@@ -102,6 +102,9 @@ class NavigationBarTopPane {
         KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
         searchTextField.registerKeyboardAction(action, enter, ULCComponent.WHEN_FOCUSED);
         clearButton.addActionListener([actionPerformed: { ActionEvent event ->
+            // search: parameterizations, results, templates, tags,...
+            // nb in applicationResources.properties
+            //
             searchTextField.setText(UIUtils.getText(this.class, "searchText"))
             searchTextField.setForeground Color.gray
             FilterDefinition filter = tableTreeModel.currentFilter
