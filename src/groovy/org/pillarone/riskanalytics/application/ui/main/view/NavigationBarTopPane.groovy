@@ -109,13 +109,16 @@ class NavigationBarTopPane {
             fireFilterChanged(filter)
         }
     public void clearSearchFilterAction(){
-            searchTextField.setText(UIUtils.getText(this.class, "searchText"))
-            searchTextField.setForeground Color.gray
+        // nb in applicationResources.properties :
+        // search: parameterizations, results, templates, tags,...
+        //
+        searchTextField.setText(UIUtils.getText(this.class, "searchText"))
+        searchTextField.setForeground Color.gray
         tableTreeModel.currentFilter.allFieldsFilter.query = ""
         tableTreeModel.currentFilter.ownerFilter.active = false
         fireFilterChanged(tableTreeModel.currentFilter)
-            myStuffButton.setSelected false
-            assignedToMeButton.setSelected false
+        myStuffButton.setSelected false
+        assignedToMeButton.setSelected false
     }
 
     private static String getLoggedUser() {
