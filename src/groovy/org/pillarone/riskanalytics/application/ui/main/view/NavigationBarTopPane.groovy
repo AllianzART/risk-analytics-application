@@ -92,28 +92,30 @@ class NavigationBarTopPane {
             fireFilterChanged(filter)
         }] as IActionListener)
         searchTextField.addFocusListener(new TextFieldFocusListener(searchTextField))
-        Closure searchClosure = {
+
+        searchTextField.registerKeyboardAction(
+            [actionPerformed: { ActionEvent e -> searchAction() }] as IActionListener,
+            KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false),
+            ULCComponent.WHEN_FOCUSED
+        );
+        tableTreeModel.setNavigationBarTopPane(this) // to allow refresh button to clear the search filter ?
+        clearButton.addActionListener([actionPerformed: { ActionEvent e -> clearSearchFilterAction() }] as IActionListener )
+    }
+
+    private void searchAction(){
             String text = searchTextField.getText()
             FilterDefinition filter = tableTreeModel.currentFilter
             filter.allFieldsFilter.query = text
             fireFilterChanged(filter)
         }
-        IActionListener action = [actionPerformed: { ActionEvent e -> searchClosure.call() }] as IActionListener
-        KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
-        searchTextField.registerKeyboardAction(action, enter, ULCComponent.WHEN_FOCUSED);
-        clearButton.addActionListener([actionPerformed: { ActionEvent event ->
-            // search: parameterizations, results, templates, tags,...
-            // nb in applicationResources.properties
-            //
+    public void clearSearchFilterAction(){
             searchTextField.setText(UIUtils.getText(this.class, "searchText"))
             searchTextField.setForeground Color.gray
-            FilterDefinition filter = tableTreeModel.currentFilter
-            filter.allFieldsFilter.query = ""
-            filter.ownerFilter.active = false
-            fireFilterChanged(filter)
+        tableTreeModel.currentFilter.allFieldsFilter.query = ""
+        tableTreeModel.currentFilter.ownerFilter.active = false
+        fireFilterChanged(tableTreeModel.currentFilter)
             myStuffButton.setSelected false
             assignedToMeButton.setSelected false
-        }] as IActionListener)
     }
 
     private static String getLoggedUser() {
