@@ -14,12 +14,15 @@ import org.pillarone.riskanalytics.application.ui.util.UIUtils
  */
 class ShowPropertiesAction extends ResourceBasedAction {
     private static Log LOG = LogFactory.getLog(ShowPropertiesAction)
+    private static int instanceCount = 0;
 
     ULCTableTree tree
 
     ShowPropertiesAction(ULCTableTree tree) {
         super("ShowPropertiesAction");
         this.tree = tree
+        ++instanceCount
+        LOG.info("Created instance nr: $instanceCount")
     }
 
     void doActionPerformed(ActionEvent event) {

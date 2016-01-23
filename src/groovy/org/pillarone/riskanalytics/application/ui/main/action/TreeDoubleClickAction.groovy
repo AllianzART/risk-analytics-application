@@ -3,6 +3,8 @@ import com.ulcjava.base.application.ULCTableTree
 import com.ulcjava.base.application.event.ActionEvent
 import com.ulcjava.base.application.tree.TreePath
 import groovy.transform.CompileStatic
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.base.model.ItemGroupNode
 import org.pillarone.riskanalytics.application.ui.base.model.ModelNode
 import org.pillarone.riskanalytics.application.ui.base.model.ResourceClassNode
@@ -12,7 +14,7 @@ import org.pillarone.riskanalytics.core.simulation.item.ModellingItem
 
 @CompileStatic
 class TreeDoubleClickAction extends SelectionTreeAction {
-
+    protected static Log LOG = LogFactory.getLog(TreeDoubleClickAction)
     private final OpenItemAction openItemAction
 
     TreeDoubleClickAction(ULCTableTree tree) {
@@ -21,13 +23,23 @@ class TreeDoubleClickAction extends SelectionTreeAction {
     }
 
     void doActionPerformed(ActionEvent event) {
-        def path = tree.selectedPath
+        TreePath path = tree.selectedPath
+        if(path){
         if (isNodeWeWantToToggleOnDoubleClick(path.lastPathComponent)) {
             toggle(path)
             return
         }
-        if (selectedItem instanceof ModellingItem) {
-            openItemAction.doActionPerformed(event)
+        } else {
+            LOG.warn("Got a double click without a path. Maybe CTRL key pressed?")
+        }
+        if(selectedItem){
+            if (selectedItem instanceof ModellingItem) {
+                openItemAction.doActionPerformed(event)
+            }else{
+                LOG.warn("INSANITY: selected item ($selectedItem) is not instance of ModellingItem!")
+            }
+        }else{
+            LOG.warn("Got a double click without a selected item. Maybe CTRL key stuck?")
         }
     }
 

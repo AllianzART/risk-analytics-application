@@ -4,12 +4,14 @@ import com.ulcjava.base.application.ULCMenuItem
 import com.ulcjava.base.application.ULCPopupMenu
 import com.ulcjava.base.application.ULCTableTree
 import grails.util.Holders
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.main.action.*
 import org.pillarone.riskanalytics.application.ui.main.view.EnabledCheckingMenuItem
+import static org.pillarone.riskanalytics.application.ui.main.view.TagsListView.quarterTagsAreSpecial
 
-//import org.pillarone.riskanalytics.application.ui.main.view.CompareParameterizationMenuItem
-//import org.pillarone.riskanalytics.application.ui.main.view.OpenExternalMenuItem
 import org.pillarone.riskanalytics.application.ui.parameterization.model.ParameterizationNode
+import static org.pillarone.riskanalytics.core.parameter.comment.Tag.qtrTagMatcherRegex
 
 /**
  * Allianz Risk Transfer  ATOM
@@ -18,8 +20,13 @@ import org.pillarone.riskanalytics.application.ui.parameterization.model.Paramet
  * frahman 2014-01-02: Looks like this class builds (in its ctor) the context menu on a parameterization node.
  */
 abstract class AbstractParameterNodePopupMenu extends ULCPopupMenu {
+    private static Log LOG = LogFactory.getLog(AbstractParameterNodePopupMenu)
+    private static int instanceCount =  0;
+
     public AbstractParameterNodePopupMenu(ULCTableTree tree, ParameterizationNode node) {
         super();
+        ++instanceCount;
+        LOG.info("Creating instance $instanceCount");
         name = "parameterNodePopUpMenu";
         add(new ULCMenuItem(new OpenItemAction(tree)));
         add(new EnabledCheckingMenuItem(new SimulationAction(tree))); //PMO-2764
@@ -29,6 +36,10 @@ abstract class AbstractParameterNodePopupMenu extends ULCPopupMenu {
         addSeparator();
         add(new EnabledCheckingMenuItem(new CompareParameterizationsAction(tree)));
 
+//        add(createTagsMenu(tree))
+        if( quarterTagsAreSpecial ){
+            add(new ULCMenuItem(new TagsAction(tree, 'QuarterTagsAction', qtrTagMatcherRegex)))
+        }
         add(new ULCMenuItem(new TagsAction(tree)));
 
         Boolean b = ((Boolean) Holders.grailsApplication?.config?.getProperty("useSetFilterToSelectionPopupMenu")) ?: Boolean.FALSE;

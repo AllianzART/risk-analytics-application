@@ -8,6 +8,7 @@ import com.ulcjava.base.application.ULCWindow
 import com.ulcjava.base.application.event.IValueChangedListener
 import com.ulcjava.base.application.event.ValueChangedEvent
 import com.ulcjava.base.application.util.Color
+import org.apache.commons.lang.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
@@ -28,10 +29,10 @@ class TagsListView extends AbstractView {
 
     private static Log LOG = LogFactory.getLog(TagsListView )
 
-    // Set -DquarterTagsAreSpecial=false to disable Quarter Tag validations on Workflow p14ns etc
+    // Set -DquarterTagsAreSpecial=true to enable Artisan Quarter Tag validations on Workflow p14ns etc
     //
     final static boolean quarterTagsAreSpecial =
-        Configuration.coreGetAndLogStringConfig("quarterTagsAreSpecial","true").equalsIgnoreCase("true");
+        Configuration.coreGetAndLogStringConfig("quarterTagsAreSpecial","false").equalsIgnoreCase("true");
 
     private ULCWindow parent
     public ULCBoxPane content
@@ -39,17 +40,29 @@ class TagsListView extends AbstractView {
     private List<ULCCheckBox> tagsCheckBoxes
     private List<ModellingItem> modellingItems
     List<Tag> allTags
+    String tagNameFilterRegex = null
 
-    public TagsListView(List<ModellingItem> modellingItems, ULCWindow parent) {
+    public TagsListView(List<ModellingItem> modellingItems, ULCWindow parent, String nameFilter = null) {
         this.modellingItems = modellingItems
         content = new ULCBoxPane(2, 0)
         this.parent = parent
+        this.tagNameFilterRegex = nameFilter
     }
 
-    // TODO rename to createNewTag and fix any breaking tests
-    //
-    public void addTag(String tagName) {
-        if (tagName && !Tag.findByName(tagName)) {
+    public void createNewTag(String suppliedName) {
+
+        String tagName = StringUtils.trim(suppliedName)
+        if( StringUtils.isEmpty(tagName) ){
+            LOG.warn("Not creating tag with empty name '$suppliedName' ")
+            return
+        }
+
+        if( tagNameFilterRegex && !tagName.matches(tagNameFilterRegex ) ){
+            LOG.warn("Not creating tag with name '$suppliedName' (doesn't match tag filter '$tagNameFilterRegex')")
+            return
+        }
+
+        if ( !Tag.findByName(tagName)) {
             Tag newTag = new Tag(name: tagName, tagType: EnumTagType.PARAMETERIZATION)
             Tag.withTransaction {
                 newTag.save()
@@ -64,23 +77,27 @@ class TagsListView extends AbstractView {
     @Override
     protected void initComponents() {
         allTags = getAllTags()
-        itemTags = getAllModellingItemTages()
+        itemTags = getAllModellingItemTags()
 
         tagsCheckBoxes = new ArrayList<ULCCheckBox>()
         allTags.each { Tag tag ->
             ULCCheckBox checkBox = new ULCCheckBox(tag.name)
             checkBox.name = tag.name
-            setLookAndFeel(checkBox, tag)
+            setAppearance(checkBox, tag)
             checkBox.setSelected(itemTags.contains(tag))
             checkBox.addValueChangedListener([valueChanged: { ValueChangedEvent valueChangedEvent ->
-                ULCCheckBox box = (ULCCheckBox) valueChangedEvent.source
-                Tag newTag = allTags.find { it.name == box.getText() }
-                if (box.isSelected() && newTag) {
-                    addTagToItem(newTag)
-                } else {
-                    removeTag(newTag)
+                ULCCheckBox srcCheckBox = (ULCCheckBox) valueChangedEvent.source
+                Tag newTag = allTags.find { it.name == srcCheckBox.getText() }
+                if( !newTag ){
+                    LOG.error("INSANITY Checkbox labelled with unknown tag ${srcCheckBox.text} fired event $valueChangedEvent ")
+                }else{
+                    if (srcCheckBox.isSelected()) {
+                        addTagToItems(newTag)
+                    } else {
+                        removeTagFromItems(newTag)
+                    }
+                    setAppearance(srcCheckBox, newTag)
                 }
-                setLookAndFeel(box, newTag)
             }] as IValueChangedListener)
             content.add(ULCBoxPane.BOX_LEFT_TOP, checkBox)
             content.add(ULCBoxPane.BOX_EXPAND_EXPAND, new ULCFiller())
@@ -97,10 +114,18 @@ class TagsListView extends AbstractView {
     }
 
     public List<Tag> getAllTags() {
-        return Tag.findAll(" from ${Tag.class.name} as tag where tag.tagType =? and tag.name != ? order by tag.name asc", [EnumTagType.PARAMETERIZATION, Tag.LOCKED_TAG])
+        // For Quarter Tags Only case, want newest tags at top, so descending order by name
+        String ascOrDesc = Tag.qtrTagMatcherRegex.equals(tagNameFilterRegex) ? 'desc' : 'asc'
+
+        List<Tag> allTags =  Tag.findAll(" from ${Tag.class.name} as tag where tag.tagType =? and tag.name != ? order by tag.name $ascOrDesc", [EnumTagType.PARAMETERIZATION, Tag.LOCKED_TAG])
+        if( tagNameFilterRegex ){
+            return allTags.findAll {it.name.matches(tagNameFilterRegex)}
+        }else{
+            return allTags
+        }
     }
 
-    private List<Tag> getAllModellingItemTages() {
+    private List<Tag> getAllModellingItemTags() {
         Set<Tag> all = new HashSet<Tag>()
         for (ModellingItem item : modellingItems) {
             for (Tag tag : item.getTags()) {
@@ -110,7 +135,7 @@ class TagsListView extends AbstractView {
         return all as List
     }
 
-    private void addTagToItem(Tag tag) {
+    private void addTagToItems(Tag tag) {
         if (!itemTags.contains(tag)) itemTags << tag            // Some itemTags were only on subset of selected items
         for (ModellingItem modellingItem : modellingItems) {
             if (!modellingItem.getTags().contains(tag)) {
@@ -120,7 +145,7 @@ class TagsListView extends AbstractView {
                     modellingItem.setChanged(true)
                 }else{
                     // ART-specific logic
-                    if( !isQuarterTagCollision( modellingItem, tag ) ){
+                    if( !isQuarterTagCollision( modellingItem, tag, parent ) ){
                         modellingItem.getTags().add(tag)
                         modellingItem.setChanged(true)
                     }
@@ -131,7 +156,7 @@ class TagsListView extends AbstractView {
 
     // PMO-2741
     //
-    private boolean isQuarterTagCollision( ModellingItem modellingItem, Tag tag ){
+    private static boolean isQuarterTagCollision( ModellingItem modellingItem, Tag tag, ULCWindow par ){
 
         // Only restricting quarter tags
         //
@@ -148,13 +173,13 @@ class TagsListView extends AbstractView {
                 return false
             }
 
-            return isTagOnWorkflow(parameterization, tag)
+            return isTagOnWorkflow(parameterization, tag, par)
 
         } else if (modellingItem instanceof Simulation){
 
             Simulation simulation = modellingItem as Simulation
-            return simAlreadyQtrTagged(simulation, tag) || // same sim can't be in two different quarters (AR-192)
-                   isTagOnDeal(simulation, tag)            // qtr run can only have one sim for each deal
+            return isSimAlreadyQtrTagged(simulation, tag, par) || // same sim can't be in two different quarters (AR-192)
+                   isTagOnDeal(simulation, tag, par)            // qtr run can only have one sim for each deal
 
         } else {
             return false
@@ -164,7 +189,7 @@ class TagsListView extends AbstractView {
     // AR-192
     // Does the sim Janet wants to tag already have a quarter tag?
     //
-    private boolean simAlreadyQtrTagged( Simulation sim, Tag newTag ){
+    private static boolean isSimAlreadyQtrTagged( Simulation sim, Tag newTag, ULCWindow par ){
         if( !sim.loaded ){
             sim.load(true) //includes comments, params and **tags**
         }
@@ -175,7 +200,7 @@ class TagsListView extends AbstractView {
             String secondLine = "Sim result already carries tag ${oldTag.name}"
             LOG.warn(firstLine + " " + secondLine)
             LOG.info("To disable qtr tag checks, override -DquarterTagsAreSpecial=false ")
-            UIUtils.showWarnAlert(parent, "Sim result cannot be in two different quarters", firstLine + "\n" + secondLine)
+            UIUtils.showWarnAlert(par, "Sim result cannot be in two different quarters", firstLine + "\n" + secondLine)
             return true
         }
         return false
@@ -184,7 +209,7 @@ class TagsListView extends AbstractView {
     // Does proposed tag already exist for current deal ?
     // Or, should tag not be allowed owing to no deal ?
     //
-    private boolean isTagOnDeal( Simulation simulation, Tag tag ){
+    private static boolean isTagOnDeal( Simulation simulation, Tag tag, ULCWindow par ){
 
         if( !simulation.loaded ){
             simulation.load(false) //skips comments, params and tags
@@ -198,10 +223,10 @@ class TagsListView extends AbstractView {
         Long dealId = simulation?.parameterization?.dealId
         if( ! dealId ){
             String firstLine= "Cant add ${tag.name} to '${simulation.name}' (sandbox model sim):"
-            String secondLine = "Might want to first create workflow from model '${simulation?.parameterization?.nameAndVersion}'"
+            String secondLine = "Model '${simulation?.parameterization?.nameAndVersion}' is not a production workflow"
             LOG.warn(firstLine + " " + secondLine)
             LOG.info("To disable qtr tag checks, override -DquarterTagsAreSpecial=false ")
-            UIUtils.showWarnAlert(parent, "Cant quarter-tag sandbox sim-results", firstLine + "\n" + secondLine)
+            UIUtils.showWarnAlert(par, "Cant quarter-tag sandbox sim-results", firstLine + "\n" + secondLine)
             return true
         }
 
@@ -234,7 +259,7 @@ class TagsListView extends AbstractView {
                     String secondLine = "Tag already on '${sim.name}'."
                     LOG.warn(firstLine + " " + secondLine)
                     LOG.info("To disable qtr tag checks, override -DquarterTagsAreSpecial=false ")
-                    UIUtils.showWarnAlert(parent, "Duplicate quarter tag on deal $dealId", firstLine + "\n" + secondLine)
+                    UIUtils.showWarnAlert(par, "Duplicate quarter tag on deal $dealId", firstLine + "\n" + secondLine)
                     return true
                 }
             }
@@ -246,7 +271,7 @@ class TagsListView extends AbstractView {
 
     // Does supplied tag already exist on any other version p14n in workflow ?
     //
-    private boolean isTagOnWorkflow( Parameterization workflow, Tag tag ){
+    private static boolean isTagOnWorkflow( Parameterization workflow, Tag tag, ULCWindow par ){
 
         for( VersionNumber versionNumber : VersionNumber.getExistingVersions(workflow)){
 
@@ -264,7 +289,7 @@ class TagsListView extends AbstractView {
                     String secondLine= "(Tag already exists on v${otherP14n.versionNumber.toString()} of same workflow.)"
                     LOG.warn(firstLine + " " + secondLine)
                     LOG.info("To disable qtr tag checks, override -DquarterTagsAreSpecial=false ")
-                    UIUtils.showWarnAlert(parent, "Duplicate quarter tag in workflow", firstLine + "\n" + secondLine)
+                    UIUtils.showWarnAlert(par, "Duplicate quarter tag in workflow", firstLine + "\n" + secondLine)
                     return true
                 }
             }
@@ -274,7 +299,7 @@ class TagsListView extends AbstractView {
 
 
 
-    private void removeTag(Tag tag) {
+    private void removeTagFromItems(Tag tag) {
         itemTags.remove(tag)
         for (ModellingItem modellingItem : modellingItems) {
             if (modellingItem.getTags().contains(tag)) {
@@ -284,7 +309,7 @@ class TagsListView extends AbstractView {
         }
     }
 
-    private void setLookAndFeel(ULCCheckBox checkBox, Tag tag) {
+    private void setAppearance(ULCCheckBox checkBox, Tag tag) {
         Color color = getColor(tag)
         checkBox.setForeground(color)
         checkBox.setBorder(BorderFactory.createLineBorder(color))

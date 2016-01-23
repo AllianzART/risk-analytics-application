@@ -59,9 +59,10 @@ abstract class SelectionTreeAction extends ResourceBasedAction {
         }
     }
 
-    Object getSelectedItem() {
+    ModellingItem getSelectedItem() {
         DefaultMutableTableTreeNode itemNode = tree?.selectedPath?.lastPathComponent
-        return itemNode instanceof ItemNode ? itemNode.itemNodeUIItem.item : null
+        return itemNode && (itemNode instanceof ItemNode) ? itemNode.itemNodeUIItem.item
+                                                          : null
     }
 
     ModellingUIItem getSelectedUIItem() {

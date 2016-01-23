@@ -151,9 +151,10 @@ class HeaderView extends AbstractView {
         refreshButton = new ULCButton(refreshAction)
         refreshButton.name = "refresh"
         refreshButton.text = null
-        refreshButton.toolTipText = "Refresh"
+        refreshButton.toolTipText = "Best avoid this as can block everyone for minutes.."
         refreshButton.margin = new Insets(3, 3, 3, 3);
         refreshButton.borderPainted = false;
+        refreshButton.setEnabled(false)
 
         runButton = new ULCButton(runAction)
         runButton.text = null

@@ -10,6 +10,7 @@ import org.pillarone.riskanalytics.application.dataaccess.item.ModellingItemFact
 import org.pillarone.riskanalytics.application.ui.UlcSessionScope
 import org.pillarone.riskanalytics.application.ui.base.model.ItemNode
 import org.pillarone.riskanalytics.application.ui.base.model.ModellingTableTreeColumn
+import org.pillarone.riskanalytics.application.ui.main.view.NavigationBarTopPane
 import org.pillarone.riskanalytics.application.ui.main.view.item.BatchUIItem
 import org.pillarone.riskanalytics.application.ui.parameterization.model.BatchNode
 import org.pillarone.riskanalytics.application.ui.parameterization.model.ParameterizationNode
@@ -62,6 +63,12 @@ class NavigationTableTreeModel extends AbstractTableTreeModel implements ITableT
     int columnCount = COLUMN_NAMES.size()
 
     FilterDefinition currentFilter = new FilterDefinition()
+
+    NavigationBarTopPane navigationBarTopPane = null;
+
+    public void setNavigationBarTopPane(NavigationBarTopPane navigationBarTopPane) {
+        this.navigationBarTopPane = navigationBarTopPane
+    }
 
     NavigationTableTreeModel() {
         enumModellingTableTreeColumn = new ModellingTableTreeColumn()
@@ -212,6 +219,9 @@ class NavigationTableTreeModel extends AbstractTableTreeModel implements ITableT
 
     private void refreshService() {
         cacheItemSearchService.refresh()
+        if(navigationBarTopPane){
+            navigationBarTopPane.clearSearchFilterAction()
+        }
         ModellingItemFactory.clear()
     }
 
