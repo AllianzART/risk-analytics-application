@@ -37,21 +37,21 @@ public class TreeNodeDuplicator extends TreeNodeAction {
                 String newPath = ComponentUtils.removeModelFromPath(node.parent.path, model.model) + ":$newName"
                 // AR-207 Don't try to create exact duplicate, dummy!
                 //
-                if(!newPath.equalsIgnoreCase(oldPath)){
+                if( !newPath.equals(oldPath) &&
+                    !model.parametrizedItem.notDeletedParameterHolders.find { it.path.contains(newPath+':')} ){
                     Component component = node.parent.component.createDefaultSubComponent()
                     component.name = newName
                     model.parametrizedItem.copyComponent(oldPath, newPath, component, withComments)
                 } else {
-                    String msg = "Supply a new name (not '${newName.substring(3)}') for the clone, THEN click OK..."
+                    String msg = "Component named '${newName.substring(3)}' already exists (not deleted..)" +
+                                 "\n(NB PillarOne coerces names to its own convention.)"
                     LOG.warn(msg)
                     UIUtils.showAlert(
                             UlcUtilities.getWindowAncestor(tree),
-                            "New name needed!",
+                            "Pls supply a new name",
                             msg,
                             ULCAlert.WARNING_MESSAGE
                     )
-//                    SelectionTreeAction.showWarnAlert("Duplicate component needs new name","Please supply a new name for the new component, before clicking OK", true)
-                    //throw new NonUniqueComponentNameException("Please supply a new name for the new component, before clicking OK")
                 }
             }
         }
