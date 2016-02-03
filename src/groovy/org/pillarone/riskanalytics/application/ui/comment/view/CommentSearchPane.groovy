@@ -129,7 +129,7 @@ class CommentSearchPane {
         IActionListener action = [actionPerformed: {e -> searchClosure.call()}] as IActionListener
         KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
         searchText.registerKeyboardAction(action, enter, ULCComponent.WHEN_FOCUSED);
-        searchText.addFocusListener(new TextFieldFocusListener(searchText))
+        searchText.addFocusListener(new TextFieldFocusListener(searchText, searchText.text))
 
         orderByComboBox.addActionListener([actionPerformed: {ActionEvent event ->
             ULCComboBox source = (ULCComboBox) event.getSource();

@@ -8,6 +8,8 @@ import com.ulcjava.base.application.util.Color
 import com.ulcjava.base.application.util.Dimension
 import com.ulcjava.base.application.util.KeyStroke
 import groovy.transform.CompileStatic
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.UserContext
 import org.pillarone.riskanalytics.application.ui.base.model.modellingitem.FilterDefinition
 import org.pillarone.riskanalytics.application.ui.base.model.modellingitem.NavigationTableTreeModel
@@ -15,12 +17,19 @@ import org.pillarone.riskanalytics.application.ui.comment.action.TextFieldFocusL
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
 import org.pillarone.riskanalytics.core.util.Configuration
 
+import java.util.prefs.Preferences
+
 /**
  * @author fouad.jaada@intuitive-collaboration.com
  */
 @CompileStatic
 class NavigationBarTopPane {
+    private static Log LOG = LogFactory.getLog(NavigationBarTopPane)
     private static final String overrideSearchText = Configuration.coreGetAndLogStringConfig( "defaultSearchFilterText","")
+    private static Preferences preferences = Preferences.userNodeForPackage(this.class)
+    private static final String SEARCH_FILTER_TEXT = "searchFilterText";
+    private static final String SEARCH_FILTER_HINT = UIUtils.getText(NavigationBarTopPane, "searchText");
+
 
     private ULCToolBar toolBar
     private ULCToggleButton myStuffButton
@@ -66,9 +75,11 @@ class NavigationBarTopPane {
 
         searchTextField = new ULCTextField(name: "searchText")
         searchTextField.setMaximumSize(new Dimension(300, 20))
-        searchTextField.setToolTipText UIUtils.getText(this.class, "searchText")
-        searchTextField.setText( overrideSearchText ?: UIUtils.getText(this.class, "searchText") )
-        searchTextField.setForeground(Color.gray)
+        searchTextField.setToolTipText SEARCH_FILTER_HINT
+        searchTextField.setText( overrideSearchText ?: preferences.get(SEARCH_FILTER_TEXT, "") ?: SEARCH_FILTER_HINT )
+        if(searchTextField.text == SEARCH_FILTER_HINT){
+            searchTextField.setForeground(Color.gray)
+        }
         searchTextField.setPreferredSize(new Dimension(250, 20))
 
         clearButton = new ULCButton(UIUtils.getIcon("delete-active.png"))
@@ -94,23 +105,30 @@ class NavigationBarTopPane {
             filter.ownerFilter.active = myStuffButton.isSelected()
             fireFilterChanged(filter)
         }] as IActionListener)
-        searchTextField.addFocusListener(new TextFieldFocusListener(searchTextField))
+        searchTextField.addFocusListener(new TextFieldFocusListener(searchTextField, SEARCH_FILTER_HINT))
 
         searchTextField.registerKeyboardAction(
             [actionPerformed: { ActionEvent e -> searchAction() }] as IActionListener,
             KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false),
             ULCComponent.WHEN_FOCUSED
         );
-        tableTreeModel.setNavigationBarTopPane(this) // to allow refresh button to clear the search filter ?
+        tableTreeModel.setNavigationBarTopPane(this) // eg allows refresh button to clear the search filter
         clearButton.addActionListener([actionPerformed: { ActionEvent e -> clearSearchFilterAction() }] as IActionListener )
 
-        if(!overrideSearchText.empty){
+    }
+
+    // Intended to be called from somewhere during gui setup, after the listeners have been configured...
+    public void initialFilterSearchAction(){
+        if(filterChangedListeners.empty){
+            LOG.warn("initialFilterSearchAction called when filterChangedListeners still empty");
+        } else if( !overrideSearchText.empty || !preferences.get(SEARCH_FILTER_TEXT, "").empty ){
             searchAction()
         }
     }
 
     private void searchAction(){
             String text = searchTextField.getText()
+            preferences.put(SEARCH_FILTER_TEXT, text);
             FilterDefinition filter = tableTreeModel.currentFilter
             filter.allFieldsFilter.query = text
             fireFilterChanged(filter)
@@ -119,7 +137,7 @@ class NavigationBarTopPane {
         // nb in applicationResources.properties :
         // search: parameterizations, results, templates, tags,...
         //
-        searchTextField.setText(UIUtils.getText(this.class, "searchText"))
+        searchTextField.setText(SEARCH_FILTER_HINT)
         searchTextField.setForeground Color.gray
         tableTreeModel.currentFilter.allFieldsFilter.query = ""
         tableTreeModel.currentFilter.ownerFilter.active = false
