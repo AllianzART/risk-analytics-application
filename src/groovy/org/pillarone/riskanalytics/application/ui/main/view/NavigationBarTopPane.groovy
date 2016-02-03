@@ -13,12 +13,15 @@ import org.pillarone.riskanalytics.application.ui.base.model.modellingitem.Filte
 import org.pillarone.riskanalytics.application.ui.base.model.modellingitem.NavigationTableTreeModel
 import org.pillarone.riskanalytics.application.ui.comment.action.TextFieldFocusListener
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
+import org.pillarone.riskanalytics.core.util.Configuration
 
 /**
  * @author fouad.jaada@intuitive-collaboration.com
  */
 @CompileStatic
 class NavigationBarTopPane {
+    private static final String overrideSearchText = Configuration.coreGetAndLogStringConfig( "defaultSearchFilterText","")
+
     private ULCToolBar toolBar
     private ULCToggleButton myStuffButton
     private ULCToggleButton assignedToMeButton
@@ -64,7 +67,7 @@ class NavigationBarTopPane {
         searchTextField = new ULCTextField(name: "searchText")
         searchTextField.setMaximumSize(new Dimension(300, 20))
         searchTextField.setToolTipText UIUtils.getText(this.class, "searchText")
-        searchTextField.setText(UIUtils.getText(this.class, "searchText"))
+        searchTextField.setText( overrideSearchText ?: UIUtils.getText(this.class, "searchText") )
         searchTextField.setForeground(Color.gray)
         searchTextField.setPreferredSize(new Dimension(250, 20))
 
@@ -100,6 +103,10 @@ class NavigationBarTopPane {
         );
         tableTreeModel.setNavigationBarTopPane(this) // to allow refresh button to clear the search filter ?
         clearButton.addActionListener([actionPerformed: { ActionEvent e -> clearSearchFilterAction() }] as IActionListener )
+
+        if(!overrideSearchText.empty){
+            searchAction()
+        }
     }
 
     private void searchAction(){
