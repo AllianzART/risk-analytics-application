@@ -191,6 +191,7 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
         headerView.navigationBarTopPane.addFilterChangedListener([filterChanged: { FilterDefinition filter ->
             selectionTreeView.filterTree(filter)
         }] as IFilterChangedListener)
+        headerView.navigationBarTopPane.initialFilterSearchAction() // AR-225
     }
 
     void modelAdded(Model model) {
