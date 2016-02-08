@@ -19,7 +19,7 @@ class UserTraceDialog {
 
         ULCBoxPane boxPane = new ULCBoxPane()
 
-        ULCTextArea textArea = new ULCTextArea(traceLogManager.trace.join(""))
+        ULCTextArea textArea = new ULCTextArea( traceLogManager?.trace?.join("") ?: "<No Data>" )
         boxPane.add(IDefaults.BOX_EXPAND_EXPAND, textArea)
 
         dialog.contentPane = new ULCScrollPane(boxPane)
