@@ -16,16 +16,15 @@ class ResultFunctionTests extends AbstractResultUIItemTests {
     public void testView() {
         ULCFrameOperator frameOperator = new ULCFrameOperator(new ComponentByNameChooser("test"))
         assertNotNull frameOperator
-        Thread.sleep(1000)
-
         ULCTableTreeOperator tableTreeOperator = new ULCTableTreeOperator(frameOperator, new ComponentByNameChooser('resultDescriptorTreeContent'))
+        Thread.sleep(2000)
 
         assertEquals 1, tableTreeOperator.getColumnCount()
         assertEquals new Double(11.1), tableTreeOperator.getValueAt(4, 0)
         assertEquals new Double(33.3), tableTreeOperator.getValueAt(7, 0)
 
-
         addResultFunction(frameOperator, 'percentileButton')
+        Thread.sleep(2000) // Try eliminate the failing integration test 89 of 217 ...
 
         assertEquals 2, tableTreeOperator.getColumnCount()
         assertEquals new Double(11.1), tableTreeOperator.getValueAt(4, 0)
@@ -34,11 +33,13 @@ class ResultFunctionTests extends AbstractResultUIItemTests {
         assertEquals new Double(1000.0), tableTreeOperator.getValueAt(7, 1)
 
         addResultFunction(frameOperator, 'varButton')
+        Thread.sleep(2000) // Try eliminate the failing integration test 89 of 217 ...
         assertEquals 3, tableTreeOperator.getColumnCount()
         assertEquals new Double(250.0), tableTreeOperator.getValueAt(4, 2)
         assertEquals new Double(499.5), tableTreeOperator.getValueAt(7, 2)
 
         addResultFunction(frameOperator, 'tvarButton')
+        Thread.sleep(2000)
         assertEquals 4, tableTreeOperator.getColumnCount()
         assertEquals new Double(99249.99999999991), tableTreeOperator.getValueAt(4, 3)
         assertEquals new Double(99499.49999999991), tableTreeOperator.getValueAt(7, 3)
