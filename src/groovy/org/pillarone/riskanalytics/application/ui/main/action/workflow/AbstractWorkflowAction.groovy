@@ -7,7 +7,7 @@ import org.pillarone.riskanalytics.application.dataaccess.item.ModellingItemFact
 import org.pillarone.riskanalytics.application.ui.comment.view.NewCommentView
 import org.pillarone.riskanalytics.application.ui.main.action.SingleItemAction
 import org.pillarone.riskanalytics.application.ui.main.view.NewVersionCommentDialog
-import org.pillarone.riskanalytics.application.ui.main.view.item.AbstractUIItem
+import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
 import org.pillarone.riskanalytics.application.ui.util.ExceptionSafe
 import org.pillarone.riskanalytics.core.ParameterizationDAO
 import org.pillarone.riskanalytics.core.parameter.comment.Tag
@@ -41,7 +41,7 @@ abstract class AbstractWorkflowAction extends SingleItemAction {
         if (toStatus == Status.DATA_ENTRY) {
             Closure changeStatusAction = { String commentText ->
                 ExceptionSafe.protect {
-                    AbstractUIItem uiItem = getSelectedUIItem()
+                    ModellingUIItem uiItem = getSelectedUIItem()
                     if (!uiItem.isLoaded()) {
                         uiItem.load()
                     }
