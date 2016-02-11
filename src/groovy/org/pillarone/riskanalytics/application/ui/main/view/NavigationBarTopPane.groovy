@@ -77,6 +77,9 @@ class NavigationBarTopPane {
         searchTextField.setMaximumSize(new Dimension(300, 20))
         searchTextField.setToolTipText SEARCH_FILTER_HINT
         searchTextField.setText( overrideSearchText ?: preferences.get(SEARCH_FILTER_TEXT, "") ?: SEARCH_FILTER_HINT )
+        if("test" == System.getProperty("grails.env")){
+            searchTextField.setText( SEARCH_FILTER_HINT )
+        }
         if(searchTextField.text == SEARCH_FILTER_HINT){
             searchTextField.setForeground(Color.gray)
         }
