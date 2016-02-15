@@ -26,6 +26,7 @@ import java.util.prefs.Preferences
 class NavigationBarTopPane {
     private static Log LOG = LogFactory.getLog(NavigationBarTopPane)
     private static final String overrideSearchText = Configuration.coreGetAndLogStringConfig( "defaultSearchFilterText","")
+    private static final boolean weAreRunningInATest =  ("test" == System.getProperty("grails.env"))
     private static Preferences preferences = Preferences.userNodeForPackage(this.class)
     private static final String SEARCH_FILTER_TEXT = "searchFilterText";
     private static final String SEARCH_FILTER_HINT = UIUtils.getText(NavigationBarTopPane, "searchText");
@@ -77,7 +78,7 @@ class NavigationBarTopPane {
         searchTextField.setMaximumSize(new Dimension(300, 20))
         searchTextField.setToolTipText SEARCH_FILTER_HINT
         searchTextField.setText( overrideSearchText ?: preferences.get(SEARCH_FILTER_TEXT, "") ?: SEARCH_FILTER_HINT )
-        if("test" == System.getProperty("grails.env")){
+        if(weAreRunningInATest){
             searchTextField.setText( SEARCH_FILTER_HINT )
         }
         if(searchTextField.text == SEARCH_FILTER_HINT){
@@ -120,12 +121,16 @@ class NavigationBarTopPane {
 
     }
 
-    // Intended to be called from somewhere during gui setup, after the listeners have been configured...
+    // Intended to be called from somewhere during gui setup, after the listeners have been configured,
+    // in case a search filter has been carried over from a prior session.
+    // Not relevant during automated tests of course.
     public void initialFilterSearchAction(){
-        if(filterChangedListeners.empty){
-            LOG.warn("initialFilterSearchAction called when filterChangedListeners still empty");
-        } else if( !overrideSearchText.empty || !preferences.get(SEARCH_FILTER_TEXT, "").empty ){
-            searchAction()
+        if(!weAreRunningInATest) {
+            if(filterChangedListeners.empty){
+                LOG.warn("initialFilterSearchAction called when filterChangedListeners still empty");
+            } else if( !overrideSearchText.empty || !preferences.get(SEARCH_FILTER_TEXT, "").empty ){
+                searchAction()
+            }
         }
     }
 
