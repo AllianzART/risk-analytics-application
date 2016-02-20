@@ -9,9 +9,6 @@ import com.ulcjava.base.application.ULCTableTree
  */
 abstract class SingleItemAction extends SelectionTreeAction {
 
-    // Ugly constructor because TreeDoubleClickAction somehow calls OpenItemAction which somehow calls
-    // e.g. CreateNewMajorVersion (our subclass) with a single string ctor.
-    //
     SingleItemAction(String name, ULCTableTree tree = null) {
         super(name, tree)
     }
@@ -29,17 +26,6 @@ abstract class SingleItemAction extends SelectionTreeAction {
             return false
         }
         return super.isEnabled()//generic checks like user roles
-    }
-
-    protected boolean quitWithAlertIfCalledWhenDisabled(){
-        if( !isEnabled() ){
-            showWarnAlert(
-                    "Single-item action $actionName invoked on selection",
-                    "To help improve this please tell developers how you got here.\nA screenshot helps - Use Ctrl+PrtScn on Windows\nThanks for your help."
-            )
-            return true
-        }
-        return false
     }
 
 }
