@@ -135,12 +135,14 @@ class NavigationBarTopPane {
     }
 
     private void searchAction(){
-            String text = searchTextField.getText()
+        String text = searchTextField.getText()
+        if(SEARCH_FILTER_HINT != text){
             preferences.put(SEARCH_FILTER_TEXT, text);
             FilterDefinition filter = tableTreeModel.currentFilter
             filter.allFieldsFilter.query = text
             fireFilterChanged(filter)
         }
+    }
     public void clearSearchFilterAction(){
         // nb in applicationResources.properties :
         // search: parameterizations, results, templates, tags,...
