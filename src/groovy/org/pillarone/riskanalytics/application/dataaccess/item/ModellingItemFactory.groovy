@@ -8,10 +8,12 @@ import org.pillarone.riskanalytics.application.output.CustomTableDAO
 import org.pillarone.riskanalytics.application.output.result.item.CustomTable
 import org.pillarone.riskanalytics.application.output.structure.ResultStructureDAO
 import org.pillarone.riskanalytics.application.output.structure.item.ResultStructure
+import org.pillarone.riskanalytics.application.ui.comment.view.NewCommentView
 import org.pillarone.riskanalytics.core.ModelDAO
 import org.pillarone.riskanalytics.core.ModelStructureDAO
 import org.pillarone.riskanalytics.core.ParameterizationDAO
 import org.pillarone.riskanalytics.core.ResourceDAO
+import org.pillarone.riskanalytics.core.parameter.comment.Tag
 import org.pillarone.riskanalytics.core.modellingitem.CacheItem
 import org.pillarone.riskanalytics.core.modellingitem.ModellingItemUpdater
 import org.pillarone.riskanalytics.core.modellingitem.SimulationCacheItem
@@ -20,8 +22,10 @@ import org.pillarone.riskanalytics.core.output.PacketCollector
 import org.pillarone.riskanalytics.core.output.ResultConfigurationDAO
 import org.pillarone.riskanalytics.core.output.SimulationRun
 import org.pillarone.riskanalytics.core.parameterization.ParameterizationHelper
+import org.pillarone.riskanalytics.core.simulation.item.parameter.comment.Comment
 import org.pillarone.riskanalytics.core.simulation.item.*
 import org.pillarone.riskanalytics.core.user.UserManagement
+import org.pillarone.riskanalytics.core.workflow.StatusChangeService
 import org.springframework.transaction.TransactionStatus
 
 class ModellingItemFactory {
@@ -310,8 +314,8 @@ class ModellingItemFactory {
 
     static ModellingItem incrementVersion(ModellingItem item) {
         ConfigObjectBasedModellingItem newItem = item.class.newInstance([item.name] as Object[])
-
-        item.load()
+        if (!item.loaded)
+            item.load()
         if (item.data != null) {
             newItem.data = item.data.merge(new ConfigObject())
             newItem.versionNumber = VersionNumber.incrementVersion(item)
@@ -328,8 +332,17 @@ class ModellingItemFactory {
         newParameters.each {
             newItem.addParameter(it)
         }
-        List comments = item?.comments?.collect { it.clone() }
-        comments?.each { newItem.addComment(it) }
+        if(StatusChangeService.getService().disableAR238){
+            List comments = item?.comments?.collect { it.clone() }
+            comments?.each { newItem.addComment(it) }
+        }else{
+            // AR-238 Juan: skip the version comments when cloning
+            //
+            final Tag versionTag = Tag.findByName(NewCommentView.VERSION_COMMENT)
+            List<Comment> nonVersionComments = item?.comments?.findAll { !(it?.tags?.contains( versionTag ) ) }
+            List<Comment> comments = nonVersionComments?.collect { it.clone() }
+            comments?.each { newItem.addComment(it) }
+        }
 
         newItem.periodCount = item.periodCount
         newItem.periodLabels = item.periodLabels
