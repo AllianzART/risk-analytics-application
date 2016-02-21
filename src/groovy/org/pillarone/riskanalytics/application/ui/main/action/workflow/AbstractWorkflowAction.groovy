@@ -23,6 +23,7 @@ import org.pillarone.riskanalytics.core.workflow.StatusChangeService
 
 abstract class AbstractWorkflowAction extends SelectionTreeAction {
     protected static Log LOG = LogFactory.getLog(AbstractWorkflowAction)
+    protected static final List<Integer> singleItemSelection = [1]
 
     private StatusChangeService service = getService()
     protected Parameterization optionalSandboxModel = null //AR-190
@@ -34,12 +35,14 @@ abstract class AbstractWorkflowAction extends SelectionTreeAction {
         super(name, tree)
     }
 
+    protected List<Integer> validSelectionCounts() { return singleItemSelection }
+
     @Override
     boolean isEnabled() {
-        return super.isEnabled()//generic checks like user roles
+        return validSelectionCounts().contains(getAllSelectedObjectsSimpler().size()) &&
+               super.isEnabled()//generic checks like user roles
     }
-
-    // This method is shared by subclasses
+    // Called from subclasses
     //
     void doActionPerformed(ActionEvent event) {
 
@@ -102,7 +105,7 @@ abstract class AbstractWorkflowAction extends SelectionTreeAction {
             NewVersionCommentDialog versionCommentDialog =
                 optionalSandboxModel ? new NewVersionCommentDialog(
                                             changeStatusAction,
-                                            "Adopting ${optionalSandboxModel.nameAndVersion} as new workflow version",
+                                            "Adopting sandbox model '${optionalSandboxModel.nameAndVersion}'\n as next version of workflow\n'${item.nameAndVersion}'",
                                             UIUtils.getText(NewVersionCommentDialog, "createNewVersionFromSandbox") )
                                      : new NewVersionCommentDialog(changeStatusAction)
             ;

@@ -14,6 +14,7 @@ import org.pillarone.riskanalytics.core.workflow.WorkflowException
 
 class CreateNewWorkflowVersionAction extends AbstractWorkflowAction {
     protected static Log LOG = LogFactory.getLog(CreateNewWorkflowVersionAction)
+    protected static final List<Integer> oneOrTwo = [1,2]
 
     // forbid meddling by non-workflow-owners via -DCreateNewWorkflowVersion.promiscuous=false
     private final static boolean promiscuous =                  //breaks tests when false so by default it's set to true
@@ -57,7 +58,7 @@ class CreateNewWorkflowVersionAction extends AbstractWorkflowAction {
 
         // The isEnabled() should prevent arriving here unless exactly 1 or 2 items selected
         //
-        if ( ![1,2].contains(selectedItemCount)) {
+        if ( !oneOrTwo.contains(selectedItemCount)) {
             throw new IllegalStateException("CreateNewWorkflowVersionAction invoked with $selectedItemCount items!")
         }
 
@@ -87,9 +88,9 @@ class CreateNewWorkflowVersionAction extends AbstractWorkflowAction {
 
         // Check exactly one production workflow P14n selected
         //
-        int numWorkflows = selectedItems.count { (it.itemNodeUIItem?.item as Parameterization).status == Status.IN_PRODUCTION}
+        int numWorkflows = selectedItems.count { (it.itemNodeUIItem?.item as Parameterization).status != Status.NONE}
         if( numWorkflows != 1 ){
-            String msg = "Need ONE production workflow but ${numWorkflows} are selected.\n" +
+            String msg = "Need ONE workflow but ${numWorkflows} are selected.\n" +
                     "Hint: Select ONE workflow version to bump (& optional sandbox model to adopt)."
             showInfoAlert( "Exactly ONE workflow needed", msg, true )
             return
@@ -117,14 +118,7 @@ class CreateNewWorkflowVersionAction extends AbstractWorkflowAction {
         super.doActionPerformed(event)
     }
 
-    // We're interested if a single workflow, or a single workflow and a single sandbox p14n are selected
-    @Override // TODO why is this being invoked when non-workflow model selected
-    boolean isEnabled() {
-        if ( ![1,2].contains(getAllSelectedObjectsSimpler().size())) { // Okay, *this* is groovy..
-            return false
-        }
-        return super.isEnabled()//generic checks like user roles
-    }
+    protected List<Integer> validSelectionCounts() { return oneOrTwo }
 
     @Override
     Status toStatus() {

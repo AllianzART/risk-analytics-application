@@ -18,12 +18,6 @@ class StartWorkflowAction extends AbstractWorkflowAction {
         super("StartWorkflow", tree);
     }
 
-    @Override
-    boolean isEnabled() {
-        return
-        getAllSelectedObjectsSimpler().size() == 1 &&
-        super.isEnabled()//generic checks like user roles
-    }
     // This is crazy-complicated. Does anyone understand the range of behaviours implied by this code ?
     //
     void doActionPerformed(ActionEvent event) {

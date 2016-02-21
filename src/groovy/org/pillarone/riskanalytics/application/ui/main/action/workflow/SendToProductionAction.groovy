@@ -12,13 +12,6 @@ class SendToProductionAction extends AbstractWorkflowAction {
         super("SendToProduction", tree);
     }
 
-    @Override
-    boolean isEnabled() {
-        return
-            getAllSelectedObjectsSimpler().size() == 1 &&
-            super.isEnabled()//generic checks like user roles
-    }
-
     Status toStatus() {
         Status.IN_PRODUCTION
     }
