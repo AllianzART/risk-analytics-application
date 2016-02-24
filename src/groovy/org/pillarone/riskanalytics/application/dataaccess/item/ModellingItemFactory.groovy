@@ -252,12 +252,14 @@ class ModellingItemFactory {
 
     static ModellingItem copyItem(ModellingItem oldItem, String newName) {
         ModellingItem newItem = oldItem.class.newInstance([newName] as Object[])
-        oldItem.load()
+        if(!oldItem.loaded){
+            oldItem.load()
+        }
         if (oldItem.data != null) {
             newItem.data = oldItem.data.merge(new ConfigObject())
         }
         def newId = newItem.save()
-        newItem.load()
+        newItem.load()  // TODO test if load immediately after save is needed for some weird reason
         itemInstances[key(newItem.class, newId as Long)] = newItem
         return newItem
     }
