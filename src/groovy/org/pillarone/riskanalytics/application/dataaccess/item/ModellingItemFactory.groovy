@@ -25,11 +25,13 @@ import org.pillarone.riskanalytics.core.parameterization.ParameterizationHelper
 import org.pillarone.riskanalytics.core.simulation.item.parameter.comment.Comment
 import org.pillarone.riskanalytics.core.simulation.item.*
 import org.pillarone.riskanalytics.core.user.UserManagement
+import org.pillarone.riskanalytics.core.util.Configuration
 import org.pillarone.riskanalytics.core.workflow.StatusChangeService
 import org.springframework.transaction.TransactionStatus
 
 class ModellingItemFactory {
     private static Log LOG = LogFactory.getLog(ModellingItemFactory)
+    private static boolean disableAR243Fix = Configuration.coreGetAndLogStringConfig('disableAR243Fix', 'false') == 'true'
 
     protected static Map getItemInstances() {
         Map map = UserContext.getAttribute("itemInstances") as Map
@@ -152,18 +154,44 @@ class ModellingItemFactory {
             }
         }
 
-        String highestVersion = VersionNumber.getHighestNonWorkflowVersion(item)?.toString()
+        String highestVersion = VersionNumber.getHighestNonWorkflowVersion(item)?.toString()  // GOOD: only looks in same model class tree
 
         if (highestVersion != null) {
             boolean equals = false
-            item.daoClass.withTransaction { status ->
-                def existingDao = item.daoClass.findByNameAndItemVersion(name, highestVersion)
-                ModellingItem existingItem = getItem(existingDao)
-                if (!existingItem.isLoaded()) {
-                    existingItem.load()
+            //Allow backing out AR-243 (knowing pillarone, fix might break something somewhere else)
+            //
+            if(disableAR243Fix){ // TODO remove old code if no repercussions found with AR-243 fix
+                item.daoClass.withTransaction { status ->
+                    def existingDao = item.daoClass.findByNameAndItemVersion(name, highestVersion)
+                    ModellingItem existingItem = getItem(existingDao)
+                    if (!existingItem.isLoaded()) {
+                        existingItem.load()
+                    }
+                    equals = ItemComparator.contentEquals(item, existingItem)
+                    item.versionNumber = VersionNumber.incrementVersion(existingItem)
                 }
-                equals = ItemComparator.contentEquals(item, existingItem)
-                item.versionNumber = VersionNumber.incrementVersion(existingItem)
+            }else{
+                //AR-243 choose existingDao from specific model class !
+                //
+                item.daoClass.withTransaction { status ->
+                    List existingDaos = item.daoClass.findAllByNameAndItemVersion(name, highestVersion)
+                    if( existingDaos?.size() ){
+                        def existingDao =  existingDaos.first()
+
+                        // Not all dao types have model-class (eg batches dont)
+                        //
+                        if( existingDao instanceof ParameterizationDAO || existingDao instanceof ResultConfigurationDAO ){
+                            existingDao = existingDaos.find {it.modelClassName == item.modelClass.name}
+                        }
+
+                        ModellingItem existingItem = getItem(existingDao)
+                        if (!existingItem.isLoaded()) {
+                            existingItem.load()
+                        }
+                        equals = ItemComparator.contentEquals(item, existingItem)
+                        item.versionNumber = VersionNumber.incrementVersion(existingItem)
+                    }
+                }
             }
             if (equals && !forceImport) {
                 return null
