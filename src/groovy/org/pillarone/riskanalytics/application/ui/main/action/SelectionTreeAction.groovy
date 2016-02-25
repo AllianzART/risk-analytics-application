@@ -281,7 +281,7 @@ abstract class SelectionTreeAction extends ResourceBasedAction {
     }
     protected void showInfoAlert( String title, String msg, boolean log ){
         if( log ){
-            LOG.info(msg)
+            LOG.info(title + '; ' + msg)
         }
         UIUtils.showAlert( UlcUtilities.getWindowAncestor(tree), title,msg,ULCAlert.INFORMATION_MESSAGE)
     }
