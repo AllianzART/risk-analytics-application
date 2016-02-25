@@ -17,9 +17,13 @@ import org.pillarone.riskanalytics.application.ui.util.I18NAlert
 import org.pillarone.riskanalytics.application.ui.view.viewlock.ViewLockService
 import org.pillarone.riskanalytics.core.user.Person
 import org.pillarone.riskanalytics.core.user.UserManagement
+import org.pillarone.riskanalytics.core.util.Configuration
+
+import static org.pillarone.riskanalytics.core.util.Configuration.*
 
 class TabbedPaneManager {
     private static Log LOG = LogFactory.getLog(TabbedPaneManager)
+    private static boolean disableAR228Fix = Configuration.coreGetAndLogStringConfig("disableAR228Fix", "false")=="true"
 
     private ULCDetachableTabbedPane tabbedPane
     private DependentFramesManager dependentFramesManager
@@ -83,17 +87,28 @@ class TabbedPaneManager {
      */
     void addTab(ParameterizationUIItem item) {
         Person currentUser = getCurrentUser()
-        if( currentUser == null ){
-            // test environment
-            addTabInternal(item)
-            return
-        }
-
-        if( isReadOnlyP14n(item)    )
-        {
-            addTabInternal(item)
-        } else {
-            handleEditCollisionWarningIfNeededBeforeOpening(item, currentUser)
+        try{
+            if( currentUser == null ){
+                // test environment
+                addTabInternal(item)
+                return
+            }
+            if( isReadOnlyP14n(item)    )
+            {
+                addTabInternal(item)
+            } else {
+                handleEditCollisionWarningIfNeededBeforeOpening(item, currentUser)
+            }
+        }catch(IllegalStateException e){
+            if(disableAR228Fix){
+                throw e
+            }
+            String w = "Error opening '${item.nameAndVersion}': ${e.message}.\nPlease inform IT Apps."
+            LOG.error(w,e)
+            new ULCAlert("Failed to open P14n", w, "OK").show()
+            if(currentUser){
+                viewLockService.release(item, currentUser.getUsername())
+            }
         }
     }
 
@@ -116,27 +131,27 @@ class TabbedPaneManager {
     // Do not call this with a null user
     //
     private void handleEditCollisionWarningIfNeededBeforeOpening(ModellingUIItem item, Person currentUser) {
-            Set<String> alreadyEditingUsers = viewLockService.lock(item, currentUser.getUsername())
-            if(alreadyEditingUsers.size() > 0) {
+        Set<String> alreadyEditingUsers = viewLockService.lock(item, currentUser.getUsername())
+        if(alreadyEditingUsers.size() > 0) {
             final String alreadyCsv = alreadyEditingUsers.join(", ")
             final String warning = "Opening ${item.nameAndVersion} DESPITE already opened by ${alreadyCsv}"
             final String cancel = "Canceled opening ${item.nameAndVersion} - already opened by ${alreadyCsv}"
             I18NAlert alert = new I18NAlert(null, "ViewLockedAlert", [item.nameAndVersion, alreadyCsv])
-                alert.addWindowListener([windowClosing: { WindowEvent windowEvent ->
-                    def value = windowEvent.source.value
-                    if (value.equals(alert.firstButtonLabel)) {
+            alert.addWindowListener([windowClosing: { WindowEvent windowEvent ->
+                def value = windowEvent.source.value
+                if (value.equals(alert.firstButtonLabel)) {
                     LOG.warn(warning)
-                        addTabInternal(item)
-                    }
-                    if (value.equals(alert.secondButtonLabel)) {
+                    addTabInternal(item)
+                }
+                if (value.equals(alert.secondButtonLabel)) {
                     LOG.info(cancel)
-                        viewLockService.release(item, currentUser.getUsername())
-                    }
-                }] as IWindowListener)
-                alert.show()
+                    viewLockService.release(item, currentUser.getUsername())
+                }
+            }] as IWindowListener)
+            alert.show()
         } else {
             addTabInternal(item)
-            }
+        }
     }
 
     private void addTabInternal(AbstractUIItem item) {
