@@ -5,6 +5,8 @@ import com.ulcjava.base.application.event.KeyEvent
 import com.ulcjava.base.application.util.Dimension
 import com.ulcjava.base.application.util.KeyStroke
 import com.ulcjava.base.application.*
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
 import org.pillarone.riskanalytics.core.simulation.item.Parameterization
 
@@ -12,6 +14,7 @@ import org.pillarone.riskanalytics.core.simulation.item.Parameterization
  * @author fouad.jaada@intuitive-collaboration.com
  */
 class NewVersionCommentDialog {
+    private static Log LOG = LogFactory.getLog(NewVersionCommentDialog)
 
     ULCDialog dialog
     ULCTextArea commentTextArea
@@ -85,6 +88,11 @@ class NewVersionCommentDialog {
 
     private void attachListeners() {
         IActionListener action = [actionPerformed: { e ->
+            if(initialText){
+                String oneLiner = ""+initialText
+                LOG.info(oneLiner.replaceAll('\n', ' '));
+                boolean debugMe = true;
+            }
             okAction.call(commentTextArea.getText()); hide();
         }] as IActionListener
         okButton.addActionListener(action)
