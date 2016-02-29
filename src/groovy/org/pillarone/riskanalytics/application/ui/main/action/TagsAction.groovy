@@ -5,6 +5,8 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.main.view.AddTagDialog
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
+import org.pillarone.riskanalytics.core.parameter.comment.Tag
+
 /**
  * @author fouad.jaada@intuitive-collaboration.com
  */
@@ -26,4 +28,13 @@ class TagsAction extends SelectionTreeAction {
         dialog.init()
         dialog.dialog.visible = true
     }
+
+    @Override
+    String toString() {
+        int num = tree?.selectedPaths?.length ?: 0;
+        String qtrOrAllTags = (tagNameFilterRegex == Tag.qtrTagMatcherRegex) ? "QtrTags" : "AllTags";
+
+        return "$qtrOrAllTags: Selected paths ($num): ${tree?.selectedPaths}"
+    }
+
 }
