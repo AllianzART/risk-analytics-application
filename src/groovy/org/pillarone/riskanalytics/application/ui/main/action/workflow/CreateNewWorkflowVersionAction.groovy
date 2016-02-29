@@ -1,11 +1,14 @@
 package org.pillarone.riskanalytics.application.ui.main.action.workflow
 import com.ulcjava.base.application.ULCTableTree
 import com.ulcjava.base.application.event.ActionEvent
+import com.ulcjava.base.application.tabletree.DefaultMutableTableTreeNode
+import com.ulcjava.base.application.tree.TreePath
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.base.model.ItemNode
 import org.pillarone.riskanalytics.application.ui.main.action.SelectionTreeAction
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
+import org.pillarone.riskanalytics.core.simulation.item.ModellingItem
 import org.pillarone.riskanalytics.core.simulation.item.Parameterization
 import org.pillarone.riskanalytics.core.simulation.item.VersionNumber
 import org.pillarone.riskanalytics.core.util.Configuration
@@ -24,6 +27,23 @@ class CreateNewWorkflowVersionAction extends AbstractWorkflowAction {
         super("NewWorkflowVersion", tree)
     }
 
+    // Only call this when you know only p14ns are selected eg in CreateNewWorkflowVersionAction case
+    //
+    private Parameterization huntWorkflowFromSelectedItems(){
+        for( TreePath treePath : tree.getSelectedPaths() ){
+
+            DefaultMutableTableTreeNode itemNode = treePath?.lastPathComponent
+
+            if( itemNode && (itemNode instanceof ItemNode) ){
+                ModellingItem modellingItem =  itemNode.itemNodeUIItem.item
+                if( modellingItem?.versionNumber?.workflow ){
+                    return ((modellingItem instanceof Parameterization) ? modellingItem : null) as Parameterization
+                }
+            }
+        }
+        LOG.error("Found no workflow model - CreateNewWorkflowVersionAction should not be invokable without one !")
+        return null
+    }
 
     // Checks to prevent :
     // - creating new workflow off someone else's model
@@ -33,6 +53,25 @@ class CreateNewWorkflowVersionAction extends AbstractWorkflowAction {
     @Override
     void doActionPerformed(ActionEvent event) {
         Parameterization parameterization = getSelectedItem()
+        // ULC is sometimes yielding the wrong selected item eg when :
+        // i) a selected workflow is immediately above a selected sandbox, and
+        // ii) you chose 'create new workflow version' off workflow
+        // FAIL: tree.selectedPath yields the sandbox model ! Duh...
+        //
+
+        if(this instanceof CreateNewWorkflowVersionAction){
+            if(! parameterization?.getVersionNumber()?.workflow){
+                // Looks like ULC is lying so we have to hunt the workflow
+                //
+                parameterization = huntWorkflowFromSelectedItems()
+                if(!parameterization){
+                    String w = "Please change the search filter & retry (ULC shows no workflow selected!)."
+                    showErrorAlert("Problem creating new workflow version",w,true)
+                    return
+                }
+            }
+
+        }
 
         // PMO-2765 Forbid meddling via -DCreateNewMajorVersion.promiscuous=false
         //
