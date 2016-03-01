@@ -24,7 +24,7 @@ class P1RATApplication extends Application {
 
     private static final Log LOG = LogFactory.getLog(P1RATApplication)
 
-    ULCMinimalSizeFrame mainFrame = new ULCMinimalSizeFrame("Risk Analytics")
+    ULCMinimalSizeFrame mainFrame = new ULCMinimalSizeFrame("Artisan")
     RiskAnalyticsMainView riskAnalyticsMainView
     NavigationTableTreeModel navigationTableTreeModel
     TraceLogManager traceLogManager

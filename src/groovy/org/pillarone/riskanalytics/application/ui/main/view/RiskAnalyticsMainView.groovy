@@ -200,7 +200,7 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
 
     void setWindowTitle(String windowTitle) {
         ULCFrame window = UlcUtilities.getWindowAncestor(this.content) as ULCFrame
-        window.title = "Risk Analytics - ${(windowTitle ?: '')}"
+        window.title = "Artisan - ${(windowTitle ?: '')}"
     }
 
     ULCMenuBar getMenuBar() {

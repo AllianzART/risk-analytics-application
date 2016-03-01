@@ -34,7 +34,7 @@ class WorkflowActionTests extends AbstractFunctionalTestCase {
     }
 
     void todoTestDeleteP14NInWorkflowWithPopup() {
-        ULCFrameOperator frame = new ULCFrameOperator("Risk Analytics")
+        ULCFrameOperator frame = new ULCFrameOperator("Artisan")
         ULCTableTreeOperator itemTree = new ULCTableTreeOperator(frame, new ComponentByNameChooser("selectionTreeRowHeader"))
         TreePath applicationModelPath = itemTree.findPath('0=Application')
         int applicationModelRow = itemTree.getRowForPath(applicationModelPath)
@@ -89,7 +89,7 @@ class WorkflowActionTests extends AbstractFunctionalTestCase {
 
     void testDeleteP14NInWorkflowWithKeyboardAction() {
         return //Temporarily disable tests to get the plugin to build (renaming the tests leaves no tests and that fails too)
-        ULCFrameOperator frame = new ULCFrameOperator("Risk Analytics")
+        ULCFrameOperator frame = new ULCFrameOperator("Artisan")
         ULCTableTreeOperator itemTree = new ULCTableTreeOperator(frame, new ComponentByNameChooser("selectionTreeRowHeader"))
         TreePath applicationModelPath = itemTree.findPath('0=Application')
         int applicationModelRow = itemTree.getRowForPath(applicationModelPath)

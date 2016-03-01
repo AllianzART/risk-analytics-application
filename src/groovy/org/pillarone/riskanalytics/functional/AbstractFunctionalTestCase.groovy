@@ -38,7 +38,7 @@ class AbstractFunctionalTestCase extends RiskAnalyticsAbstractStandaloneTestCase
 
     ULCFrameOperator getMainFrameOperator() {
         if (mainFrameOperator == null) {
-            mainFrameOperator = new ULCFrameOperator("Risk Analytics")
+            mainFrameOperator = new ULCFrameOperator("Artisan")
         }
         return mainFrameOperator
     }

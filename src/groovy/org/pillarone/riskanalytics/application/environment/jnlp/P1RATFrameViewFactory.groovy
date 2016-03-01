@@ -13,7 +13,7 @@ class P1RATFrameViewFactory extends P1RATViewFactory {
     ULCRootPane createRootPane() {
         ULCMinimalSizeFrame frame = new ULCMinimalSizeFrame()
         frame.iconImage = UIUtils.getIcon("application.png")
-        frame.title = "Risk Analytics"
+        frame.title = "Artisan"
         frame.defaultCloseOperation = TERMINATE_ON_CLOSE
         frame.setSize(1000, 800)
         frame.setLocation(100, 100)
