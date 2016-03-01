@@ -17,6 +17,7 @@ import org.pillarone.riskanalytics.core.simulation.item.ModelStructure
 import org.pillarone.riskanalytics.core.simulation.item.Parameterization
 import org.pillarone.riskanalytics.core.simulation.item.Simulation
 import org.pillarone.riskanalytics.core.simulation.item.VersionNumber
+import org.pillarone.riskanalytics.core.workflow.StatusChangeService
 
 import static org.pillarone.riskanalytics.core.workflow.Status.*
 /**
@@ -66,19 +67,15 @@ class ParameterizationUIItem extends ModellingUiItemWithModel<ParameterView> {
     ParameterizationUIItem createNewVersion(String commentText, boolean openNewVersion = true) {
         ParameterizationUIItem newItem = super.createNewVersion(false) as ParameterizationUIItem
         VersionNumber newVersion = newItem.item.versionNumber
-        addComment(newItem, "v${newVersion}: ${commentText}", openNewVersion)
-        return newItem
-    }
-
-    private void addComment(ParameterizationUIItem uiItem, String commentText, boolean openNewVersion) {
-        if (commentText) {
+        if(commentText || StatusChangeService.getService().disableAR238){
             Tag versionTag = Tag.findByName(NewCommentView.VERSION_COMMENT)
-            uiItem.item.addTaggedComment(commentText, versionTag)
-            uiItem.item.save()
+            newItem.item.addTaggedComment("v${newVersion}: ${commentText}", versionTag)
+            newItem.item.save()
         }
         if (openNewVersion) {
-            riskAnalyticsEventBus.post(new OpenDetailViewEvent(uiItem))
+            riskAnalyticsEventBus.post(new OpenDetailViewEvent(newItem))
         }
+        return newItem
     }
 
     @Override

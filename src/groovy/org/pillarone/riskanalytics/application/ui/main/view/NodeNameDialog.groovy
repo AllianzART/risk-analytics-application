@@ -5,11 +5,13 @@ import com.ulcjava.base.application.event.IActionListener
 import com.ulcjava.base.application.util.Dimension
 import org.pillarone.riskanalytics.application.ui.main.view.item.BatchUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.ModellingUIItem
+import org.pillarone.riskanalytics.application.ui.main.view.item.ParameterizationUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.ResourceUIItem
 import org.pillarone.riskanalytics.application.ui.main.view.item.SimulationResultUIItem
 import org.pillarone.riskanalytics.application.ui.util.I18NAlert
 import org.pillarone.riskanalytics.application.util.LocaleResources
 import org.pillarone.riskanalytics.core.BatchRun
+import org.pillarone.riskanalytics.core.ParameterizationDAO
 import org.pillarone.riskanalytics.core.ResourceDAO
 import org.pillarone.riskanalytics.core.output.ResultConfigurationDAO
 
@@ -88,6 +90,31 @@ class NodeNameDialog {
 
     protected boolean isUnique(ModellingUIItem modellingUIItem) {
         modellingUIItem.item.daoClass.findByNameAndModelClassName(nameInput.text, modellingUIItem.item.modelClass.name) == null
+    }
+
+    // AR-227 isUnique for given name, modelClassName, name *and* sandbox-vs-workflow (deduce from itemVersion)
+    //        String name
+    //        String modelClassName
+    //        String itemVersion
+    //
+    protected boolean isUnique(ParameterizationUIItem parameterizationUiItem) {
+
+        def c = ParameterizationDAO.createCriteria()
+        // Do existing p14ns match new name / model class ?
+        // Sorting means any sandbox models (v1, v2 etc) appear before workflows (vR1, vR2 etc)
+        //
+        def instanceList = ParameterizationDAO.findAllByNameAndModelClassName(
+                nameInput.text,
+                parameterizationUiItem.item.modelClass.name,
+                [max:1, sort:"itemVersion", order:"asc"] )
+
+        if( ! instanceList?.size() ){
+            return true
+        }
+
+        // Return true if only workflow models exist - as we will save-as a sandbox model
+        //
+        return instanceList.first().itemVersion?.startsWith('R')
     }
 
     protected boolean isUnique(ResourceUIItem resource) {

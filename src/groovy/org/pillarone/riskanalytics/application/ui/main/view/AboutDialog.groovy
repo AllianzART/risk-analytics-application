@@ -55,7 +55,7 @@ class AboutDialog {
         pane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5))
         pane.add(new ULCLabel(UIUtils.getIcon("ArtisanLogo37k.png")), ULCBoxPane.BOX_RIGHT_TOP)
         Properties infoProperties = new PropertiesUtils().getProperties("/version.properties")
-        String appName = "RiskAnalytics ${infoProperties.getProperty("version", "N/A")}"
+        String appName = "Artisan ${infoProperties.getProperty("version", "N/A")}"
         ULCLabel appNameLabel = new ULCLabel(appName)
         appNameLabel.font = appNameLabel.font.deriveFont(Font.BOLD)
         pane.add(appNameLabel, ULCBoxPane.BOX_CENTER_TOP)
@@ -66,12 +66,45 @@ class AboutDialog {
 
         FollowLinkPane htmlPane = new FollowLinkPane()
         String url = getText("url")
-        htmlPane.setText("<a href='${url}'>${url}</a>")
+        String linkText = getText("urlLabel")
+        htmlPane.setText("<a href='${url}'>${linkText}</a>")
         pane.add(htmlPane, ULCBoxPane.BOX_CENTER_TOP)
         pane
     }
 
     private ULCComponent createCreditsTab() {
+        def creditees = [
+                "Albini Paolo, Allianz Risk Transfer",
+                "Ansorge Matthias, Canoo Engineering AG",
+                "Bardola Jon, FS Consulta AG",
+                "Brendle Detlef, Canoo Engineering AG",
+                "Cartier Sebastian, Intuitive Collaboration AG",
+                "Dittrich Joerg, Munich Re Group",
+                "Ginsberg Benjamin, Intuitive Collaboration AG",
+                "Hartmann Stephan, Munich Re Group",
+                "Huber Martin, Canoo Engineering AG",
+                "Huber Matthias, Canoo Engineering AG",
+                "Jaada Fouad, Intuitive Collaboration AG",
+                "Koenig Dierk, Canoo Engineering AG",
+                "Kunz Stefan, Intuitive Collaboration AG",
+                "Kuschel Norbert, Munich Re Group",
+                "Lord Katja, Munich Re Group",
+                "Majidi Ali, Munich Re Group",
+                "Meier Markus, Intuitive Collaboration AG",
+                "Melchior Martin, UAS Northwestern Switzerland",
+                "Noe Michael, Munich Re Group",
+                "Parten Simon, Allianz Risk Transfer",
+                "Porzelt Johannes, Canoo Engineering AG",
+                "Rahman Fazl, Allianz Risk Transfer",
+                "Spahn Michael, Intuitive Collaboration AG",
+                "Stricker Markus, Intuitive Collaboration AG",
+                "Terry Chris, Allianz Risk Transfer",
+                "Walter Jessika, Intuitive Collaboration AG",
+                "Wassmer Arnold, Munich Re Group",
+                "Wyss Manuel, UAS Northwestern Switzerland",
+                "Zetterstrom Bjorn, Allianz Risk Transfer",
+                "Zumsteg Stefan, Intuitive Collaboration AG"
+        ]
         ULCBoxPane pane = new ULCBoxPane(2, 0)
         pane.background = Color.white
         pane.border = BorderFactory.createEmptyBorder(5, 5, 5, 5)
@@ -79,64 +112,11 @@ class AboutDialog {
         title.font = title.font.deriveFont(Font.BOLD, 14)
         pane.add(ULCBoxPane.BOX_LEFT_TOP, title); pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
         pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCFiller(1, 10)); pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Ansorge Matthias, Canoo Engineering AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Bardola Jon, FS Consulta AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Brendle Detlef, Canoo Engineering AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Cartier Sebastian, Intuitive Collaboration AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Dittrich Joerg, Munich Re Group"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Ginsberg Benjamin, Intuitive Collaboration AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Hartmann Stephan, Munich Re Group"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Huber Martin, Canoo Engineering AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Huber Matthias, Canoo Engineering AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Jaada Fouad, Intuitive Collaboration AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Koenig Dierk, Canoo Engineering AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Kunz Stefan, Intuitive Collaboration AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Kuschel Norbert, Munich Re Group"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Lord Katja, Munich Re Group"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Majidi Ali, Munich Re Group"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Meier Markus, Intuitive Collaboration AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Melchior Martin, UAS Northwestern Switzerland"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Noe Michael, Munich Re Group"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Parten Simon, Allianz Risk Transfer"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Porzelt Johannes, Canoo Engineering AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Rahman Fazl, Allianz Risk Transfer"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Spahn Michael, Intuitive Collaboration AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Stricker Markus, Intuitive Collaboration AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Terry Chris, Allianz Risk Transfer"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Walter Jessika, Intuitive Collaboration AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Wassmer Arnold, Munich Re Group"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Wyss Manuel, UAS Northwestern Switzerland"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Zetterstrom Bjorn, Allianz Risk Transfer"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
-        pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel("Zumsteg Stefan, Intuitive Collaboration AG"));
-        pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
+
+        creditees.each { creditee ->
+            pane.add(ULCBoxPane.BOX_LEFT_TOP, new ULCLabel( creditee ));
+            pane.add(ULCBoxPane.BOX_EXPAND_TOP, new ULCFiller())
+        }
 
         //new ULCScrollPane(pane)
         pane
@@ -161,6 +141,7 @@ class AboutDialog {
                 ["JFreechart","http://www.jfree.org"],
                 ["JodaTime","http://joda.sourceforge.net"],
                 ["Lucene","http://lucene.apache.org"],
+                ["PillarOne","http://www.pillarone.org"],
                 ["POI","http://poi.apache.org"],
                 ["Spring<","http://www.springsource.org"],
                 ["SSJ","http://www.iro.umontreal.ca/~simardr/ssj"],

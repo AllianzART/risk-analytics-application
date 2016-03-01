@@ -45,7 +45,7 @@ class AddTagDialogTests extends RiskAnalyticsAbstractStandaloneTestCase {
 
     void testAddNewTag() {
         int size = Tag.findAllByTagType(EnumTagType.PARAMETERIZATION).size()
-        ULCFrameOperator frame = new ULCFrameOperator("Risk Analytics")
+        ULCFrameOperator frame = new ULCFrameOperator("Artisan")
 
         ULCTableTreeOperator tableTree = new ULCTableTreeOperator(frame, new ComponentByNameChooser("selectionTreeRowHeader"))
         assertNotNull tableTree
@@ -88,7 +88,7 @@ class AddTagDialogTests extends RiskAnalyticsAbstractStandaloneTestCase {
         Tag.withSession { Session session ->
 
             int size = Tag.findAllByTagType(EnumTagType.PARAMETERIZATION).size()
-            ULCFrameOperator frame = new ULCFrameOperator("Risk Analytics")
+            ULCFrameOperator frame = new ULCFrameOperator("Artisan")
 
             ULCTableTreeOperator tableTree = new ULCTableTreeOperator(frame, new ComponentByNameChooser("selectionTreeRowHeader"))
             assertNotNull tableTree

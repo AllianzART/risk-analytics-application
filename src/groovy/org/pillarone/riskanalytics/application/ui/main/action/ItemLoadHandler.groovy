@@ -74,7 +74,7 @@ class ItemLoadHandler implements IFileLoadHandler {
                     }
 
                 } catch (Throwable e) {
-                    LOG.error "error by loading $itemName"
+                    LOG.error "Failed loading $itemName"
                     throw new ParameterizationImportError(e)
                 } finally {
                     importAction.ancestor?.cursor = Cursor.DEFAULT_CURSOR

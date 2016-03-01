@@ -8,10 +8,12 @@ import org.pillarone.riskanalytics.application.output.CustomTableDAO
 import org.pillarone.riskanalytics.application.output.result.item.CustomTable
 import org.pillarone.riskanalytics.application.output.structure.ResultStructureDAO
 import org.pillarone.riskanalytics.application.output.structure.item.ResultStructure
+import org.pillarone.riskanalytics.application.ui.comment.view.NewCommentView
 import org.pillarone.riskanalytics.core.ModelDAO
 import org.pillarone.riskanalytics.core.ModelStructureDAO
 import org.pillarone.riskanalytics.core.ParameterizationDAO
 import org.pillarone.riskanalytics.core.ResourceDAO
+import org.pillarone.riskanalytics.core.parameter.comment.Tag
 import org.pillarone.riskanalytics.core.modellingitem.CacheItem
 import org.pillarone.riskanalytics.core.modellingitem.ModellingItemUpdater
 import org.pillarone.riskanalytics.core.modellingitem.SimulationCacheItem
@@ -20,12 +22,16 @@ import org.pillarone.riskanalytics.core.output.PacketCollector
 import org.pillarone.riskanalytics.core.output.ResultConfigurationDAO
 import org.pillarone.riskanalytics.core.output.SimulationRun
 import org.pillarone.riskanalytics.core.parameterization.ParameterizationHelper
+import org.pillarone.riskanalytics.core.simulation.item.parameter.comment.Comment
 import org.pillarone.riskanalytics.core.simulation.item.*
 import org.pillarone.riskanalytics.core.user.UserManagement
+import org.pillarone.riskanalytics.core.util.Configuration
+import org.pillarone.riskanalytics.core.workflow.StatusChangeService
 import org.springframework.transaction.TransactionStatus
 
 class ModellingItemFactory {
     private static Log LOG = LogFactory.getLog(ModellingItemFactory)
+    private static boolean disableAR243Fix = Configuration.coreGetAndLogStringConfig('disableAR243Fix', 'false') == 'true'
 
     protected static Map getItemInstances() {
         Map map = UserContext.getAttribute("itemInstances") as Map
@@ -148,18 +154,44 @@ class ModellingItemFactory {
             }
         }
 
-        String highestVersion = VersionNumber.getHighestNonWorkflowVersion(item)?.toString()
+        String highestVersion = VersionNumber.getHighestNonWorkflowVersion(item)?.toString()  // GOOD: only looks in same model class tree
 
         if (highestVersion != null) {
             boolean equals = false
-            item.daoClass.withTransaction { status ->
-                def existingDao = item.daoClass.findByNameAndItemVersion(name, highestVersion)
-                ModellingItem existingItem = getItem(existingDao)
-                if (!existingItem.isLoaded()) {
-                    existingItem.load()
+            //Allow backing out AR-243 (knowing pillarone, fix might break something somewhere else)
+            //
+            if(disableAR243Fix){ // TODO remove old code if no repercussions found with AR-243 fix
+                item.daoClass.withTransaction { status ->
+                    def existingDao = item.daoClass.findByNameAndItemVersion(name, highestVersion)
+                    ModellingItem existingItem = getItem(existingDao)
+                    if (!existingItem.isLoaded()) {
+                        existingItem.load()
+                    }
+                    equals = ItemComparator.contentEquals(item, existingItem)
+                    item.versionNumber = VersionNumber.incrementVersion(existingItem)
                 }
-                equals = ItemComparator.contentEquals(item, existingItem)
-                item.versionNumber = VersionNumber.incrementVersion(existingItem)
+            }else{
+                //AR-243 choose existingDao from specific model class !
+                //
+                item.daoClass.withTransaction { status ->
+                    List existingDaos = item.daoClass.findAllByNameAndItemVersion(name, highestVersion)
+                    if( existingDaos?.size() ){
+                        def existingDao =  existingDaos.first()
+
+                        // Not all dao types have model-class (eg batches dont)
+                        //
+                        if( existingDao instanceof ParameterizationDAO || existingDao instanceof ResultConfigurationDAO ){
+                            existingDao = existingDaos.find {it.modelClassName == item.modelClass.name}
+                        }
+
+                        ModellingItem existingItem = getItem(existingDao)
+                        if (!existingItem.isLoaded()) {
+                            existingItem.load()
+                        }
+                        equals = ItemComparator.contentEquals(item, existingItem)
+                        item.versionNumber = VersionNumber.incrementVersion(existingItem)
+                    }
+                }
             }
             if (equals && !forceImport) {
                 return null
@@ -248,12 +280,14 @@ class ModellingItemFactory {
 
     static ModellingItem copyItem(ModellingItem oldItem, String newName) {
         ModellingItem newItem = oldItem.class.newInstance([newName] as Object[])
-        oldItem.load()
+        if(!oldItem.loaded){
+            oldItem.load()
+        }
         if (oldItem.data != null) {
             newItem.data = oldItem.data.merge(new ConfigObject())
         }
         def newId = newItem.save()
-        newItem.load()
+        newItem.load()  // TODO test if load immediately after save is needed for some weird reason
         itemInstances[key(newItem.class, newId as Long)] = newItem
         return newItem
     }
@@ -310,8 +344,8 @@ class ModellingItemFactory {
 
     static ModellingItem incrementVersion(ModellingItem item) {
         ConfigObjectBasedModellingItem newItem = item.class.newInstance([item.name] as Object[])
-
-        item.load()
+        if (!item.loaded)
+            item.load()
         if (item.data != null) {
             newItem.data = item.data.merge(new ConfigObject())
             newItem.versionNumber = VersionNumber.incrementVersion(item)
@@ -328,8 +362,17 @@ class ModellingItemFactory {
         newParameters.each {
             newItem.addParameter(it)
         }
-        List comments = item?.comments?.collect { it.clone() }
-        comments?.each { newItem.addComment(it) }
+        if(StatusChangeService.getService().disableAR238){
+            List comments = item?.comments?.collect { it.clone() }
+            comments?.each { newItem.addComment(it) }
+        }else{
+            // AR-238 Juan: skip the version comments when cloning
+            //
+            final Tag versionTag = Tag.findByName(NewCommentView.VERSION_COMMENT)
+            List<Comment> nonVersionComments = item?.comments?.findAll { !(it?.tags?.contains( versionTag ) ) }
+            List<Comment> comments = nonVersionComments?.collect { it.clone() }
+            comments?.each { newItem.addComment(it) }
+        }
 
         newItem.periodCount = item.periodCount
         newItem.periodLabels = item.periodLabels

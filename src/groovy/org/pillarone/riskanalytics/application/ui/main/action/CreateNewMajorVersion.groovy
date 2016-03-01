@@ -42,7 +42,7 @@ class CreateNewMajorVersion extends SingleItemAction {
         ModellingUIItem uiItem = getUIItem()
         if (uiItem instanceof ParameterizationUIItem) {
             Parameterization parameterization = (uiItem as ParameterizationUIItem).item
-            SortedSet allVersions = new TreeSet(VersionNumber.getExistingVersions(parameterization))
+            SortedSet allVersions = new TreeSet(VersionNumber.getExistingVersionsSameAuditCategory(parameterization))
             if (parameterization.versionNumber != allVersions.last()) {
                 showInfoAlert("Cannot create new version", "A newer version already exists: ${parameterization.name} v${allVersions.last()}", true)
             } else {

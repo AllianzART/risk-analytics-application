@@ -2,6 +2,7 @@ package org.pillarone.riskanalytics.application.ui.main.action.workflow
 import com.ulcjava.base.application.ULCTableTree
 import com.ulcjava.base.application.UlcUtilities
 import com.ulcjava.base.application.event.ActionEvent
+import org.pillarone.riskanalytics.application.ui.main.action.SelectionTreeAction
 import org.pillarone.riskanalytics.application.ui.util.ExceptionSafe
 import org.pillarone.riskanalytics.core.simulation.item.Parameterization
 import org.pillarone.riskanalytics.core.user.UserManagement

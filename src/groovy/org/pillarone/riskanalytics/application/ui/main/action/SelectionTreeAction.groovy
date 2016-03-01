@@ -281,7 +281,7 @@ abstract class SelectionTreeAction extends ResourceBasedAction {
     }
     protected void showInfoAlert( String title, String msg, boolean log ){
         if( log ){
-            LOG.info(msg)
+            LOG.info(title + '; ' + msg)
         }
         UIUtils.showAlert( UlcUtilities.getWindowAncestor(tree), title,msg,ULCAlert.INFORMATION_MESSAGE)
     }
@@ -297,4 +297,17 @@ abstract class SelectionTreeAction extends ResourceBasedAction {
         }
         UIUtils.showAlert(UlcUtilities.getWindowAncestor(tree), title,msg,ULCAlert.ERROR_MESSAGE )
     }
+
+    protected boolean quitWithAlertIfCalledWhenDisabled(){
+        if( !isEnabled() ){
+            showWarnAlert(
+                "Action $actionName disabled!",
+                "Please mail a screenshot to developers (Ctrl+PrtScn on Windows, paste into Paint)\n"+
+                "Thanks for your help."
+            )
+            return true
+        }
+        return false
+    }
+
 }
