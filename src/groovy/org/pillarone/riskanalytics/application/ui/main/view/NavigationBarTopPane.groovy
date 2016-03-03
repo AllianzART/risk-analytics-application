@@ -86,7 +86,7 @@ class NavigationBarTopPane {
         }
         searchTextField.setPreferredSize(new Dimension(250, 20))
 
-        clearButton = new ULCButton(UIUtils.getIcon("delete-active.png"))
+        clearButton = new ULCButton(UIUtils.getIcon("cancel.png"))
         clearButton.name = "clearButton"
         clearButton.setToolTipText UIUtils.getText(this.class, "clear")
 
