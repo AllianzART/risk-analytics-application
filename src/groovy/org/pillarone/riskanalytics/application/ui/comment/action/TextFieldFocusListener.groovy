@@ -34,7 +34,7 @@ class TextFieldFocusListener implements IFocusListener {
 
     void focusLost(FocusEvent focusEvent) {
         String text = searchText.getText()
-        if (!text || text == "") {
+        if (!text || text.trim() == "") {
             searchText.setText(hintText)
             searchText.setForeground(Color.gray)
         }
