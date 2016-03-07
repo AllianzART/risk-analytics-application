@@ -15,6 +15,7 @@ import org.pillarone.riskanalytics.application.ui.base.model.modellingitem.Filte
 import org.pillarone.riskanalytics.application.ui.base.model.modellingitem.NavigationTableTreeModel
 import org.pillarone.riskanalytics.application.ui.comment.action.TextFieldFocusListener
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
+import org.pillarone.riskanalytics.core.user.UserManagement
 import org.pillarone.riskanalytics.core.util.Configuration
 
 import java.util.prefs.Preferences
@@ -28,7 +29,6 @@ class NavigationBarTopPane {
     private static final String overrideSearchText = Configuration.coreGetAndLogStringConfig( "defaultSearchFilterText","")
     private static final boolean weAreRunningInATest =  ("test" == System.getProperty("grails.env"))
     private static Preferences preferences = Preferences.userNodeForPackage(this.class)
-    private static final String SEARCH_FILTER_TEXT = "searchFilterText";
     private static final String SEARCH_FILTER_HINT = UIUtils.getText(NavigationBarTopPane, "searchText");
 
 
@@ -77,7 +77,7 @@ class NavigationBarTopPane {
         searchTextField = new ULCTextField(name: "searchText")
         searchTextField.setMaximumSize(new Dimension(300, 20))
         searchTextField.setToolTipText SEARCH_FILTER_HINT
-        searchTextField.setText( overrideSearchText ?: preferences.get(SEARCH_FILTER_TEXT, "") ?: SEARCH_FILTER_HINT )
+        searchTextField.setText( overrideSearchText ?: preferences.get(searchFilterPrefsKey, "") ?: SEARCH_FILTER_HINT )
         if(weAreRunningInATest){
             searchTextField.setText( SEARCH_FILTER_HINT )
         }
@@ -90,6 +90,10 @@ class NavigationBarTopPane {
         clearButton.name = "clearButton"
         clearButton.setToolTipText UIUtils.getText(this.class, "clear")
 
+    }
+
+    String getSearchFilterPrefsKey(){
+        UserManagement.currentUser?.username + "_searchFilterText"
     }
 
     protected void layoutComponents() {
@@ -128,7 +132,7 @@ class NavigationBarTopPane {
         if(!weAreRunningInATest) {
             if(filterChangedListeners.empty){
                 LOG.warn("initialFilterSearchAction called when filterChangedListeners still empty");
-            } else if( !overrideSearchText.empty || !preferences.get(SEARCH_FILTER_TEXT, "").empty ){
+            } else if( !overrideSearchText.empty || !preferences.get(searchFilterPrefsKey, "").empty ){
                 searchAction()
             }
         }
@@ -137,7 +141,7 @@ class NavigationBarTopPane {
     private void searchAction(){
         String text = searchTextField.getText()
         if(SEARCH_FILTER_HINT != text){
-            preferences.put(SEARCH_FILTER_TEXT, text);
+            preferences.put(searchFilterPrefsKey, text);
             FilterDefinition filter = tableTreeModel.currentFilter
             filter.allFieldsFilter.query = text
             fireFilterChanged(filter)
