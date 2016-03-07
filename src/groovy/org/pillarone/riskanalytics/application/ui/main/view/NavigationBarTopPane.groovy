@@ -77,9 +77,10 @@ class NavigationBarTopPane {
         searchTextField = new ULCTextField(name: "searchText")
         searchTextField.setMaximumSize(new Dimension(300, 20))
         searchTextField.setToolTipText SEARCH_FILTER_HINT
-        searchTextField.setText( overrideSearchText ?: preferences.get(searchFilterPrefsKey, "") ?: SEARCH_FILTER_HINT )
         if(weAreRunningInATest){
             searchTextField.setText( SEARCH_FILTER_HINT )
+        }else{
+            searchTextField.setText( overrideSearchText ?: preferences.get(searchFilterPrefsKey, "") ?: SEARCH_FILTER_HINT )
         }
         if(searchTextField.text == SEARCH_FILTER_HINT){
             searchTextField.setForeground(Color.gray)
