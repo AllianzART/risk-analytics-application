@@ -6,6 +6,7 @@ import grails.util.Holders
 import org.pillarone.riskanalytics.application.ui.batch.view.BatchView
 import org.pillarone.riskanalytics.application.ui.main.view.DetailViewManager
 import org.pillarone.riskanalytics.application.ui.parameterization.model.ParameterizationNode
+import org.pillarone.riskanalytics.core.simulation.item.Batch
 import org.pillarone.riskanalytics.core.simulation.item.Parameterization
 
 class AddToOpenBatchAction extends SelectionTreeAction {
@@ -34,6 +35,10 @@ class AddToOpenBatchAction extends SelectionTreeAction {
 
     @Override
     boolean isEnabled() {
-        detailViewManager.openDetailView instanceof BatchView
+        if( detailViewManager.openDetailView instanceof BatchView ){
+            return !detailViewManager?.openDetailView?.batch?.executed
+        }else{
+            return false
+        }
     }
 }
