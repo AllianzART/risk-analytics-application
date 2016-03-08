@@ -244,9 +244,9 @@ class HeaderView extends AbstractView {
     }
 
     //todo fja refactoring to IEnabler
-    // TODO Does this code need to also consider Resources ??
+    // TODO this code probably also needs to consider Resources..
     public boolean syncMenuBar() {
-        saveAction.enabled = saveAction.enabled
+        saveAction.setEnabled( saveAction.isEnabled() ); // Still looks a bit crazy but less than before..
         if (detailViewManager.currentUIItem) {
             if (detailViewManager.currentUIItem instanceof ParameterizationUIItem || detailViewManager.currentUIItem instanceof ResultConfigurationUIItem) {
                 if (detailViewManager.currentUIItem.editable) {
