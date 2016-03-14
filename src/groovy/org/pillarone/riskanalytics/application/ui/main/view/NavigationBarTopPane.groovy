@@ -117,7 +117,19 @@ class NavigationBarTopPane {
         searchTextField.addFocusListener(new TextFieldFocusListener(searchTextField, SEARCH_FILTER_HINT))
 
         searchTextField.registerKeyboardAction(
-            [actionPerformed: { ActionEvent e -> searchAction() }] as IActionListener,
+            [actionPerformed: { ActionEvent e ->
+                try{
+                    searchAction()
+                }catch(IllegalStateException ise){
+                    // This alert fails - might be due to closure ?
+                    //new ULCAlert("Search filter error", "Cause: ${ise.getMessage()}", "Ok").show()
+
+                    //Instead, supply visible feedback via search filter
+                    //
+                    searchTextField.setText("Error: Transaction Service down ? ${ise.message}")
+                    searchTextField.setForeground(Color.red)
+                }
+            }] as IActionListener,
             KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false),
             ULCComponent.WHEN_FOCUSED
         );
@@ -134,7 +146,15 @@ class NavigationBarTopPane {
             if(filterChangedListeners.empty){
                 LOG.warn("initialFilterSearchAction called when filterChangedListeners still empty");
             } else if( !overrideSearchText.empty || !preferences.get(searchFilterPrefsKey, "").empty ){
-                searchAction()
+                try{
+                    searchAction()
+                }catch(IllegalStateException ise){
+                    // See search action keyboard registration above for why alert not used
+                    //
+                    LOG.warn("Failed to re-instate persisted search filter - Transaction Service may be down", ise)
+                    searchTextField.setText("Error: Transaction Service down ? ${ise.message}")
+                    searchTextField.setForeground(Color.red)
+                }
             }
         }
     }
