@@ -59,6 +59,7 @@ abstract class AbstractParameterNodePopupMenu extends ULCPopupMenu {
         addSeparator();
         add(new ULCMenuItem(new CreateBatchAction(tree)))
         add(new EnabledCheckingMenuItem(new AddToOpenBatchAction(tree)))
+        add(new EnabledCheckingMenuItem(new RemoveFromOpenBatchAction(tree)))
         //Concrete subclasses add menus appropriate to current state.
         //Eg the InReviewPopupMenu adds menu items for send to production and reject workflow.
         //(Like a 'statemachine' encoded in class diagram, fixed at compile time)
