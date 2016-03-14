@@ -45,6 +45,7 @@ class ResultFunctionTests extends AbstractResultUIItemTests {
         assertEquals new Double(99499.49999999991), tableTreeOperator.getValueAt(7, 3)
 
         addFunction(frameOperator, 'minButton')
+        Thread.sleep(2000) // Try eliminate the failing integration test 89 of 217 ...
         assertEquals 5, tableTreeOperator.getColumnCount()
         assertEquals new Double(1.0), tableTreeOperator.getValueAt(7, 4)
 
