@@ -56,11 +56,21 @@ class TabbedPaneManager {
      */
     void addTab(AbstractUIItem item) {
         Person currentUser = getCurrentUser()
-        if(currentUser != null && item instanceof ModellingUIItem ) {
-            handleEditCollisionWarningIfNeededBeforeOpening(item, currentUser)
-        } else {
-            // test env (user null) or not modelling item
-            addTabInternal(item)
+        try{
+            if(currentUser != null && item instanceof ModellingUIItem ) {
+                handleEditCollisionWarningIfNeededBeforeOpening(item, currentUser)
+            } else {
+                // test env (user null) or not modelling item
+                addTabInternal(item)
+            }
+        }catch(Exception e){
+            String w = "Error opening '${item.nameAndVersion}': ${e.message}.\nPlease report this to IT Apps."
+            LOG.error(w,e)
+            new ULCAlert("Failed to open tab for item", w, "OK").show()
+            if(currentUser){
+                viewLockService.release(item, currentUser.getUsername())
+            }
+            throw e
         }
     }
     /**
@@ -109,7 +119,16 @@ class TabbedPaneManager {
             if(currentUser){
                 viewLockService.release(item, currentUser.getUsername())
             }
+        }catch(Exception e){
+            String w = "Error opening '${item.nameAndVersion}': ${e.message}.\nPlease screenshot this for IT Apps."
+            LOG.error(w,e)
+            new ULCAlert("Failed to open P14n", w, "OK").show()
+            if(currentUser){
+                viewLockService.release(item, currentUser.getUsername())
+            }
+            throw e
         }
+
     }
 
     private boolean  isReadOnlyP14n(ParameterizationUIItem parameterizationUIItem){
