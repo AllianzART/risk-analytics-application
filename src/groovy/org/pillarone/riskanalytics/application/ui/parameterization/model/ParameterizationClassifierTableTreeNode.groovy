@@ -5,6 +5,7 @@ import org.pillarone.riskanalytics.core.model.Model
 import org.pillarone.riskanalytics.core.parameterization.AbstractParameterObjectClassifier
 import org.pillarone.riskanalytics.core.parameterization.IParameterObjectClassifier
 import org.pillarone.riskanalytics.core.simulation.item.ParametrizedItem
+import org.pillarone.riskanalytics.core.simulation.item.ParameterNotFoundException
 import org.pillarone.riskanalytics.core.simulation.item.parameter.ParameterObjectParameterHolder
 
 class ParameterizationClassifierTableTreeNode extends AbstractMultiValueParameterizationTableTreeNode {
@@ -19,7 +20,12 @@ class ParameterizationClassifierTableTreeNode extends AbstractMultiValueParamete
 
     public List initValues() {
         List possibleValues = []
-        ParameterObjectParameterHolder parameterObjectHolder = parametrizedItem.getArbitraryParameterHolder(parameterPath)
+        ParameterObjectParameterHolder parameterObjectHolder = null
+        try{
+            parameterObjectHolder = parametrizedItem.getArbitraryParameterHolder(parameterPath)
+        }catch(ParameterNotFoundException notFoundException){
+            return possibleValues // AR-266 compared models can have different structures
+        }
         IParameterObjectClassifier classifier = parameterObjectHolder.classifier
         List<IParameterObjectClassifier> classifiers = simulationModel.configureClassifier(parameterObjectHolder.path, classifier.classifiers)
         for(AbstractParameterObjectClassifier singleClassifier in classifiers){

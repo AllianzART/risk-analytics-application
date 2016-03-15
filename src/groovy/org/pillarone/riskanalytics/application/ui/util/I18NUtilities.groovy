@@ -69,6 +69,9 @@ class I18NUtilities {
         //TODO capitalize properties files.
         //int lastIndex = parameterType.lastIndexOf('.') + 1
         //parameterType = parameterType.substring(0, lastIndex) + parameterType.substring(lastIndex, lastIndex + 1).toLowerCase() + parameterType.substring(lastIndex + 1)
+        if(parameter == null || subPath == null){
+            return '**null**'  //AR-266 prevent gratuitous crash
+        }
         return findParameter(parameter.classifier.class, subPath.replaceAll(":", "."))
     }
 
@@ -105,7 +108,7 @@ class I18NUtilities {
         componentSubPath = componentSubPath.replaceAll(":", ".")
         try {
             name = getModelResourceBundle(modelClass.name).getString(componentSubPath + toolTip)
-        } catch (java.util.MissingResourceException e) {
+        } catch (MissingResourceException e) {
             LOG.trace("resource for ${modelClass.name} not found. Key: ${componentSubPath}")
         }
         return name
