@@ -75,7 +75,7 @@ class NavigationBarTopPane {
         assignedToMeButton.setEnabled(false)
 
         searchTextField = new ULCTextField(name: "searchText")
-        searchTextField.setMaximumSize(new Dimension(300, 20))
+        searchTextField.setMaximumSize(new Dimension(550, 20))
         searchTextField.setToolTipText SEARCH_FILTER_HINT
         if(weAreRunningInATest){
             searchTextField.setText( SEARCH_FILTER_HINT )
@@ -85,7 +85,7 @@ class NavigationBarTopPane {
         if(searchTextField.text == SEARCH_FILTER_HINT){
             searchTextField.setForeground(Color.gray)
         }
-        searchTextField.setPreferredSize(new Dimension(250, 20))
+        searchTextField.setPreferredSize(new Dimension(500, 20))
 
         clearButton = new ULCButton(UIUtils.getIcon("cancel.png"))
         clearButton.name = "clearButton"
