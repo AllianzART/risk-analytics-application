@@ -6,13 +6,12 @@ import grails.util.Holders
 import org.pillarone.riskanalytics.application.ui.batch.view.BatchView
 import org.pillarone.riskanalytics.application.ui.main.view.DetailViewManager
 import org.pillarone.riskanalytics.application.ui.parameterization.model.ParameterizationNode
-import org.pillarone.riskanalytics.core.simulation.item.Batch
 import org.pillarone.riskanalytics.core.simulation.item.Parameterization
 
-class AddToOpenBatchAction extends SelectionTreeAction {
+class RemoveFromOpenBatchAction extends SelectionTreeAction {
 
-    AddToOpenBatchAction(ULCTableTree tree) {
-        super("AddToOpenBatch", tree)
+    RemoveFromOpenBatchAction(ULCTableTree tree) {
+        super("RemoveFromOpenBatch", tree)
     }
 
     @Override
@@ -25,7 +24,7 @@ class AddToOpenBatchAction extends SelectionTreeAction {
         } as List<ParameterizationNode>
         if (parameterizationNodes) {
             BatchView batchView = detailViewManager.openDetailView as BatchView
-            batchView.addParameterizations(parameterizationNodes.itemNodeUIItem.item)
+            batchView.removeParameterizations(parameterizationNodes.itemNodeUIItem.item)
         }
     }
 

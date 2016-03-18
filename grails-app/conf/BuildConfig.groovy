@@ -39,7 +39,7 @@ grails.project.dependency.resolution = {
         // NB Doh! Must manually keep build.xml in sync with version number here!
         // (Target: 'jar' for the ...extensions-client.jar in build.xml)
         //
-        runtime("org.pillarone:pillar-one-ulc-extensions:1.12") { transitive = false }
+        runtime("org.pillarone:pillar-one-ulc-extensions:1.13") { transitive = false }
 
         test ":code-coverage:1.2.7"
         test ":codenarc:0.20"

@@ -160,6 +160,12 @@ abstract class AbstractParametrizedTableTreeModel extends AbstractCommentableIte
 
 
     protected isBeingInserted(SimpleTableTreeNode node) {
+        // Skip walking the path if we already know toBeInserted doesn't contain anything
+        //
+        if( toBeInserted.isEmpty() ){
+            return false
+        }
+
         SimpleTableTreeNode current = node
         while (current != null) {
             if (toBeInserted.contains(current)) {

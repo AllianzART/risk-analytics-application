@@ -15,6 +15,7 @@ import org.pillarone.riskanalytics.application.ui.base.model.modellingitem.Filte
 import org.pillarone.riskanalytics.application.ui.base.model.modellingitem.NavigationTableTreeModel
 import org.pillarone.riskanalytics.application.ui.comment.action.TextFieldFocusListener
 import org.pillarone.riskanalytics.application.ui.util.UIUtils
+import org.pillarone.riskanalytics.core.user.UserManagement
 import org.pillarone.riskanalytics.core.util.Configuration
 
 import java.util.prefs.Preferences
@@ -28,7 +29,6 @@ class NavigationBarTopPane {
     private static final String overrideSearchText = Configuration.coreGetAndLogStringConfig( "defaultSearchFilterText","")
     private static final boolean weAreRunningInATest =  ("test" == System.getProperty("grails.env"))
     private static Preferences preferences = Preferences.userNodeForPackage(this.class)
-    private static final String SEARCH_FILTER_TEXT = "searchFilterText";
     private static final String SEARCH_FILTER_HINT = UIUtils.getText(NavigationBarTopPane, "searchText");
 
 
@@ -75,21 +75,26 @@ class NavigationBarTopPane {
         assignedToMeButton.setEnabled(false)
 
         searchTextField = new ULCTextField(name: "searchText")
-        searchTextField.setMaximumSize(new Dimension(300, 20))
+        searchTextField.setMaximumSize(new Dimension(550, 20))
         searchTextField.setToolTipText SEARCH_FILTER_HINT
-        searchTextField.setText( overrideSearchText ?: preferences.get(SEARCH_FILTER_TEXT, "") ?: SEARCH_FILTER_HINT )
         if(weAreRunningInATest){
             searchTextField.setText( SEARCH_FILTER_HINT )
+        }else{
+            searchTextField.setText( overrideSearchText ?: preferences.get(searchFilterPrefsKey, "") ?: SEARCH_FILTER_HINT )
         }
         if(searchTextField.text == SEARCH_FILTER_HINT){
             searchTextField.setForeground(Color.gray)
         }
-        searchTextField.setPreferredSize(new Dimension(250, 20))
+        searchTextField.setPreferredSize(new Dimension(500, 20))
 
-        clearButton = new ULCButton(UIUtils.getIcon("delete-active.png"))
+        clearButton = new ULCButton(UIUtils.getIcon("cancel.png"))
         clearButton.name = "clearButton"
         clearButton.setToolTipText UIUtils.getText(this.class, "clear")
 
+    }
+
+    String getSearchFilterPrefsKey(){
+        UserManagement.currentUser?.username + "_searchFilterText"
     }
 
     protected void layoutComponents() {
@@ -112,7 +117,19 @@ class NavigationBarTopPane {
         searchTextField.addFocusListener(new TextFieldFocusListener(searchTextField, SEARCH_FILTER_HINT))
 
         searchTextField.registerKeyboardAction(
-            [actionPerformed: { ActionEvent e -> searchAction() }] as IActionListener,
+            [actionPerformed: { ActionEvent e ->
+                try{
+                    searchAction()
+                }catch(IllegalStateException ise){
+                    // This alert fails - might be due to closure ?
+                    //new ULCAlert("Search filter error", "Cause: ${ise.getMessage()}", "Ok").show()
+
+                    //Instead, supply visible feedback via search filter
+                    //
+                    searchTextField.setText("Error: Transaction Service down ? ${ise.message}")
+                    searchTextField.setForeground(Color.red)
+                }
+            }] as IActionListener,
             KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false),
             ULCComponent.WHEN_FOCUSED
         );
@@ -128,8 +145,16 @@ class NavigationBarTopPane {
         if(!weAreRunningInATest) {
             if(filterChangedListeners.empty){
                 LOG.warn("initialFilterSearchAction called when filterChangedListeners still empty");
-            } else if( !overrideSearchText.empty || !preferences.get(SEARCH_FILTER_TEXT, "").empty ){
-                searchAction()
+            } else if( !overrideSearchText.empty || !preferences.get(searchFilterPrefsKey, "").empty ){
+                try{
+                    searchAction()
+                }catch(IllegalStateException ise){
+                    // See search action keyboard registration above for why alert not used
+                    //
+                    LOG.warn("Failed to re-instate persisted search filter - Transaction Service may be down", ise)
+                    searchTextField.setText("Error: Transaction Service down ? ${ise.message}")
+                    searchTextField.setForeground(Color.red)
+                }
             }
         }
     }
@@ -137,7 +162,7 @@ class NavigationBarTopPane {
     private void searchAction(){
         String text = searchTextField.getText()
         if(SEARCH_FILTER_HINT != text){
-            preferences.put(SEARCH_FILTER_TEXT, text);
+            preferences.put(searchFilterPrefsKey, text);
             FilterDefinition filter = tableTreeModel.currentFilter
             filter.allFieldsFilter.query = text
             fireFilterChanged(filter)

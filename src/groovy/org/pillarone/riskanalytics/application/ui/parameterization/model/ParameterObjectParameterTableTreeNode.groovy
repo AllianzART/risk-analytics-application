@@ -36,6 +36,9 @@ class ParameterObjectParameterTableTreeNode extends ParameterizationTableTreeNod
         String displayName
         if (!(parent instanceof DynamicComposedComponent)) {
             ParameterObjectParameterHolder parameter = parametrizedItem.getParameterHoldersForAllPeriods(parameterPath).find { it -> it != null }
+            if(!parameter){
+                return '>>null<<' //AR-266 prevent gratuitous crash
+            }
             displayName = I18NUtilities.findParameterTypeDisplayName(parameter.classifier.class, tooltip)
         }
         return displayName

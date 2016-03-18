@@ -11,6 +11,8 @@ import com.ulcjava.base.application.ULCPopupMenu
 import com.ulcjava.base.application.ULCScrollPane
 import com.ulcjava.base.application.tabletree.ITableTreeNode
 import com.ulcjava.base.application.util.ULCIcon
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.base.model.AbstractCommentableItemModel
 import org.pillarone.riskanalytics.application.ui.comment.model.UndockedPaneListener
 import org.pillarone.riskanalytics.application.ui.result.model.ResultTableTreeNode
@@ -23,6 +25,7 @@ import org.pillarone.riskanalytics.core.simulation.item.parameter.comment.Commen
  * @author fouad.jaada@intuitive-collaboration.com
  */
 class CommentAndErrorView implements CommentListener {
+    private static Log LOG = LogFactory.getLog(CommentAndErrorView)
 
     ULCCloseableTabbedPane tabbedPane
     CommentSearchPane commentSearchPane
@@ -233,7 +236,15 @@ class CommentAndErrorView implements CommentListener {
     }
 
     void closeTab() {
-        tabbedPane.removeTabAt tabbedPane.getSelectedIndex()
+        int numTabs = tabbedPane.tabCount
+        int selectedIndex =  tabbedPane.getSelectedIndex()
+        // AR-249 At least protect list of comments (first tab), and prevent crashing the GUI (out of range)
+        //
+        if( 0 < selectedIndex && selectedIndex < numTabs  ){
+            tabbedPane.removeTabAt( selectedIndex )
+        }else{
+            LOG.warn("Cant remove tab $selectedIndex (numTabs=$numTabs) - has a tab been undocked ?")
+        }
     }
 
     private int getTabIndex(Comment comment, String path, String tabTitle) {

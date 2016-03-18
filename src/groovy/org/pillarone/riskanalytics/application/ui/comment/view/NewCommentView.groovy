@@ -147,6 +147,11 @@ class NewCommentView {
     protected void attachListeners() {
         addButton.addActionListener([actionPerformed: { ActionEvent evt ->
             addCommentToItem(path, periodIndex)
+            if(evt.source instanceof ULCButton){
+                ULCContainer parent = (evt.source as ULCButton).parent
+                // AR-249 TODO at this point could potentially check whether tab is undocked ??
+                //
+            }
             commentAndErrorView.closeTab()
         }] as IActionListener)
 

@@ -202,6 +202,10 @@ class BatchView implements IDetailView {
 
     }
 
+    void removeParameterizations(List<Parameterization> parameterizations) {
+        batchViewModel.removeParameterizations(parameterizations)
+    }
+
     void removeSelectedParameterizations() {
         batchViewModel.removeParameterizations(selectedBatchRowInfos.parameterization)
     }
