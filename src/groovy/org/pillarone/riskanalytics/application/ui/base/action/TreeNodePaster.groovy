@@ -3,6 +3,7 @@ package org.pillarone.riskanalytics.application.ui.base.action
 import com.canoo.ulc.community.ulcclipboard.server.IClipboardHandler
 import com.canoo.ulc.community.ulcclipboard.server.ULCClipboard
 import com.ulcjava.base.application.IAction
+import com.ulcjava.base.application.ULCAlert
 import com.ulcjava.base.application.ULCTableTree
 import com.ulcjava.base.application.event.ActionEvent
 import com.ulcjava.base.application.event.KeyEvent
@@ -24,7 +25,8 @@ class TreeNodePaster extends ExceptionSafeAction {
 
     public void doActionPerformed(ActionEvent event) {
 
-        ULCClipboard.appyClipboardContent(new IClipboardHandler() {
+
+        IClipboardHandler handler = new IClipboardHandler() {
             @Override
             void applyContent(String content) {
                 ExceptionSafe.protect {
@@ -36,7 +38,14 @@ class TreeNodePaster extends ExceptionSafeAction {
 
                     List nodes = []
                     for (int row = startRow; row < (startRow + data.size()); row++) {
-                        nodes << tree.getPathForRow(row).lastPathComponent
+                        if( tree?.getPathForRow(row) ){
+                            nodes << tree.getPathForRow(row).lastPathComponent
+                        }else{
+                            String w = "Failed getting row $row \nContent: $content, startRow: $startRow, startColumn: $startColumn"
+                            LOG.warn(w)
+                            new ULCAlert("Paste failed", w, "Ok").show()
+                            return
+                        }
                     }
                     TableTreeMutator mutator = new TableTreeMutator(tree.model)
                     try {
@@ -48,6 +57,7 @@ class TreeNodePaster extends ExceptionSafeAction {
                     }
                 }
             }
-        })
+        }
+        ULCClipboard.appyClipboardContent( handler )
     }
 }
