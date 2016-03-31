@@ -12,6 +12,7 @@ import org.pillarone.riskanalytics.application.ui.main.view.item.UploadBatchUIIt
 import org.pillarone.riskanalytics.application.ui.result.model.SimulationNode
 import org.pillarone.riskanalytics.application.ui.upload.view.UploadBatchView
 import org.pillarone.riskanalytics.core.simulation.item.Simulation
+import org.pillarone.riskanalytics.core.workflow.Status
 
 class UploadSimulationAction extends SelectionTreeAction {
     private static final Log log = LogFactory.getLog(UploadSimulationAction)
@@ -39,7 +40,10 @@ class UploadSimulationAction extends SelectionTreeAction {
         }
     }
 
-    //[AR-122] exclude non quarter-tagged sims and AZRe sims
+    //[AR-122] exclude :
+    // - non quarter-tagged sims
+    // - AZRe sims
+    // - sims whose model lacks qtr tag or not IN PRODUCTION
     //
     private List<Simulation> validateSelectedSims() {
         if(! TagsListView.quarterTagsAreSpecial){
@@ -50,25 +54,52 @@ class UploadSimulationAction extends SelectionTreeAction {
             sim?.tags?.any({ it.isQuarterTag() })
         }
 
-        if (qtrSims.size() != selectedSims.size()) {
-            int nonQtrCount = selectedSims.size() - qtrSims.size()
+        int badCount = selectedSims.size() - qtrSims.size()
+        if (0 < badCount) {
             Simulation example = selectedSims.find { !qtrSims.contains(it) }
             String title = "Only tagged (non azre) sims can upload"
-            String body = "($nonQtrCount) non quarter-tagged sims skipped.\n(No quarter tag found on ${(nonQtrCount > 1) ? 'e.g. ' : ''} ${example})"
-            showInfoAlert(title, body)
+            String body = "Duh! ($badCount) non quarter-tagged sims skipped.\n(No quarter tag found on ${(badCount > 1) ? 'e.g. ' : ''} ${example})"
+            showInfoAlert(title, body, true)
         }
 
         List<Simulation> azReSims = qtrSims.findAll { sim ->
             sim?.getParameterization()?.tags?.any({ it.isAZReTag() })
         }
 
-        int azReCount = azReSims.size()
-        if (azReCount > 0) {
-            String title = "Artisan cant upload AZRe sims"
-            String body = "($azReCount) AZRe sims skipped.\nE.g. ${azReSims.first().parameterization.nameAndVersion} is an AZRe model."
-            showInfoAlert(title, body)
+        badCount = azReSims.size()
+        if (badCount > 0) {
+            String title = "Only IT-Apps can upload AZRe sims"
+            String body = "Duh! ($badCount) AZRe sims skipped.\nE.g. ${azReSims.first().parameterization.nameAndVersion} is an AZRe model."
+            showInfoAlert(title, body, true)
             qtrSims.removeAll(azReSims)
         }
+
+        // Do models carry the quarter tag ?
+        //
+        List<Simulation> modelsLackingQtrTag = qtrSims.findAll { final sim ->
+            ! sim?.getParameterization()?.tags?.any({ pt -> pt == sim.tags.find{ st -> st.isQuarterTag() }})
+        }
+        badCount = modelsLackingQtrTag.size()
+        if (badCount > 0) {
+            String title = "Non-quarter-tagged models skipped"
+            String body = "Duh! MODEL behind ($badCount) sims lack matching Quarter Tag.\n(E.g. ${modelsLackingQtrTag.first().parameterization.nameAndVersion})."
+            showInfoAlert(title, body, true)
+            qtrSims.removeAll(modelsLackingQtrTag)
+        }
+
+        // Are models in PRODUCTION state ?
+        //
+        List<Simulation> nonProdModels = qtrSims.findAll { sim ->
+            Status.IN_PRODUCTION != sim?.getParameterization()?.status
+        }
+        badCount = nonProdModels.size()
+        if (badCount > 0) {
+            String title = "Non-Production models skipped"
+            String body = "Duh! ($badCount) sims lack PRODUCTION model status.\nE.g. ${nonProdModels.first().parameterization.nameAndVersion} is not IN PRODUCTION."
+            showInfoAlert(title, body, true)
+            qtrSims.removeAll(nonProdModels)
+        }
+
         return qtrSims
     }
 
