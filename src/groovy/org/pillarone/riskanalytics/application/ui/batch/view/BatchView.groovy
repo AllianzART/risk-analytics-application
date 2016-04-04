@@ -49,6 +49,7 @@ class BatchView implements IDetailView {
 
     private final ValidationListener validationListener = new ValidationListener()
     private final IListSelectionListener updateSelectionCountListener = new UpdateSelectionCountListener()
+//    private ULCTextField batchPrefix
 
     void setBatch(Batch batch) {
         if (this.batch) {
@@ -77,6 +78,7 @@ class BatchView implements IDetailView {
         batches.dragEnabled = false
         runBatch.enabled = false
         simulationProfilesComboBox.enabled = false
+//        batchPrefix.enabled = false
     }
 
     @PostConstruct
@@ -91,10 +93,8 @@ class BatchView implements IDetailView {
         content = new ULCBoxPane(1, 3, 5, 5)
         content.add(ULCBoxPane.BOX_LEFT_TOP, configurationPane)
         ULCScrollPane batchesPane = new ULCScrollPane(batches)
-        batchesPane.preferredSize = new Dimension(600, 300)
-        content.add(ULCBoxPane.BOX_EXPAND_TOP, batchesPane)
+        content.add(ULCBoxPane.BOX_EXPAND_EXPAND, batchesPane)
         content.add(ULCBoxPane.BOX_EXPAND_TOP, buttonsPane)
-        content.add(ULCBoxPane.BOX_EXPAND_EXPAND, new ULCFiller())
         attachListener()
     }
 
@@ -171,6 +171,9 @@ class BatchView implements IDetailView {
             ULCBoxPane content = new ULCBoxPane(3, 3)
             content.add(ULCBoxPane.BOX_LEFT_CENTER, new ULCLabel('Simulation Profile'))
             content.add(2, ULCBoxPane.BOX_LEFT_TOP, spaceAround(simulationProfilesComboBox, 2, 10, 0, 0))
+//            content.add(ULCBoxPane.BOX_LEFT_CENTER, new ULCLabel('Optional Batch Prefix'))
+//            batchPrefix = new ULCTextField("batch")
+//            content.add(2, ULCBoxPane.BOX_LEFT_TOP, spaceAround(batchPrefix, 2, 10, 0, 0))
             box.add ULCBoxPane.BOX_LEFT_TOP, content
         }
         return parameterSection
