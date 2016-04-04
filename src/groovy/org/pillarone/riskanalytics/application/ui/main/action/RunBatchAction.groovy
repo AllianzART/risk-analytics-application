@@ -15,7 +15,7 @@ class RunBatchAction extends SingleItemAction {
 
     void doActionPerformed(ActionEvent event) {
         if (enabled) {
-            batchRunService.runBatch(selectedItem as Batch)
+            batchRunService.runBatch(selectedItem as Batch, null)
         }
     }
 

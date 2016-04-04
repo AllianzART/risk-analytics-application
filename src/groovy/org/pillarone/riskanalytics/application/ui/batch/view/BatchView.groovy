@@ -49,7 +49,7 @@ class BatchView implements IDetailView {
 
     private final ValidationListener validationListener = new ValidationListener()
     private final IListSelectionListener updateSelectionCountListener = new UpdateSelectionCountListener()
-//    private ULCTextField batchPrefix
+    private ULCTextField batchPrefix
 
     void setBatch(Batch batch) {
         if (this.batch) {
@@ -78,7 +78,7 @@ class BatchView implements IDetailView {
         batches.dragEnabled = false
         runBatch.enabled = false
         simulationProfilesComboBox.enabled = false
-//        batchPrefix.enabled = false
+        batchPrefix.enabled = false
     }
 
     @PostConstruct
@@ -142,6 +142,7 @@ class BatchView implements IDetailView {
     private void attachListener() {
         riskAnalyticsEventBus.register(this)
         runBatch.addActionListener([actionPerformed: { ActionEvent event ->
+            batchViewModel.setBatchPrefix(batchPrefix.text)
             batchViewModel.save()
             batchViewModel.run()
         }] as IActionListener)
@@ -168,12 +169,12 @@ class BatchView implements IDetailView {
     private ULCBoxPane getConfigurationPane() {
         simulationProfilesComboBox = new ULCComboBox(batchViewModel.simulationProfileNamesComboBoxModel)
         ULCBoxPane parameterSection = boxLayout(UIUtils.getText(this.class, "BatchConfig") + ":") { ULCBoxPane box ->
-            ULCBoxPane content = new ULCBoxPane(3, 3)
+            ULCBoxPane content = new ULCBoxPane(false, 3)
             content.add(ULCBoxPane.BOX_LEFT_CENTER, new ULCLabel('Simulation Profile'))
-            content.add(2, ULCBoxPane.BOX_LEFT_TOP, spaceAround(simulationProfilesComboBox, 2, 10, 0, 0))
-//            content.add(ULCBoxPane.BOX_LEFT_CENTER, new ULCLabel('Optional Batch Prefix'))
-//            batchPrefix = new ULCTextField("batch")
-//            content.add(2, ULCBoxPane.BOX_LEFT_TOP, spaceAround(batchPrefix, 2, 10, 0, 0))
+            content.add(ULCBoxPane.BOX_LEFT_TOP, spaceAround(simulationProfilesComboBox, 2, 10, 0, 0))
+            content.add(ULCBoxPane.BOX_LEFT_CENTER, new ULCLabel('Optional Batch Prefix'))
+            batchPrefix = new ULCTextField("batch")
+            content.add(ULCBoxPane.BOX_LEFT_TOP, spaceAround(batchPrefix, 2, 10, 0, 0))
             box.add ULCBoxPane.BOX_LEFT_TOP, content
         }
         return parameterSection
