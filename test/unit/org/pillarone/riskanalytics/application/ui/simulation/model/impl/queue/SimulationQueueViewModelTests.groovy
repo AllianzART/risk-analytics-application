@@ -2,6 +2,7 @@ package org.pillarone.riskanalytics.application.ui.simulation.model.impl.queue
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import org.pillarone.riskanalytics.application.ui.util.IResourceBundleResolver
+import org.pillarone.riskanalytics.core.simulation.engine.SimulationQueueEntry
 import org.pillarone.riskanalytics.core.simulation.engine.SimulationRuntimeInfo
 import org.pillarone.riskanalytics.core.simulation.engine.SimulationRuntimeService
 
@@ -38,7 +39,7 @@ class SimulationQueueViewModelTests {
 
         subject.infoListener.offered(addInfo)
 
-        subject.infoListener.finished(deleteInfo)
+        subject.infoListener.finished(new SimulationQueueEntry(deleteInfo))
         subject.infoListener.removed(deleteInfo)
     }
 

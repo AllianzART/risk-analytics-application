@@ -215,6 +215,10 @@ environments {
 }
 
 grails {
+    mail {
+        host = "foo.bar.com"
+        props = ["mail.smtp.auth":"false"]
+    }
     plugin {
         springsecurity {
             logout.invalidateHttpSession = false
