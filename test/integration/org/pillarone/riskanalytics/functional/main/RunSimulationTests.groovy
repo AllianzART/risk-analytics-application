@@ -62,7 +62,7 @@ class SimulationQueueListener implements QueueListener<SimulationQueueEntry> {
     }
 
     @Override
-    void finished(UUID id) {
+    void finished(SimulationQueueEntry entry) {
         latch.countDown()
     }
 
