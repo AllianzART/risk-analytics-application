@@ -3,9 +3,10 @@ package org.pillarone.riskanalytics.application.ui.simulation.view.impl.queue
 import com.ulcjava.base.application.IAction
 import com.ulcjava.base.application.ULCPopupMenu
 import org.pillarone.riskanalytics.application.ui.UlcSessionScope
-import org.pillarone.riskanalytics.application.ui.util.EnabledCheckingMenuItem
 import org.pillarone.riskanalytics.application.ui.simulation.view.impl.queue.action.CancelSimulationAction
+import org.pillarone.riskanalytics.application.ui.simulation.view.impl.queue.action.RegisterNotificationOnSimulationEntryAction
 import org.pillarone.riskanalytics.application.ui.simulation.view.impl.queue.action.SimulationQueueViewFindParameterizationsInTreeAction
+import org.pillarone.riskanalytics.application.ui.util.EnabledCheckingMenuItem
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 
@@ -20,12 +21,16 @@ class QueueContextMenu extends ULCPopupMenu {
     CancelSimulationAction cancelSimulationAction
 
     @Resource
+    RegisterNotificationOnSimulationEntryAction registerNotificationOnSimulationEntryAction
+
+    @Resource
     SimulationQueueViewFindParameterizationsInTreeAction simulationQueueViewFindParameterizationsInTreeAction
     private List<EnabledCheckingMenuItem> menuItems = []
 
     @PostConstruct
     void initialize() {
         addItem(cancelSimulationAction)
+        addItem(registerNotificationOnSimulationEntryAction)
         addItem(simulationQueueViewFindParameterizationsInTreeAction)
     }
 
