@@ -17,7 +17,7 @@ class BatchRowInfo {
     private final Parameterization parameterization
     private SimulationProfile simulationProfile
     private Simulation simulation
-    String durationAsString
+    Integer duration
 
     BatchRowInfo(Parameterization parameterization) {
         this.parameterization = Preconditions.checkNotNull(parameterization)
@@ -96,7 +96,7 @@ class BatchRowInfo {
         DateTime end = simulation?.end
         if (start && end) {
             Period period = new Period(start, end, PeriodType.minutes());
-            durationAsString = "${period.minutes} min"
+            duration = period.minutes
         }
     }
 

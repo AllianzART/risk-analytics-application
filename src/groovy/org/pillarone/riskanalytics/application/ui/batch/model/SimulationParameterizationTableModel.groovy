@@ -163,7 +163,7 @@ class SimulationParameterizationTableModel extends SortableTableModel<BatchRowIn
                 LOG.debug("updating")
                 columnModel.object.simulation = info?.simulation
                 if (info) {
-                    columnModel.object.durationAsString = info.estimatedTime
+                    columnModel.object.duration = info.estimatedTime
                 }
                 columnModel.update()
             }

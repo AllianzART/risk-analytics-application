@@ -64,7 +64,7 @@ abstract class AbstractTableRowModel<T> {
         }
     }
 
-    abstract Closure<String> getValueFactory(int index)
+    abstract Closure getValueFactory(int index)
 
     private static class StringProperty {
         @Bindable
