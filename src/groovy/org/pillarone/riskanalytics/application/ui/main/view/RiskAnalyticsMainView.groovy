@@ -153,6 +153,11 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
         navigationSwitchButton.selected = true
         selectionSwitchPane.add(BOX_LEFT_TOP, navigationSwitchButton);
 
+        ULCVerticalToggleButton contentSwitchButton = new ULCVerticalToggleButton(
+                new ToggleSplitPaneAction(splitPane, UIUtils.getText(this.class, "Content"), 1))
+        contentSwitchButton.selected = true
+        selectionSwitchPane.add(BOX_LEFT_TOP, contentSwitchButton);
+
         validationSplitPaneAction = new CommentsSwitchAction(UIUtils.getText(this.class, "ValidationsAndComments"))
         validationSwitchButton = new ULCVerticalToggleButton(validationSplitPaneAction)
         validationSwitchButton.selected = false
