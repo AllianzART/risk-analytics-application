@@ -50,6 +50,10 @@ class UploadSimulationAction extends SelectionTreeAction {
             log.warn("Please note: quarterTagsAreSpecial is disabled. But uploads still check quarter tags..")
         }
         List<Simulation> selectedSims = getSimulations()
+        selectedSims.each { sim ->
+            if(!sim.isLoaded()){
+               sim.load(true) // need the tags
+        }}
         List<Simulation> qtrSims = selectedSims.findAll { sim ->
             sim?.tags?.any({ it.isQuarterTag() })
         }
@@ -58,10 +62,14 @@ class UploadSimulationAction extends SelectionTreeAction {
         if (0 < badCount) {
             Simulation example = selectedSims.find { !qtrSims.contains(it) }
             String title = "Only tagged (non azre) sims can upload"
-            String body = "Duh! ($badCount) non quarter-tagged sims skipped.\n(No quarter tag found on ${(badCount > 1) ? 'e.g. ' : ''} ${example})"
+            String body = "Oops! ($badCount) non quarter-tagged sims skipped.\n(No quarter tag found on ${(badCount > 1) ? 'e.g. ' : ''} ${example})"
             showInfoAlert(title, body, true)
         }
 
+        selectedSims.each { sim ->
+            if(!sim.parameterization?.isLoaded()){
+                sim.parameterization?.load(true) // need the tags
+            }}
         List<Simulation> azReSims = qtrSims.findAll { sim ->
             sim?.getParameterization()?.tags?.any({ it.isAZReTag() })
         }
@@ -69,7 +77,7 @@ class UploadSimulationAction extends SelectionTreeAction {
         badCount = azReSims.size()
         if (badCount > 0) {
             String title = "Only IT-Apps can upload AZRe sims"
-            String body = "Duh! ($badCount) AZRe sims skipped.\nE.g. ${azReSims.first().parameterization.nameAndVersion} is an AZRe model."
+            String body = "Oops! ($badCount) AZRe sims skipped.\nE.g. ${azReSims.first().parameterization.nameAndVersion} is an AZRe model."
             showInfoAlert(title, body, true)
             qtrSims.removeAll(azReSims)
         }
@@ -82,7 +90,7 @@ class UploadSimulationAction extends SelectionTreeAction {
         badCount = modelsLackingQtrTag.size()
         if (badCount > 0) {
             String title = "Non-quarter-tagged models skipped"
-            String body = "Duh! MODEL behind ($badCount) sims lack matching Quarter Tag.\n(E.g. ${modelsLackingQtrTag.first().parameterization.nameAndVersion})."
+            String body = "Oops! MODEL behind ($badCount) sims lack matching Quarter Tag.\n(E.g. ${modelsLackingQtrTag.first().parameterization.nameAndVersion})."
             showInfoAlert(title, body, true)
             qtrSims.removeAll(modelsLackingQtrTag)
         }
@@ -95,7 +103,7 @@ class UploadSimulationAction extends SelectionTreeAction {
         badCount = nonProdModels.size()
         if (badCount > 0) {
             String title = "Non-Production models skipped"
-            String body = "Duh! ($badCount) sims lack PRODUCTION model status.\nE.g. ${nonProdModels.first().parameterization.nameAndVersion} is not IN PRODUCTION."
+            String body = "Oops! ($badCount) sims lack PRODUCTION model status.\nE.g. ${nonProdModels.first().parameterization.nameAndVersion} is not IN PRODUCTION."
             showInfoAlert(title, body, true)
             qtrSims.removeAll(nonProdModels)
         }
