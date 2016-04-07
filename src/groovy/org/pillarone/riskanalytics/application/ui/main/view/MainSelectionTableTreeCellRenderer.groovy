@@ -7,12 +7,14 @@ import com.ulcjava.base.application.ULCTableTree
 import com.ulcjava.base.application.tabletree.DefaultTableTreeCellRenderer
 import com.ulcjava.base.application.util.Color
 import com.ulcjava.base.application.util.Font
+import com.ulcjava.base.application.util.HTMLUtilities
 import org.pillarone.riskanalytics.application.ui.base.model.INavigationTreeNode
 import org.pillarone.riskanalytics.application.ui.base.model.ItemGroupNode
 import org.pillarone.riskanalytics.application.ui.parameterization.model.BatchNode
 import org.pillarone.riskanalytics.application.ui.parameterization.model.ParameterizationNode
 import org.pillarone.riskanalytics.application.ui.resource.model.ResourceNode
 import org.pillarone.riskanalytics.application.ui.result.model.SimulationNode
+import org.pillarone.riskanalytics.core.util.Configuration
 import org.pillarone.riskanalytics.core.workflow.Status
 
 /**
@@ -21,6 +23,7 @@ import org.pillarone.riskanalytics.core.workflow.Status
 class MainSelectionTableTreeCellRenderer extends DefaultTableTreeCellRenderer {
 
     // TODO frahman these maps look likely suspects for our joy with menus esp report menus
+    public static final Color ERROR_COLOUR = Configuration.coreGetAndLogStringConfig("validationErrorColour", "red") == "red"? Color.red : Color.gray
     ULCTableTree tree
     Map<Class, ULCPopupMenu> popupMenus = [:]
     Map<Class, ULCPopupMenu> paramNodePopupMenus = [:]
@@ -45,7 +48,12 @@ class MainSelectionTableTreeCellRenderer extends DefaultTableTreeCellRenderer {
     private void renderComponent(ULCComponent component, INavigationTreeNode node) {
         ULCPopupMenu popupMenu = getPopupMenu(node)
         component.setComponentPopupMenu(popupMenu)
-        component.setToolTipText(node.getToolTip())
+        def toolTip = node.getToolTip()
+        if (node instanceof ParameterizationNode) {
+            toolTip = ((node as ParameterizationNode).valid)? toolTip : (toolTip + "\nhas validation errors!")
+            toolTip = HTMLUtilities.convertToHtml(toolTip)
+        }
+        component.setToolTipText(toolTip)
         setIcon(node.getIcon())
     }
 
@@ -55,7 +63,7 @@ class MainSelectionTableTreeCellRenderer extends DefaultTableTreeCellRenderer {
     void setFont(ParameterizationNode node) {
         if (node.parent && !(node.parent instanceof SimulationNode)) {
             setFont(node.getFont(getFont().getName(), getFont().getSize()))
-            setForeground(!node.valid ? Color.gray : null)
+            setForeground(!node.valid ? ERROR_COLOUR : null)
         }
     }
 
