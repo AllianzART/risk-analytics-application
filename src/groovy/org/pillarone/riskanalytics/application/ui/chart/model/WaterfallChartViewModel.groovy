@@ -33,7 +33,7 @@ public class WaterfallChartViewModel extends ChartViewModel {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         double sum = 0
         (periodValues.size() - 1).times {int index ->
-            double value
+            Double value
             if (function == VAR_FUNCTION) {
                 value = ResultAccessor.getVar(simulationRun, currentPeriod, nodes[index].path, nodes[index].collector, nodes[index].field, percent, QuantilePerspective.LOSS)
             } else {
@@ -46,7 +46,7 @@ public class WaterfallChartViewModel extends ChartViewModel {
             }
         }
 
-        double lastValue
+        Double lastValue
         if (function == VAR_FUNCTION) {
             lastValue = ResultAccessor.getVar(simulationRun, currentPeriod, nodes[-1].path, nodes[-1].collector, nodes[-1].field, percent, QuantilePerspective.LOSS)
         } else {
@@ -143,7 +143,7 @@ public class WaterfallChartViewModel extends ChartViewModel {
         m[columnHeader] = []
         seriesNames.eachWithIndex {String seriesName, int nameIndex ->
             m[""] << seriesName + " for " + getPeriodLabel(currentPeriod)
-            double value
+            Double value
             if (function == VAR_FUNCTION) {
                 value = ResultAccessor.getVar(simulationRun, currentPeriod, nodes[nameIndex].path, nodes[nameIndex].collector, nodes[nameIndex].field, percent, QuantilePerspective.LOSS)
             } else {
