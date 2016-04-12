@@ -164,9 +164,10 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
         validationSwitchButton.enabled = false
         selectionSwitchPane.add(BOX_LEFT_TOP, validationSwitchButton)
 
-        ToggleSplitPaneAction independentPaneToggleAction = new ToggleSplitPaneAction(splitBetweenModelPaneAndIndependentPane, UIUtils.getText(this.class, 'ModelIndependent'), 1)
-        navigationSwitchButton.selected = true
-        selectionSwitchPane.add(BOX_LEFT_TOP, new ULCVerticalToggleButton(independentPaneToggleAction))
+        ToggleSplitPaneAction queuePaneToggleAction = new ToggleSplitPaneAction(splitBetweenModelPaneAndIndependentPane, UIUtils.getText(this.class, 'ModelIndependent'), 1)
+        ULCVerticalToggleButton queueToggleButton = new ULCVerticalToggleButton(queuePaneToggleAction)
+        queueToggleButton.selected = true
+        selectionSwitchPane.add(BOX_LEFT_TOP, queueToggleButton)
 
         ULCBoxPane mainCard = new ULCBoxPane(2, 0)
 
