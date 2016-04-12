@@ -16,7 +16,7 @@ public class UIManagerHelper {
     public static final int TOOLTIP_DISMISS_DELAY = 7000;
 
     public static void setLookAndFeel() {
-        final boolean useNimbusTheme = "true".equalsIgnoreCase(Configuration.coreGetAndLogStringConfig("useNimbusTheme", "false"));
+        final boolean useNimbusTheme = "true".equalsIgnoreCase(Configuration.coreGetAndLogStringConfig("useNimbusTheme", "false", null));
         if(useNimbusTheme) {
             setNimbusLookAndFeel();
         } else {
