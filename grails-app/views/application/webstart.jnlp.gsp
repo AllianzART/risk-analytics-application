@@ -22,7 +22,7 @@
 
     <resources>
         <j2se version="1.5+"/>
-        <jar href=".<%=ulcPluginPath%>/lib/ulc-core-client.jar"/>
+        <!--jar href=".<%=ulcPluginPath%>/lib/ulc-core-client.jar"/ nimbus lnf uncovers some signing conflict -->
         <g:each in="${clientFiles}" var="clientFile">
             <jar href="${clientFile}"/>
         </g:each>
