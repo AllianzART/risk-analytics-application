@@ -12,7 +12,7 @@
         <title>ARTisan</title>
         <vendor>Allianz Risk Transfer</vendor>
         <description>A modelling toolbox for the ART community.</description>
-        <homepage href="zh-jira-01.art-allianz.com:8090/display/AR/Artisan+Home"/>
+        <homepage href="http://zh-jira-01.art-allianz.com:8090/display/AR/Artisan+Home"/>
         <icon href="/images/PillarOneLogoSmall.png" width="48" height="48"/>
     </information>
 
