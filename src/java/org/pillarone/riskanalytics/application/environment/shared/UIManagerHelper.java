@@ -16,10 +16,14 @@ public class UIManagerHelper {
     public static final int TOOLTIP_DISMISS_DELAY = 7000;
 
     public static void setLookAndFeel() {
-        final boolean useNimbusTheme = "true".equalsIgnoreCase(Configuration.coreGetAndLogStringConfig("useNimbusTheme", "false", null));
+        final boolean useNimbusTheme = "true".equalsIgnoreCase(System.getProperty("useNimbusTheme", "false"));
         if(useNimbusTheme) {
+            System.out.println("Found -DuseNimbusTheme set, using NimbusLookAndFeel ");
+            System.err.println("Found -DuseNimbusTheme set, using NimbusLookAndFeel ");
             setNimbusLookAndFeel();
         } else {
+            System.out.println("Not forcing Nimbus");
+            System.err.println("Not forcing Nimbus");
             if (isWindowsOS()) {
                 setWindowsLookAndFeel();
             } else if (isLinux()) {
