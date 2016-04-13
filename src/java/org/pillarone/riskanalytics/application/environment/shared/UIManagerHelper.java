@@ -16,14 +16,14 @@ public class UIManagerHelper {
     public static final int TOOLTIP_DISMISS_DELAY = 7000;
 
     public static void setLookAndFeel() {
-        final boolean useNimbusTheme = "true".equalsIgnoreCase(System.getProperty("useNimbusTheme", "false"));
+        final boolean useNimbusTheme = "true".equalsIgnoreCase(System.getProperty("useNimbusTheme", "true"));
         if(useNimbusTheme) {
-            System.out.println("Found -DuseNimbusTheme set, using NimbusLookAndFeel ");
-            System.err.println("Found -DuseNimbusTheme set, using NimbusLookAndFeel ");
+            System.out.println("using NimbusLookAndFeel ");
+            System.err.println("using NimbusLookAndFeel ");
             setNimbusLookAndFeel();
         } else {
-            System.out.println("Not forcing Nimbus");
-            System.err.println("Not forcing Nimbus");
+            System.out.println("Not using NimbusLookAndFeel ");
+            System.err.println("Not using NimbusLookAndFeel ");
             if (isWindowsOS()) {
                 setWindowsLookAndFeel();
             } else if (isLinux()) {
@@ -89,12 +89,12 @@ public class UIManagerHelper {
     }
 
     public static void setNimbusLookAndFeel() {
-        setLookAndFeel(new NimbusLookAndFeel());
         UIManager.put("Table.showGrid", true);
         UIManager.put("Tree.drawHorizontalLines", true);
         UIManager.put("Tree.drawVerticalLines", true);
         UIManager.put("TextFieldUI", MetalTextFieldUI.class.getName());
         UIManager.put("TabbedPane.tabInsets", new Insets(0, 0, 0, 0));
+        setLookAndFeel(new NimbusLookAndFeel());
     }
 
     public static void setTooltipDismissDelay() {
