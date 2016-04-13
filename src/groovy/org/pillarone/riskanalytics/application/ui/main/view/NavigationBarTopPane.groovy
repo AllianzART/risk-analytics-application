@@ -34,7 +34,7 @@ class NavigationBarTopPane {
 
     private ULCToolBar toolBar
     private ULCToggleButton myStuffButton
-    private ULCToggleButton assignedToMeButton
+//  private ULCToggleButton assignedToMeButton
     private ULCTextField searchTextField
     private ULCButton clearButton
     NavigationTableTreeModel tableTreeModel
@@ -69,13 +69,14 @@ class NavigationBarTopPane {
         myStuffButton.name = "myStuffButton"
         myStuffButton.setPreferredSize new Dimension(100, 20)
         myStuffButton.setSelected(false)
+        /*
         assignedToMeButton = new ULCToggleButton(UIUtils.getText(this.class, "assignedToMe"))
         assignedToMeButton.setPreferredSize new Dimension(100, 20)
         assignedToMeButton.setSelected(false)
         assignedToMeButton.setEnabled(false)
-
+        */
         searchTextField = new ULCTextField(name: "searchText")
-        searchTextField.setMaximumSize(new Dimension(550, 20))
+        searchTextField.setMaximumSize(new Dimension(650, 20))
         searchTextField.setToolTipText SEARCH_FILTER_HINT
         if(weAreRunningInATest){
             searchTextField.setText( SEARCH_FILTER_HINT )
@@ -101,8 +102,8 @@ class NavigationBarTopPane {
         if (UserContext.hasCurrentUser()) {
             toolBar.add(myStuffButton);
             toolBar.addSeparator()
-            toolBar.add(assignedToMeButton);
-            toolBar.addSeparator()
+//          toolBar.add(assignedToMeButton);
+//          toolBar.addSeparator()
         }
         toolBar.add(searchTextField);
         toolBar.add(clearButton)
@@ -178,7 +179,7 @@ class NavigationBarTopPane {
         tableTreeModel.currentFilter.ownerFilter.active = false
         fireFilterChanged(tableTreeModel.currentFilter)
         myStuffButton.setSelected false
-        assignedToMeButton.setSelected false
+//      assignedToMeButton.setSelected false
     }
 
     private static String getLoggedUser() {
