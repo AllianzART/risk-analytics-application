@@ -87,7 +87,11 @@ class CardPaneManager {
     }
 
     public boolean contains(Model selectedModel) {
-        return (cardPane.names as List).contains(getModelName(selectedModel))
+        return containsModelName(getModelName(selectedModel))
+    }
+
+    private boolean containsModelName(String modelName) {
+        return (cardPane.names as List).contains(modelName)
     }
 
     private String getModelName(Model selectedModel) {
@@ -101,6 +105,19 @@ class CardPaneManager {
         boolean shouldCloseCard = tabbedPaneManager.isEmpty();
         if (shouldCloseCard) {
             removeCard(model)
+            selectAnotherOpenDetailView()
+        }
+    }
+
+    void selectAnotherOpenDetailView() {
+        try {
+            String modelName = cardPane?.names?.last()
+            if (modelName && containsModelName(modelName)) {
+                cardPane.selectedName = modelName
+                selectCurrentItemFromTabByModelName(modelName)
+            }
+        } catch (Exception e) {
+            LOG.warn("was not able to select another open detail view", e)
         }
     }
 
@@ -122,7 +139,12 @@ class CardPaneManager {
     }
 
     public void selectCurrentItemFromTab(Model selectedModel) {
-        TabbedPaneManager tabbedPaneManager = tabbedPaneManagers[getModelName(selectedModel)]
+        String modelName = getModelName(selectedModel)
+        selectCurrentItemFromTabByModelName(modelName)
+    }
+
+    private void selectCurrentItemFromTabByModelName(String modelName) {
+        TabbedPaneManager tabbedPaneManager = tabbedPaneManagers[modelName]
         if (tabbedPaneManager) {
             ULCCloseableTabbedPane selectedPane = selectedCard as ULCCloseableTabbedPane
             AbstractUIItem item = tabbedPaneManager.getAbstractItem(selectedPane.selectedComponent)
