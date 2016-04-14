@@ -200,8 +200,9 @@ class BatchView implements IDetailView {
                 info.parameterization == parameterization
             }
             int indexOf = batchViewModel.simulationParameterizationTableModel.batchRowInfos.indexOf(batchRowInfo)
+            int viewIndex = batches.convertRowIndexToView(indexOf)
             batches.selectionModel.addSelectionInterval(
-                    indexOf, indexOf
+                    viewIndex, viewIndex
             )
         }
 
