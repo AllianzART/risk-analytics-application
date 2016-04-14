@@ -13,6 +13,7 @@ import org.pillarone.riskanalytics.application.ui.extension.ComponentCreator
 import org.pillarone.riskanalytics.application.ui.extension.WindowRegistry
 import org.pillarone.riskanalytics.application.ui.main.action.CommentsSwitchAction
 import org.pillarone.riskanalytics.application.ui.main.action.ToggleSplitPaneAction
+import org.pillarone.riskanalytics.application.ui.main.action.WindowSelectionAction
 import org.pillarone.riskanalytics.application.ui.main.eventbus.RiskAnalyticsEventBus
 import org.pillarone.riskanalytics.application.ui.main.eventbus.event.ChangeDetailViewEvent
 import org.pillarone.riskanalytics.application.ui.main.eventbus.event.CloseDetailViewEvent
@@ -56,6 +57,8 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
     private static final String imageLogo = Configuration.coreGetAndLogStringConfig("GUI_BACKGROUND_LOGO", "ArtisanLogo37k.png");
 
     final ULCCardPane content = new ULCCardPane()
+    final ULCBoxPane selectionSwitchPane = new ULCBoxPane(1, 3)
+    final Map<String, ULCVerticalToggleButton> verticalNavButtonsForDetailView = new HashMap<>()
 
     //all views and main model are autowired
     @Resource
@@ -114,6 +117,7 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
     @Subscribe
     void changedDetailView(ChangeDetailViewEvent event) {
         headerView.syncMenuBar()
+        updateVerticalNavButtonsForDetailView(event.uiItem.model)
         currentItem = event.uiItem
     }
 
@@ -124,6 +128,7 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
         headerView.syncMenuBar()
         //update window menu
         modelAdded(event.uiItem.model)
+        addVerticalNavButtonForDetailView(event.uiItem.model)
         currentItem = event.uiItem
     }
 
@@ -147,7 +152,6 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
         splitBetweenModelPaneAndIndependentPane.dividerLocation = SIM_QUEUE_HEIGHT
         splitPane.rightComponent = splitBetweenModelPaneAndIndependentPane
 
-        ULCBoxPane selectionSwitchPane = new ULCBoxPane(1, 3)
         navigationSplitPaneAction = new ToggleSplitPaneAction(splitPane, UIUtils.getText(this.class, "Navigation"))
         ULCVerticalToggleButton navigationSwitchButton = new ULCVerticalToggleButton(navigationSplitPaneAction)
         navigationSwitchButton.selected = true
@@ -202,6 +206,27 @@ class RiskAnalyticsMainView implements IModellingItemChangeListener {
 
     void modelAdded(Model model) {
         headerView.modelAdded(model, cardPaneManager)
+    }
+
+    void addVerticalNavButtonForDetailView(Model model) {
+        String menuName = WindowSelectionAction.getMenuName(model)
+        if (!menuName || verticalNavButtonsForDetailView.keySet().contains(menuName)) {
+            return
+        } else {
+            ULCVerticalToggleButton toggleButton = new ULCVerticalToggleButton(new WindowSelectionAction(model, cardPaneManager))
+            toggleButton.selected = true
+            verticalNavButtonsForDetailView.put(menuName, toggleButton)
+            selectionSwitchPane.add(BOX_LEFT_TOP, toggleButton)
+        }
+    }
+
+    void updateVerticalNavButtonsForDetailView(Model model) {
+        String menuName = WindowSelectionAction.getMenuName(model)
+        if (menuName && verticalNavButtonsForDetailView.keySet().contains(menuName)) {
+            verticalNavButtonsForDetailView.each {
+                it.value.selected = menuName.equals(it.key)
+            }
+        }
     }
 
     void setWindowTitle(String windowTitle) {
