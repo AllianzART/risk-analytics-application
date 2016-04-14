@@ -46,6 +46,7 @@ class SortableTable extends ULCTable {
         boolean importData(ULCComponent targetComponent, Transferable transferable) {
             DnDTableData dragged = transferable.getTransferData(DRAG_FLAVOR) as DnDTableData
             DnDTableData dropped = transferable.getTransferData(DROP_FLAVOR) as DnDTableData
+            getRowSorter()?.resetSortOrder()
             getModel().moveFromTo(dragged.selectedRows, dropped.selectedRows[0])
         }
 
