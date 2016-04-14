@@ -35,7 +35,10 @@ class SortableTable extends ULCTable {
     private initialize() {
         dragEnabled = true
         transferHandler = new MyTransferHandler()
-        setRowSorter(new TableRowSorter(model))
+
+        def sorter = new TableRowSorter(model)
+        sorter.setSortsOnUpdates(true)
+        setRowSorter(sorter)
     }
 
     private class MyTransferHandler extends TransferHandler {

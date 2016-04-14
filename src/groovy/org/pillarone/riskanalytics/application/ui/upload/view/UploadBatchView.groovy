@@ -116,9 +116,11 @@ class UploadBatchView implements IDetailView {
         }
     }
 
+
     List<SimulationRowInfo> getSelectedSimulationRowInfos() {
         simulations.selectedRows.collect { int index ->
-            uploadBatchViewModel.uploadSimulationTableModel.simulationRowInfos[index]
+            int modelIndex = simulations.convertRowIndexToModel(index)
+            uploadBatchViewModel.uploadSimulationTableModel.simulationRowInfos[modelIndex]
         }
     }
 

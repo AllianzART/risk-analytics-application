@@ -135,7 +135,8 @@ class BatchView implements IDetailView {
 
     List<BatchRowInfo> getSelectedBatchRowInfos() {
         batches.selectedRows.collect { int index ->
-            batchViewModel.simulationParameterizationTableModel.batchRowInfos[index]
+            int modelIndex = batches.convertRowIndexToModel(index)
+            batchViewModel.simulationParameterizationTableModel.batchRowInfos[modelIndex]
         }
     }
 
