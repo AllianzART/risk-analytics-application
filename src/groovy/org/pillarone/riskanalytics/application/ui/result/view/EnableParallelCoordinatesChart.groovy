@@ -21,7 +21,7 @@ class EnableParallelCoordinatesChart implements IPopupMenuListener {
         def paths = rowHeaderTableTree.selectedPaths.lastPathComponent
         List nodes = paths.findAll {it instanceof ResultTableTreeNode}
         if (nodes.size() > 1) {
-            menuItem.enabled = true
+            menuItem.enabled = false //true - AR-283 keep disabled till crash is fixed
         } else {
             menuItem.enabled = false
         }

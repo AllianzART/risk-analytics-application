@@ -215,6 +215,11 @@ environments {
 }
 
 grails {
+// AR-277 Need to supply mail host if testing 'keep me posted' feature
+//    mail {
+//        host = ""
+//        props = ["mail.smtp.auth":"false"]
+//    }
     plugin {
         springsecurity {
             logout.invalidateHttpSession = false

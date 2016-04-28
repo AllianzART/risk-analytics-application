@@ -1,13 +1,14 @@
 package org.pillarone.riskanalytics.application.ui.base.action
 
 import com.canoo.ulc.community.fixedcolumntabletree.server.ULCFixedColumnTableTree
+import com.ulcjava.base.application.IAction
 import com.ulcjava.base.application.ULCTableTree
 import com.ulcjava.base.application.event.ActionEvent
-import com.ulcjava.base.application.tree.TreePath
 import com.ulcjava.base.application.event.KeyEvent
+import com.ulcjava.base.application.tree.TreePath
 import com.ulcjava.base.application.util.KeyStroke
-import com.ulcjava.base.application.IAction
 import groovy.transform.CompileStatic
+import org.pillarone.riskanalytics.application.ui.util.ExceptionSafe
 
 /**
  * @author fouad.jaada@intuitive-collaboration.com
@@ -24,12 +25,21 @@ class TreeCollapser extends ResourceBasedAction {
     }
 
     public void doActionPerformed(ActionEvent event) {
-        TreePath[] paths = tree.getSelectedPaths()
-        if (paths[0].lastPathComponent == tree.rowHeaderTableTree.model.root) {
-            collapseAll(paths)
-        } else {
-            collapsePaths(paths, true)
+        ExceptionSafe.protect {
+            TreePath[] paths = tree.getSelectedPaths()
+            def rowHeaderTableTree = tree.getRowHeaderTableTree()
+            TreePath pathToCheckIfRoot = rowHeaderTableTree.isRootVisible()? paths[0] : paths[0].parentPath
+            if (!rowHeaderTableTree.isExpanded(paths[0]) && !isRootNode(pathToCheckIfRoot)) {
+                rowHeaderTableTree.getSelectionModel().setSelectionPath(paths[0].getParentPath());
+                tree.getViewPortTableTree().getSelectionModel().setSelectionPath(paths[0].getParentPath());
+            } else {
+                collapsePaths(paths, true)
+            }
         }
+    }
+
+    private boolean isRootNode(TreePath path) {
+        path.lastPathComponent == tree.rowHeaderTableTree.model.root
     }
 
     private void collapseAll(TreePath[] paths) {

@@ -1,4 +1,5 @@
 package org.pillarone.riskanalytics.application.ui.simulation.model.impl.queue
+
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import org.pillarone.riskanalytics.application.ui.util.IResourceBundleResolver

@@ -5,6 +5,7 @@ import com.ulcjava.base.application.ULCTable
 import com.ulcjava.base.application.dnd.DnDTableData
 import com.ulcjava.base.application.dnd.TransferHandler
 import com.ulcjava.base.application.dnd.Transferable
+import com.ulcjava.base.application.table.TableRowSorter
 import org.pillarone.riskanalytics.application.ui.sortable.model.IOrderChangedListener
 import org.pillarone.riskanalytics.application.ui.sortable.model.SortableTableModel
 import org.pillarone.riskanalytics.application.ui.sortable.model.SortedEvent
@@ -34,6 +35,10 @@ class SortableTable extends ULCTable {
     private initialize() {
         dragEnabled = true
         transferHandler = new MyTransferHandler()
+
+        def sorter = new TableRowSorter(model)
+        sorter.setSortsOnUpdates(true)
+        setRowSorter(sorter)
     }
 
     private class MyTransferHandler extends TransferHandler {
@@ -41,6 +46,7 @@ class SortableTable extends ULCTable {
         boolean importData(ULCComponent targetComponent, Transferable transferable) {
             DnDTableData dragged = transferable.getTransferData(DRAG_FLAVOR) as DnDTableData
             DnDTableData dropped = transferable.getTransferData(DROP_FLAVOR) as DnDTableData
+            getRowSorter()?.resetSortOrder()
             getModel().moveFromTo(dragged.selectedRows, dropped.selectedRows[0])
         }
 

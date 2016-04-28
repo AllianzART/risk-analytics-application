@@ -9,10 +9,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <jnlp spec="1.0+" codebase="${codebase}">
     <information>
-        <title>RiskAnalytics</title>
-        <vendor>Canoo AG</vendor>
-        <description>ULC Application RiskAnalytics.</description>
-        <homepage href="http://www.pillarone.org"/>
+        <title>ARTisan</title>
+        <vendor>Allianz Risk Transfer</vendor>
+        <description>A modelling toolbox for the ART community.</description>
+        <homepage href="http://zh-jira-01.art-allianz.com:8090/display/AR/Artisan+Home"/>
         <icon href="/images/PillarOneLogoSmall.png" width="48" height="48"/>
     </information>
 

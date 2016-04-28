@@ -4,6 +4,7 @@ import com.ulcjava.base.application.IAction
 import com.ulcjava.base.application.ULCPopupMenu
 import org.pillarone.riskanalytics.application.ui.UlcSessionScope
 import org.pillarone.riskanalytics.application.ui.upload.queue.view.action.CancelUploadAction
+import org.pillarone.riskanalytics.application.ui.upload.queue.view.action.RegisterNotificationOnUploadEntryAction
 import org.pillarone.riskanalytics.application.ui.upload.queue.view.action.UploadQueueViewFindParameterizationsInTreeAction
 import org.pillarone.riskanalytics.application.ui.util.EnabledCheckingMenuItem
 import org.springframework.context.annotation.Scope
@@ -20,12 +21,16 @@ class UploadQueueContextMenu extends ULCPopupMenu {
     CancelUploadAction cancelUploadAction
 
     @Resource
+    RegisterNotificationOnUploadEntryAction registerNotificationOnUploadEntryAction
+
+    @Resource
     UploadQueueViewFindParameterizationsInTreeAction uploadQueueViewFindParameterizationsInTreeAction
     private List<EnabledCheckingMenuItem> menuItems = []
 
     @PostConstruct
     void initialize() {
         addItem(cancelUploadAction)
+        addItem(registerNotificationOnUploadEntryAction)
         addItem(uploadQueueViewFindParameterizationsInTreeAction)
     }
 

@@ -22,7 +22,7 @@ class SimulationRowModel extends AbstractTableRowModel<SimulationRuntimeInfo> {
             6: 'configuredAt',
             7: 'configuredBy',
             8: 'simulationState',
-            9: 'time'
+            9: 'minutes'
     ] : [
             0: 'simulation',
             1: 'batch',
@@ -32,10 +32,10 @@ class SimulationRowModel extends AbstractTableRowModel<SimulationRuntimeInfo> {
             5: 'priority',
             6: 'configuredAt',
             7: 'simulationState',
-            8: 'time'
+            8: 'minutes'
     ] as Map<Integer, String>
 
-    private static final Map<Integer, Closure<String>> COLUMN_VALUE_FACTORIES = hasCurrentUser() ? [
+    private static final Map<Integer, Closure> COLUMN_VALUE_FACTORIES = hasCurrentUser() ? [
             0: { SimulationRuntimeInfo info -> info.simulation?.nameAndVersion },
             1: { SimulationRuntimeInfo info -> info.simulation?.batch?.name },
             2: { SimulationRuntimeInfo info -> info.parameterization?.nameAndVersion },
@@ -73,7 +73,7 @@ class SimulationRowModel extends AbstractTableRowModel<SimulationRuntimeInfo> {
     }
 
     @Override
-    Closure<String> getValueFactory(int index) {
+    Closure getValueFactory(int index) {
         COLUMN_VALUE_FACTORIES[index]
     }
 }

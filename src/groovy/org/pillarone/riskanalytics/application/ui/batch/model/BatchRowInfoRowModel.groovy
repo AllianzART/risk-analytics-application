@@ -16,7 +16,7 @@ class BatchRowInfoRowModel extends AbstractTableRowModel<BatchRowInfo> {
             3: 'Period/Iterations',
             4: 'Random Seed',
             5: 'Simulation State',
-            6: 'Time'
+            6: 'Minutes'
 
     ] as Map<Integer, String>
 
@@ -27,7 +27,7 @@ class BatchRowInfoRowModel extends AbstractTableRowModel<BatchRowInfo> {
             3: { BatchRowInfo batchRowInfo -> batchRowInfo.periodIterationAsString },
             4: { BatchRowInfo batchRowInfo -> batchRowInfo.randomSeed },
             5: { BatchRowInfo batchRowInfo -> batchRowInfo.simulationStateAsString },
-            6: { BatchRowInfo batchRowInfo -> batchRowInfo.durationAsString }
+            6: { BatchRowInfo batchRowInfo -> batchRowInfo.duration }
     ] as Map<Integer, Closure>
 
     BatchRowInfoRowModel(int row, AbstractTableModel tableModel, BatchRowInfo object, int columnCount) {
@@ -35,7 +35,7 @@ class BatchRowInfoRowModel extends AbstractTableRowModel<BatchRowInfo> {
     }
 
     @Override
-    Closure<String> getValueFactory(int index) {
+    Closure getValueFactory(int index) {
         COLUMN_VALUE_FACTORIES[index]
     }
 }

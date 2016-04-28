@@ -28,6 +28,7 @@ class BatchViewModel {
 
     DefaultComboBoxModel simulationProfileNamesComboBoxModel
     private Batch batch
+    private String batchPrefix
 
     @PostConstruct
     void initialize() {
@@ -51,6 +52,10 @@ class BatchViewModel {
         this.batch = batch
         simulationParameterizationTableModel.batch = batch
         simulationProfileNamesComboBoxModel.selectedItem = batch.simulationProfileName
+    }
+
+    void setBatchPrefix(String batchPrefix) {
+        this.batchPrefix = batchPrefix
     }
 
     void save() {
@@ -78,7 +83,7 @@ class BatchViewModel {
 
     void run() {
         if (batch) {
-            batchRunService.runBatch(batch)
+            batchRunService.runBatch(batch, batchPrefix)
         }
     }
 
