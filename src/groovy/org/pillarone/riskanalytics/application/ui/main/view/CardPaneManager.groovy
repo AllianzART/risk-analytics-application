@@ -148,7 +148,9 @@ class CardPaneManager {
         if (tabbedPaneManager) {
             ULCCloseableTabbedPane selectedPane = selectedCard as ULCCloseableTabbedPane
             AbstractUIItem item = tabbedPaneManager.getAbstractItem(selectedPane.selectedComponent)
-            riskAnalyticsEventBus.post(new ChangeDetailViewEvent(item))
+            if(item){
+                riskAnalyticsEventBus.post(new ChangeDetailViewEvent(item))
+            }
         }
     }
 
