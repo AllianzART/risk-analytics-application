@@ -20,6 +20,7 @@ import org.pillarone.riskanalytics.core.search.CacheItemEvent
 import org.pillarone.riskanalytics.core.simulation.item.Simulation
 import org.pillarone.riskanalytics.core.simulation.item.SimulationProfile
 import org.pillarone.riskanalytics.core.simulationprofile.SimulationProfileService
+import org.pillarone.riskanalytics.core.util.Configuration
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
@@ -33,6 +34,10 @@ import static org.pillarone.riskanalytics.application.ui.util.UIUtils.spaceAroun
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Component
 class UploadBatchView implements IDetailView {
+
+    private static final boolean uploadsShowAdvanced = "true".equalsIgnoreCase(
+            Configuration.coreGetAndLogStringConfig("uploadsShowAdvanced", "false")
+    )
 
     private SortableTable simulations
     private ULCButton upload
@@ -174,10 +179,13 @@ class UploadBatchView implements IDetailView {
             ULCBoxPane content = new ULCBoxPane(6, 3)
             content.add(ULCBoxPane.BOX_LEFT_CENTER, new ULCLabel(profileText))
             content.add(ULCBoxPane.BOX_LEFT_CENTER, spaceAround(simulationProfilesComboBox, 0, 2, 2, 10))
-            content.add(ULCBoxPane.BOX_LEFT_CENTER, new ULCLabel(overwritingText))
-            content.add(ULCBoxPane.BOX_LEFT_CENTER, spaceAround(overwriteCheckBox, 0, 2, 2, 10))
-            content.add(ULCBoxPane.BOX_LEFT_CENTER, new ULCLabel(destinationText))
-            content.add(ULCBoxPane.BOX_LEFT_CENTER, spaceAround(destinationComboBox, 0, 2, 2, 10))
+            // Juan keeps getting distracted by seeing the 'allowOverwrite' checkbox (nothing behind it yet)
+            if(uploadsShowAdvanced){
+                content.add(ULCBoxPane.BOX_LEFT_CENTER, new ULCLabel(overwritingText))
+                content.add(ULCBoxPane.BOX_LEFT_CENTER, spaceAround(overwriteCheckBox, 0, 2, 2, 10))
+                content.add(ULCBoxPane.BOX_LEFT_CENTER, new ULCLabel(destinationText))
+                content.add(ULCBoxPane.BOX_LEFT_CENTER, spaceAround(destinationComboBox, 0, 2, 2, 10))
+            }
             content.add(0, ULCBoxPane.BOX_LEFT_CENTER, warningLabel)
             box.add ULCBoxPane.BOX_LEFT_TOP, content
         }
