@@ -24,7 +24,8 @@ class SimulationQueueTableModel extends AbstractTableModel {
     }
 
     SimulationRuntimeInfo getInfoAt(int index) {
-        columnModels[index].object
+        // AR-292 NPE seen 20161216 by juan
+        columnModels[index]?.object
     }
 
     @Override
