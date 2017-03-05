@@ -108,8 +108,33 @@ class UploadSimulationAction extends SelectionTreeAction {
             qtrSims.removeAll(nonProdModels)
         }
 
+//        // Have sims already been uploaded ?  (Needs HQL work in a helper function...)
+//        //
+//        List<Simulation> alreadyUploaded = qtrSims.findAll { sim -> isAlreadyUploaded(sim) }
+//        badCount = alreadyUploaded.size()
+//        if (badCount > 0) {
+//            String title = "Already-Uploaded sims skipped"
+//            String body = "Oops! ($badCount) sims already uploaded.\nE.g. ${alreadyUploaded.first().nameAndVersion} is already uploaded."
+//            showInfoAlert(title, body, true)
+//            qtrSims.removeAll(alreadyUploaded)
+//        }
+
         return qtrSims
     }
+
+    // Need to figure out a HQL way to do this query - nb ArtisanImport database, not p1rat
+    //
+//    private boolean isAlreadyUploaded(final Simulation simulation, Connection connection) throws SQLException {
+//        if(!simulation.isLoaded()){
+//            simulation.load();
+//        }
+//        final String sql =
+//            "select * from PricemodellingSimulationNumber psn where psn.simulationId=" + simulation.id ;
+//        try( Statement st = connection.createStatement();
+//             ResultSet resultSet = st.executeQuery(sql); ){
+//            return resultSet.next();
+//        }
+//    }
 
     private List<Simulation> getSimulations() {
         List<SimulationNode> simulationNodes = getSelectedObjects(Simulation).findAll {
