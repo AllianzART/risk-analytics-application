@@ -3,6 +3,7 @@ package org.pillarone.riskanalytics.application.ui.main.action
 import com.ulcjava.base.application.ULCTableTree
 import com.ulcjava.base.application.event.ActionEvent
 import grails.util.Holders
+import org.apache.commons.lang.StringUtils
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.pillarone.riskanalytics.application.ui.main.eventbus.event.OpenDetailViewEvent
@@ -12,7 +13,14 @@ import org.pillarone.riskanalytics.application.ui.main.view.item.UploadBatchUIIt
 import org.pillarone.riskanalytics.application.ui.result.model.SimulationNode
 import org.pillarone.riskanalytics.application.ui.upload.view.UploadBatchView
 import org.pillarone.riskanalytics.core.simulation.item.Simulation
+import org.pillarone.riskanalytics.core.util.Configuration
 import org.pillarone.riskanalytics.core.workflow.Status
+
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.ResultSet
+import java.sql.SQLException
+import java.sql.Statement
 
 class UploadSimulationAction extends SelectionTreeAction {
     private static final Log log = LogFactory.getLog(UploadSimulationAction)
@@ -108,33 +116,99 @@ class UploadSimulationAction extends SelectionTreeAction {
             qtrSims.removeAll(nonProdModels)
         }
 
-//        // Have sims already been uploaded ?  (Needs HQL work in a helper function...)
-//        //
-//        List<Simulation> alreadyUploaded = qtrSims.findAll { sim -> isAlreadyUploaded(sim) }
-//        badCount = alreadyUploaded.size()
-//        if (badCount > 0) {
-//            String title = "Already-Uploaded sims skipped"
-//            String body = "Oops! ($badCount) sims already uploaded.\nE.g. ${alreadyUploaded.first().nameAndVersion} is already uploaded."
-//            showInfoAlert(title, body, true)
-//            qtrSims.removeAll(alreadyUploaded)
-//        }
+        // Skip already uploaded sims
+        //
+        if(Configuration.coreGetAndLogStringConfig("disableAlreadyUploadedSimCheck", "false", log).equalsIgnoreCase("false")){
+            List<Simulation> alreadyUploaded = alreadyUploadedSims( qtrSims );
+            badCount = (alreadyUploaded == null) ? 0 : alreadyUploaded.size();
+            if (badCount > 0) {
+                showInfoAlert(
+                    "Cannot re-upload old sims",
+                    "Oops! ($badCount) sims already uploaded.\nE.g. ${alreadyUploaded.first().nameAndVersion} is already uploaded.",
+                    true
+                )
+                qtrSims.removeAll(alreadyUploaded)
+            }
+        }
 
         return qtrSims
     }
 
-    // Need to figure out a HQL way to do this query - nb ArtisanImport database, not p1rat
+    // Get a boring old style connection and use it across the whole list
     //
-//    private boolean isAlreadyUploaded(final Simulation simulation, Connection connection) throws SQLException {
-//        if(!simulation.isLoaded()){
-//            simulation.load();
-//        }
-//        final String sql =
-//            "select * from PricemodellingSimulationNumber psn where psn.simulationId=" + simulation.id ;
-//        try( Statement st = connection.createStatement();
-//             ResultSet resultSet = st.executeQuery(sql); ){
-//            return resultSet.next();
-//        }
-//    }
+    private List<Simulation> alreadyUploadedSims( List<Simulation> sims ){
+        Connection conn = null;
+        try{
+            conn = connectUploadsDB();
+            List<Simulation> alreadyUploaded = sims.findAll { sim -> isAlreadyUploaded(sim, conn) }
+            return  alreadyUploaded;
+        }catch( Exception e ){
+            log.warn("Failure querying already-uploaded sims\n"+e.getMessage(), e);
+        }finally{
+            if(conn != null){
+              conn.close(); // no txn, just querying data
+            }
+        }
+    }
+
+    private static boolean isAlreadyUploaded(Simulation sim, Connection conn){
+        log.info(String.format("Doing isAlreadyUploaded() sim=%s (id=%d)", sim.getName(), sim.id));
+        final String sql =
+            "select * from ArtisanImport.dbo.PricemodellingSimulationNumber where simulationId=" + sim.id;
+
+        Statement statement = null;
+        try{
+            statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            return resultSet.next();
+        }catch( SQLException sqx){
+            final String failed ="FAILED to query sim upload: ["+sql+"]";
+            log.info(failed, sqx);
+            throw new IllegalStateException(failed+"\n"+sqx.getMessage());
+        }finally{
+            if(statement!=null){
+                statement.close(); // also closes resultset etc
+            }
+
+        }
+    }
+
+    private Connection connectUploadsDB() {
+        final String connectionString = "jdbc:jtds:sqlserver://ART-SQL-APPS-PROD.art-allianz.com/ArtisanImport;integratedSecurity=true;";
+        final String JDBC_DRIVER = "net.sourceforge.jtds.jdbc.Driver";
+        final String AUTH_CONN_SUFFIX = ";useNTLMv2=tru‌​e;domain=ART-ALLIANZ";
+        final String username = "ArtisanUser";
+        final String password = Configuration.coreGetAndLogStringConfig("ArtisanDBPwd","", log);
+        try{
+            if( connectionString != null ){
+                loadJDBCDriver(JDBC_DRIVER);
+                if(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)){
+                    connectionString += AUTH_CONN_SUFFIX;
+                    log.info("Getting auth conn: " + connectionString);
+                    return DriverManager.getConnection(connectionString,username,password);
+                }else{
+                    log.info("Getting simple (no credentials) conn: " + connectionString);
+                    return DriverManager.getConnection( connectionString );
+                }
+            }else{ // null connnectionString
+                throw new IllegalArgumentException("null connnectionString");
+            }
+
+        }catch(ClassNotFoundException cnf){
+            log.info("FAILED to load JDBC driver: "+JDBC_DRIVER, cnf);
+            throw new IllegalArgumentException("Failed to connect to DB", cnf);
+        }catch(SQLException sqx){
+            log.info("FAILED to connect with: "+connectionString, sqx);
+            throw new IllegalArgumentException("Failed to connect to DB\n"+sqx.getMessage(), sqx);
+        }
+    }
+
+    private void loadJDBCDriver(String name) throws ClassNotFoundException {
+        Class.forName(name);
+        log.info("Loaded JDBC Driver: " + name);
+    }
+    
+    
 
     private List<Simulation> getSimulations() {
         List<SimulationNode> simulationNodes = getSelectedObjects(Simulation).findAll {
