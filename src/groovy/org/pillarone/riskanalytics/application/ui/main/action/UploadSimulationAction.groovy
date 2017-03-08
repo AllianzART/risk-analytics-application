@@ -176,27 +176,20 @@ class UploadSimulationAction extends SelectionTreeAction {
     private Connection connectUploadsDB() {
         final String connectionString = "jdbc:jtds:sqlserver://ART-SQL-APPS-PROD.art-allianz.com/ArtisanImport;integratedSecurity=true;";
         final String JDBC_DRIVER = "net.sourceforge.jtds.jdbc.Driver";
-        final String AUTH_CONN_SUFFIX = ";useNTLMv2=tru‌​e;domain=ART-ALLIANZ";
-        final String username = "ArtisanUser";
+        final String username = Configuration.coreGetAndLogStringConfig("ArtisanDBUser","", log);
         final String password = Configuration.coreGetAndLogStringConfig("ArtisanDBPwd","", log);
         try{
-            if( connectionString != null ){
-                loadJDBCDriver(JDBC_DRIVER);
-                if(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)){
-                    connectionString += AUTH_CONN_SUFFIX;
-                    log.info("Getting auth conn: " + connectionString);
-                    return DriverManager.getConnection(connectionString,username,password);
-                }else{
-                    log.info("Getting simple (no credentials) conn: " + connectionString);
-                    return DriverManager.getConnection( connectionString );
-                }
-            }else{ // null connnectionString
-                throw new IllegalArgumentException("null connnectionString");
+            loadJDBCDriver(JDBC_DRIVER);
+            if(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)){
+                log.info("Getting auth conn: " + connectionString);
+                return DriverManager.getConnection(connectionString,username,password);
+            }else{
+                log.info("Getting simple (no credentials) conn: " + connectionString);
+                return DriverManager.getConnection( connectionString );
             }
-
         }catch(ClassNotFoundException cnf){
             log.info("FAILED to load JDBC driver: "+JDBC_DRIVER, cnf);
-            throw new IllegalArgumentException("Failed to connect to DB", cnf);
+            throw new IllegalArgumentException("Failed to connect to DB ("+cnf.getMessage()+")", cnf);
         }catch(SQLException sqx){
             log.info("FAILED to connect with: "+connectionString, sqx);
             throw new IllegalArgumentException("Failed to connect to DB\n"+sqx.getMessage(), sqx);
