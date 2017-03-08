@@ -38,9 +38,13 @@ class SimulationQueueViewModel {
     }
 
     List<SimulationRuntimeInfo> getInfoAt(int[] selected) {
-        selected.collect {
+        List<SimulationRuntimeInfo> infos = selected.collect {
             simulationQueueTableModel.getInfoAt(it)
         }
+
+        infos.removeAll {it == null}
+
+        return infos
     }
 
     private class MyInfoListener implements IRuntimeInfoListener<SimulationRuntimeInfo> {
